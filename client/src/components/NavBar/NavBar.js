@@ -14,13 +14,16 @@ const styles = (theme) => ({
     flexGrow: 1,
   },
   bar: {
-    backgroundColor: "#000655"
+    backgroundColor: '#000655'
   },
   logo: {
     marginTop: 17,
     marginBottom: 17,
     height: 50
   },
+  button: {
+    color: 'white'
+  }
 });
 
 function NavBar({ classes }) {
@@ -32,8 +35,8 @@ function NavBar({ classes }) {
           <Typography variant="h6" className={classes.title}>
             
           </Typography>
-          <Button color="inherit">About</Button>
-          <Button color="inherit">Login</Button>
+          <Button className={classes.button}>About</Button>
+          <Button className={classes.button}>Login</Button>
         </Toolbar>
       </AppBar>
     </div>
