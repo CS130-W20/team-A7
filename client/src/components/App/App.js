@@ -1,8 +1,12 @@
 import React from 'react';
 import { createMuiTheme, ThemeProvider } from '@material-ui/core/styles';
-import CssBaseline from '@material-ui/core/CssBaseline';
+import { BrowserRouter as Router } from 'react-router-dom';
 import { Typography } from '@material-ui/core';
+import CssBaseline from '@material-ui/core/CssBaseline';
+
 import './App.css';
+
+import Navigation from '../Navigation';
 
 import NavBar from '../NavBar/NavBar';
 
@@ -24,6 +28,9 @@ function App() {
           <NavBar/>
         </header>
       </div>
+      <Router>
+        <Navigation />
+      </Router>
     </ThemeProvider>
   );
 }
