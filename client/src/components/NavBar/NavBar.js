@@ -3,7 +3,16 @@ import { AppBar, Button, Toolbar, IconButton, Typography } from '@material-ui/co
 import { withStyles } from '@material-ui/core/styles';
 import logo from '../../assets/logo.png'
 
-const styles = () => ({
+const styles = (theme) => ({
+  root: {
+    flexGrow: 1,
+  },
+  menuButton: {
+    marginRight: theme.spacing(2),
+  },
+  title: {
+    flexGrow: 1,
+  },
   bar: {
     backgroundColor: "#000655"
   },
@@ -16,11 +25,18 @@ const styles = () => ({
 
 function NavBar({ classes }) {
   return (
-    <AppBar position="static" className={classes.bar}>
-      <Toolbar>
-        <img src={logo} className={classes.logo}/>
-      </Toolbar>
-    </AppBar>
+    <div className={classes.root}>
+      <AppBar position="static" className={classes.bar}>
+        <Toolbar>
+          <img src={logo} className={classes.logo}/>
+          <Typography variant="h6" className={classes.title}>
+            
+          </Typography>
+          <Button color="inherit">About</Button>
+          <Button color="inherit">Login</Button>
+        </Toolbar>
+      </AppBar>
+    </div>
   );
 }
 
