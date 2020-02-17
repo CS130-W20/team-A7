@@ -1,10 +1,8 @@
 import React from 'react';
 import { createMuiTheme, ThemeProvider } from '@material-ui/core/styles';
 import { BrowserRouter as Router } from 'react-router-dom';
-import { Typography } from '@material-ui/core';
-import CssBaseline from '@material-ui/core/CssBaseline';
-
 import './App.css';
+import background from '../../assets/background.png';
 
 import Navigation from '../Navigation';
 
@@ -18,15 +16,20 @@ const theme = createMuiTheme({
   typography: {
     fontFamily: 'Raleway, Arial'
   }
-})
+});
 
 function App() {
   return (
     <ThemeProvider theme={theme}>
-      <div>
-        <header>
+      <div id="root-div">
+        <header id="header">
           <NavBar/>
         </header>
+        <div id="content-container">
+          <img src={background} id="background"/>
+          <div id="title-container">
+          </div>
+        </div>
       </div>
       <Router>
         <Navigation />
