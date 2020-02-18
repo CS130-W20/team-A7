@@ -2,10 +2,12 @@ import React, { Component }from 'react';
 import { createMuiTheme, ThemeProvider } from '@material-ui/core/styles';
 import { BrowserRouter, Redirect, Route, Switch } from 'react-router-dom';
 import './App.css';
+import { withFirebase } from '../Firebase';
 import background from '../../assets/background.png';
 
 import * as ROUTES from '../../constants/routes';
 
+import Navigation from '../Navigation';
 import NavBar from '../NavBar/NavBar';
 import Landing from '../Landing/Landing';
 import SignIn from '../SignIn';
@@ -48,4 +50,4 @@ function App() {
   );
 }
 
-export default App;
+export default withFirebase(App);

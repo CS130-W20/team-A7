@@ -11,6 +11,7 @@ const SignUpPage = () => (
     <SignUpForm />
   </div>
 );
+
 const INITIAL_STATE = {
   username: '',
   email: '',
