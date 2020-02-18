@@ -33,7 +33,7 @@ div#root-div {
 }
 
 div#page-container {
-  width: 100%;
   flex: 1 1 auto;
+  width: 100%;
   overflow: hidden;
 }
