@@ -1,1 +1,39 @@
 @import url('https://fonts.googleapis.com/css?family=Indie+Flower|Raleway&display=swap');
+
+html {
+  overflow: hidden;
+  height: 100%;
+}
+
+body {
+  height: 100%;
+  overflow: auto;
+}
+
+div#root-div {
+  display: flex;
+  flex-flow: column;
+  height: 100vh;
+}
+
+#header {
+  flex: 0 1 auto;
+}
+
+div#content-container {
+  flex: 1 1 auto;
+  width: 100%;
+  overflow: hidden;
+  position: relative;
+}
+
+img#background {
+  object-fit: cover;
+}
+
+div#title-container {
+  position: absolute;
+  width: 100%;
+  top: 80px;
+  padding: 0px 52px;
+}

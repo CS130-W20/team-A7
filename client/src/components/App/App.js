@@ -1,10 +1,8 @@
 import React, { Component }from 'react';
 import { createMuiTheme, ThemeProvider } from '@material-ui/core/styles';
 import { BrowserRouter, Redirect, Route, Switch } from 'react-router-dom';
-import { Typography } from '@material-ui/core';
-import CssBaseline from '@material-ui/core/CssBaseline';
-
 import './App.css';
+import background from '../../assets/background.png';
 
 import * as ROUTES from '../../constants/routes';
 
@@ -22,11 +20,21 @@ const theme = createMuiTheme({
   typography: {
     fontFamily: 'Raleway, Arial'
   }
-})
+});
 
 function App() {
   return (
     <ThemeProvider theme={theme}>
+      <div id="root-div">
+        <header id="header">
+          <NavBar/>
+        </header>
+        <div id="content-container">
+          <img src={background} id="background"/>
+          <div id="title-container">
+          </div>
+        </div>
+      </div>
       <BrowserRouter>
           <NavBar />
           <Switch>
@@ -35,7 +43,6 @@ function App() {
             <Route exact path={ROUTES.QUIZ} render={(props) => <Quiz {...props} />}/>
             <Redirect to={ROUTES.ABOUT} render={(props) => <About {...props} />}/>
           </Switch>
-
       </BrowserRouter>
     </ThemeProvider>
   );
