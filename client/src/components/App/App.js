@@ -6,10 +6,9 @@ import CssBaseline from '@material-ui/core/CssBaseline';
 
 import './App.css';
 
-import NavBar from '../NavBar/NavBar';
-
 import * as ROUTES from '../../constants/routes';
 
+import NavBar from '../NavBar/NavBar';
 import SignIn from '../SignIn';
 import SignUp from '../SignUp';
 import About from '../About';
