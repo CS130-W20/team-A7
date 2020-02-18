@@ -26,22 +26,21 @@ const theme = createMuiTheme({
 function App() {
   return (
     <ThemeProvider theme={theme}>
-      <div id="root-div">
-        <header id="header">
-          <NavBar/>
-        </header>
-        <div id="page-container">
-          <Landing/>
-        </div>
-      </div>
       <BrowserRouter>
-          <NavBar />
           <Switch>
             <Route exact path={ROUTES.SIGN_UP} render={(props) => <SignUp {...props} />} />
             <Route exact path={ROUTES.SIGN_IN} render={(props) => <SignIn {...props} />}/>
             <Route exact path={ROUTES.QUIZ} render={(props) => <Quiz {...props} />}/>
             <Redirect to={ROUTES.ABOUT} render={(props) => <About {...props} />}/>
           </Switch>
+          <div id="root-div">
+            <header id="header">
+              <NavBar/>
+            </header>
+            <div id="page-container">
+              <Landing/>
+            </div>
+          </div>
       </BrowserRouter>
     </ThemeProvider>
   );
