@@ -7,6 +7,7 @@ import background from '../../assets/background.png';
 import * as ROUTES from '../../constants/routes';
 
 import NavBar from '../NavBar/NavBar';
+import Landing from '../Landing/Landing';
 import SignIn from '../SignIn';
 import SignUp from '../SignUp';
 import About from '../About';
@@ -29,10 +30,8 @@ function App() {
         <header id="header">
           <NavBar/>
         </header>
-        <div id="content-container">
-          <img src={background} id="background"/>
-          <div id="title-container">
-          </div>
+        <div id="page-container">
+          <Landing/>
         </div>
       </div>
       <BrowserRouter>

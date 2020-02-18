@@ -1,0 +1,35 @@
+div#container {
+  position: relative;
+}
+
+img#background {
+  object-fit: cover;
+  width: 100%;
+}
+
+div#content-container {
+  position: absolute;
+  top: 0px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+}
+
+div#title-container {
+  width: 80%;
+  margin-top: 50px;
+}
+
+div#line {
+  width: 50%;
+  height: 1px;
+  margin-top: 60px;
+  margin-bottom: 70px;
+  background-color: #FFEEB1;
+}
+
+div#bottom-text {
+  margin-top: 100px;
+}

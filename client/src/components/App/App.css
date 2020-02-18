@@ -10,6 +10,18 @@ body {
   overflow: auto;
 }
 
+a {
+  color: #55A3FF;
+}
+
+a:visited {
+  color: #55A3FF;
+}
+
+a:active {
+  color: #2C71C1;
+}
+
 div#root-div {
   display: flex;
   flex-flow: column;
@@ -20,20 +32,8 @@ div#root-div {
   flex: 0 1 auto;
 }
 
-div#content-container {
+div#page-container {
   flex: 1 1 auto;
   width: 100%;
   overflow: hidden;
-  position: relative;
-}
-
-img#background {
-  object-fit: cover;
-}
-
-div#title-container {
-  position: absolute;
-  width: 100%;
-  top: 80px;
-  padding: 0px 52px;
 }
