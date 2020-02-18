@@ -5,9 +5,11 @@ import { Typography } from '@material-ui/core';
 import CssBaseline from '@material-ui/core/CssBaseline';
 
 import './App.css';
+import { withFirebase } from '../Firebase';
 
 import * as ROUTES from '../../constants/routes';
 
+import Navigation from '../Navigation';
 import NavBar from '../NavBar/NavBar';
 import SignIn from '../SignIn';
 import SignUp from '../SignUp';
@@ -35,10 +37,9 @@ function App() {
             <Route exact path={ROUTES.QUIZ} render={(props) => <Quiz {...props} />}/>
             <Redirect to={ROUTES.ABOUT} render={(props) => <About {...props} />}/>
           </Switch>
-
       </BrowserRouter>
     </ThemeProvider>
   );
 }
 
-export default App;
+export default withFirebase(App);

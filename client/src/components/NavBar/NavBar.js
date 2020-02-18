@@ -4,8 +4,8 @@ import { LinkContainer } from 'react-router-bootstrap'
 import { withStyles } from '@material-ui/core/styles';
 import logo from '../../assets/logo.png'
 
+import SignOutButton from '../SignOut';
 import * as ROUTES from '../../constants/routes';
-
 
 const styles = (theme) => ({
   root: {
@@ -30,36 +30,38 @@ const styles = (theme) => ({
   }
 });
 
-function NavBar({ classes }) {
-  return (
-    <div className={classes.root}>
-      <AppBar position="static" className={classes.bar}>
-        <Toolbar>
-          <img src={logo} className={classes.logo}/>
-          <Typography variant="h6" className={classes.title}>
-            
-          </Typography>
+const NavBar = ({ classes }) => (
+  <div className={classes.root}>
+    <AppBar position="static" className={classes.bar}>
+      <Toolbar>
+        <img src={logo} className={classes.logo}/>
+      <Typography variant="h6" className={classes.title}>
 
-          <Button>Foo</Button>
+      </Typography>
 
-          <Button>Bar</Button>
+      <Button style={{color: "white"}}>Foo</Button>
 
-          <Button>Foo - Bar</Button>
+      <Button style={{color: "white"}}>Bar</Button>
 
-          <LinkContainer to={ROUTES.QUIZ}>
-            <Button className={classes.button}>Quiz</Button>
-          </LinkContainer>
+      <Button style={{color: "white"}}>Foo - Bar</Button>
 
-          <LinkContainer to={ROUTES.ABOUT}>
-            <Button className={classes.button}>About</Button>
-          </LinkContainer>
-          <LinkContainer to={ROUTES.SIGN_IN}>
-            <Button className={classes.button}>Login</Button>
-          </LinkContainer>
-        </Toolbar>
-      </AppBar>
-    </div>
-  );
-}
+      <LinkContainer to={ROUTES.QUIZ}>
+        <Button className={classes.button}>Quiz</Button>
+      </LinkContainer>
+
+      <LinkContainer to={ROUTES.ABOUT}>
+        <Button className={classes.button}>About</Button>
+      </LinkContainer>
+          
+      <LinkContainer to={ROUTES.SIGN_IN}>
+        <Button className={classes.button}>Login</Button>
+      </LinkContainer>
+
+      <SignOutButton/>
+
+      </Toolbar>
+    </AppBar>
+  </div>
+);
 
 export default withStyles(styles)(NavBar);

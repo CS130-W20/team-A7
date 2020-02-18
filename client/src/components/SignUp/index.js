@@ -11,6 +11,7 @@ const SignUpPage = () => (
     <SignUpForm />
   </div>
 );
+
 const INITIAL_STATE = {
   username: '',
   email: '',
@@ -34,7 +35,7 @@ class SignUpFormBase extends Component {
       .doCreateUserWithEmailAndPassword(email, password)
       .then(authUser => {
         this.setState({ ...INITIAL_STATE });
-        this.props.history.push(ROUTES.HOME);
+        this.props.history.push(ROUTES.ABOUT);
       })
       .catch(error => {
         this.setState({ error });
