@@ -13,6 +13,7 @@ import SignIn from '../SignIn';
 import SignUp from '../SignUp';
 import About from '../About';
 import Quiz from '../Quiz';
+import MyTrips from '../MyTrips';
 
 const theme = createMuiTheme({
   palette: {
@@ -33,6 +34,7 @@ function App() {
             <Route exact path={ROUTES.SIGN_UP} render={(props) => <SignUp {...props} />} />
             <Route exact path={ROUTES.SIGN_IN} render={(props) => <SignIn {...props} />}/>
             <Route exact path={ROUTES.QUIZ} render={(props) => <Quiz {...props} />}/>
+			<Route exact path={ROUTES.MY_TRIPS} render={(props) => <MyTrips {...props} />}/>
             <Redirect to={ROUTES.ABOUT} render={(props) => <About {...props} />}/>
           </Switch>
 
