@@ -2,11 +2,10 @@ import React from 'react';
 import { createMuiTheme, ThemeProvider } from '@material-ui/core/styles';
 import { BrowserRouter as Router } from 'react-router-dom';
 import './App.css';
-import background from '../../assets/background.png';
 
 import Navigation from '../Navigation';
-
 import NavBar from '../NavBar/NavBar';
+import Landing from '../Landing/Landing';
 
 const theme = createMuiTheme({
   palette: {
@@ -25,10 +24,8 @@ function App() {
         <header id="header">
           <NavBar/>
         </header>
-        <div id="content-container">
-          <img src={background} id="background"/>
-          <div id="title-container">
-          </div>
+        <div id="page-container">
+          <Landing/>
         </div>
       </div>
       <Router>
