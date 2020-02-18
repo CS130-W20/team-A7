@@ -1,12 +1,16 @@
-import React from 'react';
+import React, { Component }from 'react';
 import { createMuiTheme, ThemeProvider } from '@material-ui/core/styles';
-import { BrowserRouter as Router } from 'react-router-dom';
+import { BrowserRouter, Redirect, Route, Switch } from 'react-router-dom';
 import './App.css';
 import background from '../../assets/background.png';
 
-import Navigation from '../Navigation';
+import * as ROUTES from '../../constants/routes';
 
 import NavBar from '../NavBar/NavBar';
+import SignIn from '../SignIn';
+import SignUp from '../SignUp';
+import About from '../About';
+import Quiz from '../Quiz';
 
 const theme = createMuiTheme({
   palette: {
@@ -31,9 +35,15 @@ function App() {
           </div>
         </div>
       </div>
-      <Router>
-        <Navigation />
-      </Router>
+      <BrowserRouter>
+          <NavBar />
+          <Switch>
+            <Route exact path={ROUTES.SIGN_UP} render={(props) => <SignUp {...props} />} />
+            <Route exact path={ROUTES.SIGN_IN} render={(props) => <SignIn {...props} />}/>
+            <Route exact path={ROUTES.QUIZ} render={(props) => <Quiz {...props} />}/>
+            <Redirect to={ROUTES.ABOUT} render={(props) => <About {...props} />}/>
+          </Switch>
+      </BrowserRouter>
     </ThemeProvider>
   );
 }
