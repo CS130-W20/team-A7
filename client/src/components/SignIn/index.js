@@ -12,10 +12,7 @@ import Form from 'react-bootstrap/Form';
 import Card from 'react-bootstrap/Card';
 
 const SignInPage = () => (
-  <div>
-    <SignInForm />
-    <SignUpLink />
-  </div>
+  <SignInForm />
 );
 
 const INITIAL_STATE = {

@@ -1,45 +1,30 @@
 import React, { Component } from 'react';
 import DateFnsUtils from '@date-io/date-fns'; 
-import { withStyles } from '@material-ui/core/styles';
-import { compose } from 'recompose';
 
 import {
   DatePicker,
-  TimePicker,
-  DateTimePicker,
   MuiPickersUtilsProvider,
 } from '@material-ui/pickers';
-import Avatar from '@material-ui/core/Avatar';
+import { withStyles } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import TextField from '@material-ui/core/TextField';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Checkbox from '@material-ui/core/Checkbox';
-import Link from '@material-ui/core/Link';
-import Grid from '@material-ui/core/Grid';
-import Box from '@material-ui/core/Box';
 import Typography from '@material-ui/core/Typography';
-import { makeStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import {airports} from "./airport.js";
 
-
-function countryToFlag(isoCode) {
-  return typeof String.fromCodePoint !== 'undefined'
-    ? isoCode.toUpperCase().replace(/./g, char => String.fromCodePoint(char.charCodeAt(0) + 127397))
-    : isoCode;
-}
-
 const ColoredLine = ({ color }) => (
   <hr
-      style={{
-          color: color,
-          backgroundColor: color,
-          height: 5
-      }}
+  style={{
+    color: color,
+    backgroundColor: color,
+    height: 5
+  }}
   />
-);
+  );
 
 console.log("testing")
 
@@ -49,20 +34,22 @@ const styles = (theme) => ({
     fontSize: 42,
     color: 'black',
     textAlign: 'center',
+    fontWeight: 'bold',
     margin: theme.spacing(9, 0, 0),
   },
   smallTitleForm: {
-    fontFamily: 'Indie Flower',
-    fontSize: 30,
+    fontSize: 26,
     color: 'black',
     textAlign: 'center',
+    fontWeight: 'bold',
     margin: theme.spacing(8, 0, 0),
   },
   smallTitleForm2: {
-    fontFamily: 'Indie Flower',
-    fontSize: 30,
+
+    fontSize: 26,
     color: 'black',
     textAlign: 'center',
+    fontWeight: 'bold',
     margin: theme.spacing(0, 0, 4),
   },
   option: {
@@ -194,13 +181,13 @@ class Quiz extends Component {
     
     return (
       <Typography className={classes.smallTitle}>
-        Give us a few details to help us gererate your adventure
+        Give us a few details to help us generate your adventure
         <ColoredLine color="black" />
         <Container component="main" maxWidth="sm">
           <CssBaseline />
           <div className={classes.paper}>
             <form className={classes.form} noValidate>
-              `<Typography className={classes.smallTitleForm2}>
+              <Typography className={classes.smallTitleForm2}>
                 What airport would you like to depart from and when do you want your trip to be?
               </Typography>
               <Autocomplete
@@ -287,8 +274,4 @@ class Quiz extends Component {
   }
 }
 
-const doobie = compose(
-  withStyles(styles),
-)(Quiz);
-
-export default doobie;
+export default withStyles(styles)(Quiz);
