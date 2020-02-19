@@ -42,7 +42,9 @@ const NavBar = ({ classes }) => (
         <div className={classes.root}>
         <AppBar position="static" className={classes.bar}>
           <Toolbar>
-            <img src={logo} className={classes.logo}/>
+          <Link to={ROUTES.LANDING}>
+            <Image src={logo} className={classes.logo} />
+          </Link>
           <Typography variant="h6" className={classes.title}>
     
           </Typography>

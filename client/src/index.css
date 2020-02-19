@@ -22,6 +22,7 @@ code {
   height: 100vh;
   text-align: center;
   color: white;
+  overflow: hidden;
   background-repeat: no-repeat;
   background-attachment: scroll;
   -webkit-background-size: cover;
