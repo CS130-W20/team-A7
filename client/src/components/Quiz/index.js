@@ -79,6 +79,18 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
+const INITIAL_STATE = {
+  departure_airport: '',
+  departure_date: '',
+  returnData: '',
+  cheapest: false,
+  underBudget: false,
+  farthest: false,
+  within_us: false,
+  International: false,
+  error: null,
+};
+
 export default function Quiz() {
   const classes = useStyles();
   const [selectedDate, handleDateChange] = useState(new Date());
