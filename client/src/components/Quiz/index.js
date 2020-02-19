@@ -1,6 +1,8 @@
-import React, { useState } from 'react';
+import React, { Component } from 'react';
 import DateFnsUtils from '@date-io/date-fns'; 
 import { withStyles } from '@material-ui/core/styles';
+import { compose } from 'recompose';
+
 import {
   DatePicker,
   TimePicker,
@@ -39,7 +41,9 @@ const ColoredLine = ({ color }) => (
   />
 );
 
-const useStyles = makeStyles(theme => ({
+console.log("testing")
+
+const styles = (theme) => ({
   smallTitle: {
     fontFamily: 'Indie Flower',
     fontSize: 42,
@@ -93,116 +97,198 @@ const useStyles = makeStyles(theme => ({
     margin: theme.spacing(3, 0, 2),
   },
 
-}));
+});
 
 const INITIAL_STATE = {
-  departure_airport: '',
-  departure_date: '',
-  returnData: '',
+  departureAirport: null,
+  departureDate: null,
+  returnDate: null,
   cheapest: false,
   underBudget: false,
   farthest: false,
-  within_us: false,
-  International: false,
+  withinUS: false,
+  international: false,
   error: null,
 };
 
-export default function Quiz() {
-  const classes = useStyles();
-  const [selectedDate, handleDateChange] = useState(new Date());
+class Quiz extends Component {
+  constructor(props) {
+    super(props);
+    this.state = { ...INITIAL_STATE };
+  }
+  
+  onChange = (event, value) => {
+    this.setState({ [event.target.name]: value });
+  };
 
-  return (
+  handleAutocomplete = (airport) => {
+    this.setState({
+      departureAirport: airport
+    });
+  }
+
+  handleDepartureDate = (date) => {
+    if (this.state.returnDate !== null &&  this.state.departureDate >= date) {
+      window.alert("Please enter a departure date before your return date :)");
+    }
+    else {
+      this.setState({
+        departureDate: date
+      });
+    }
+  };
+
+  handleReturnDate = (date) => {
+    if (this.state.departureDate !== null && date <= this.state.departureDate) {
+      window.alert("Please enter a return date after your departure date :)");
+    }
+    else {
+      this.setState({
+        returnDate: date
+      });
+    }
+  };
+
+  handleSubmit = () => {
+    window.alert(
+      "You input:\n" +
+      this.state.departureAirport.code + '\n' +
+      this.state.departureDate.toDateString() + '\n' +
+      this.state.returnDate.toDateString() + '\n' + 
+      (this.state.cheapest ? "cheapest\n" : "") +
+      (this.state.underBudget ? "under budget\n" : "") +
+      (this.state.farthest ? "farthest\n" : "") +
+      (this.state.withinUS ? "within u.s.\n" : "") +
+      (this.state.international ? "international\n" : ""))
+  }
+
+  render() {
+    const { classes } = this.props;
     
-    <Typography className={classes.smallTitle}>
-    Give us a few details to help us gererate your adventure
-    <ColoredLine color="black" />
-    <Container component="main" maxWidth="sm">
-      <CssBaseline />
-      <div className={classes.paper}>
-        <form className={classes.form} noValidate>
-        <Typography className={classes.smallTitleForm2}>
-             What airport would you like to depart from and when do you want your trip to be?
-        </Typography>
-        <Autocomplete
-          id="airport-select"
-          style={{ width: 500, align: 'center'}}
-          options={airports}
-          classes={{
-            option: classes.option,
-          }}
-          autoHighlight
-          getOptionLabel={option => option.name}
-          renderOption={option => (
-            <React.Fragment>
-            {option.name} - {option.code} 
-            </React.Fragment>
-          )}
-      renderInput={params => (
-        <TextField
-          {...params}
-          label="Departure Airport"
-          variant="outlined"
-          fullWidth
-          inputProps={{
-            ...params.inputProps,
-            autoComplete: 'new-password', // disable autocomplete and autofill
-          }}
-        />
+    const {
+      departureAirport,
+      departureDate,
+      returnDate,
+      cheapest,
+      underBudget,
+      farthest,
+      withinUS,
+      international,
+      error,
+    } = this.state;
+    
+    const isInvalid = 
+      departureAirport === null ||
+      departureDate === null ||
+      returnDate === null;
 
-  )}
-/>
-          <MuiPickersUtilsProvider utils={DateFnsUtils}>
-            <DatePicker value={selectedDate} onChange={handleDateChange} label="Departure Date" margin="normal" />
-            <DatePicker value={selectedDate} onChange={handleDateChange} label="Return Date" margin="normal" />
-          </MuiPickersUtilsProvider>
-          <Typography className={classes.smallTitleForm}>
-             What kind of trip are you looking to have?     (check all that apply)
-          </Typography>
-          <Typography className={classes.form2}>
-             Price:
-          </Typography>
-          <FormControlLabel
-            control={<Checkbox value="cheapest" color="primary" />}
-            label="Cheapest possible trip"
-          />
-          <FormControlLabel
-            control={<Checkbox value="cheapest" color="primary" />}
-            label="Just keep it under my budget"
-          />
+    if (this.state.departureAirport) {
+      console.log("departureAirport: " + this.state.departureAirport.code);
+    }
+    if (this.state.departureDate) {
+      console.log("departureDate: " + this.state.departureDate);
+    }
+    if (this.state.returnDate) {
+      console.log("returnDate: " + this.state.returnDate);
+    }
+    
+    return (
+      <Typography className={classes.smallTitle}>
+        Give us a few details to help us gererate your adventure
+        <ColoredLine color="black" />
+        <Container component="main" maxWidth="sm">
+          <CssBaseline />
+          <div className={classes.paper}>
+            <form className={classes.form} noValidate>
+              `<Typography className={classes.smallTitleForm2}>
+                What airport would you like to depart from and when do you want your trip to be?
+              </Typography>
+              <Autocomplete
+                id="airport-select"
+                value={departureAirport}
+                onChange={(event, value) => this.handleAutocomplete(value)}
+                style={{ width: 500, align: 'center'}}
+                options={airports}
+                classes={{
+                  option: classes.option,
+                }}
+                autoHighlight
+                getOptionLabel={option => option.name}
+                renderOption={option => (
+                  <React.Fragment>
+                  {option.name} - {option.code} 
+                  </React.Fragment>
+                )}
+                renderInput={params => (
+                  <TextField
+                    {...params}
+                    label="Departure Airport"
+                    variant="outlined"
+                    fullWidth
+                    inputProps={{
+                      ...params.inputProps,
+                      autoComplete: 'new-password', // disable autocomplete and autofill
+                    }}
+                  />
 
-          <Typography className={classes.form2}>
-             Location:
-          </Typography>
-          <FormControlLabel
-            control={<Checkbox value="farthest" color="primary" />}
-            label="Farthest destination, take me away!"
-          />
-          <FormControlLabel
-            control={<Checkbox value="" color="primary" />}
-            label="I want to stay within the US"
-          />
-          <FormControlLabel
-            control={<Checkbox value="" color="primary" />}
-            label="International, Please!"
-          />
-          <Button
-            type="submit"
-            fullWidth
-            variant="contained"
-            color="primary"
-            className={classes.submit}
-          >
-            Generate My Trip
-          </Button>
-         
-        </form>
-      </div>
+                )}
+              />
+              <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                <DatePicker name="startDate" value={departureDate} onChange={(value) => this.handleDepartureDate(value)} label="Departure Date" margin="normal" />
+                <DatePicker name="returnDate" value={returnDate} onChange={(value) => this.handleReturnDate(value)} label="Return Date" margin="normal" />
+              </MuiPickersUtilsProvider>
+              <Typography className={classes.smallTitleForm}>
+                What kind of trip are you looking to have?     (check all that apply)
+              </Typography>
+              <Typography className={classes.form2}>
+                Price:
+              </Typography>
+              <FormControlLabel
+                control={<Checkbox name="cheapest" value={cheapest} onChange={(event, value) => this.onChange(event, value)} color="primary" />}
+                label="Cheapest possible trip"
+              />
+              <FormControlLabel
+                control={<Checkbox name="underBudget" value={underBudget} onChange={(event, value) => this.onChange(event, value)} color="primary" />}
+                label="Just keep it under my budget"
+              />
+              <Typography className={classes.form2}>
+                Location:
+              </Typography>
+              <FormControlLabel
+                control={<Checkbox name="farthest" value={farthest} onChange={(event, value) => this.onChange(event, value)} color="primary" />}
+                label="Farthest destination, take me away!"
+              />
+              <FormControlLabel
+                control={<Checkbox name="withinUS" value={withinUS} onChange={(event, value) => this.onChange(event, value)} color="primary" />}
+                label="I want to stay within the US"
+              />
+              <FormControlLabel
+                control={<Checkbox name="international" value={international} onChange={(event, value) => this.onChange(event, value)} color="primary" />}
+                label="International, Please!"
+              />
+              <Button
+                type="submit"
+                disabled={isInvalid}
+                onClick={this.handleSubmit}
+                fullWidth
+                variant="contained"
+                color="primary"
+                className={classes.submit}
+              >
+                Generate My Trip
+              </Button>
+              
+            </form>
+          </div>
 
-    </Container>
-    </Typography>
-  );
+        </Container>
+      </Typography>
+    );
+  }
 }
 
+const doobie = compose(
+  withStyles(styles),
+)(Quiz);
 
-
-
+export default doobie;
