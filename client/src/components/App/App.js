@@ -34,6 +34,7 @@ function App() {
           <NavBar/>
         </header>
         <Switch>
+            <Route exact path={ROUTES.LANDING} render={(props) => <Landing {...props} />} />
             <Route exact path={ROUTES.SIGN_UP} render={(props) => <SignUp {...props} />} />
             <Route exact path={ROUTES.SIGN_IN} render={(props) => <SignIn {...props} />}/>
             <Route exact path={ROUTES.QUIZ} render={(props) => <Quiz {...props} />}/>
