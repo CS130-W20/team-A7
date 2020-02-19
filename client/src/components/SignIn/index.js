@@ -6,9 +6,13 @@ import { SignUpLink } from '../SignUp';
 import { withFirebase } from '../Firebase';
 import * as ROUTES from '../../constants/routes';
 
+import { Link } from 'react-router-dom';
+import Button from 'react-bootstrap/Button';
+import Form from 'react-bootstrap/Form';
+import Card from 'react-bootstrap/Card';
+
 const SignInPage = () => (
   <div>
-    <h1>SignIn</h1>
     <SignInForm />
     <SignUpLink />
   </div>
@@ -45,26 +49,27 @@ class SignInFormBase extends Component {
     const { email, password, error } = this.state;
     const isInvalid = password === '' || email === '';
     return (
-      <form onSubmit={this.onSubmit}>
-        <input
-          name="email"
-          value={email}
-          onChange={this.onChange}
-          type="text"
-          placeholder="Email Address"
-        />
-        <input
-          name="password"
-          value={password}
-          onChange={this.onChange}
-          type="password"
-          placeholder="Password"
-        />
-        <button disabled={isInvalid} type="submit">
-          Sign In
-        </button>
-        {error && <p>{error.message}</p>}
-      </form>
+      <div id="centered-masthead">
+				<div className="row h-100 justify-content-center align-items-center">
+					<Card style={{ width:'20rem' }}>
+            <Card.Header as="h3" style={{ color: 'black' }}>Sign In</Card.Header>
+            <Card.Body>
+              <Form onSubmit={this.onSubmit}>
+                <Form.Group controlId="formSignInEmail">
+                  <Form.Control name="email" value={email} onChange={this.onChange} type="email" placeholder="Email Address"/>
+                </Form.Group>
+                <Form.Group controlId="formSignInPassword">
+                  <Form.Control name="password" value={password} onChange={this.onChange} type="password" placeholder="Password"/>
+                </Form.Group>
+                {error && <Card.Text style={{ color: 'red', fontSize:'small'}}>{error.message}</Card.Text>}
+                <Button disabled={isInvalid} type="submit" variant='primary' block>Sign In</Button>
+              </Form>
+              <p><Link to={ROUTES.PASSWORD_FORGET}>Forgot Password?</Link></p>
+              <p style={{color:"black"}}>Don&#8217;t have an account? <Link to={ROUTES.SIGN_UP}>Sign Up</Link></p>
+            </Card.Body>
+					</Card>
+				</div>
+			</div>
     );
   }
 }
