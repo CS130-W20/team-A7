@@ -15,7 +15,6 @@ import Container from '@material-ui/core/Container';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import {airports} from "./airport.js";
 
-
 const ColoredLine = ({ color }) => (
   <hr
   style={{
@@ -146,7 +145,6 @@ export default function Quiz() {
         control={<Checkbox value="cheapest" color="primary" />}
         label="Just keep it under my budget"
         />
-
         <Typography className={classes.form2}>
         Location:
         </Typography>
@@ -179,7 +177,3 @@ export default function Quiz() {
         </Typography>
         );
       }
-
-
-
-
