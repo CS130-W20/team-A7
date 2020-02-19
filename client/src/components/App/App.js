@@ -38,7 +38,7 @@ function App() {
             <Route exact path={ROUTES.SIGN_IN} render={(props) => <SignIn {...props} />}/>
             <Route exact path={ROUTES.QUIZ} render={(props) => <Quiz {...props} />}/>
             <Route exact path={ROUTES.MY_TRIPS} render={(props) => <MyTrips {...props} />}/>
-            <Redirect to={ROUTES.ABOUT} render={(props) => <Landing {...props} />}/>
+            <Redirect to={ROUTES.LANDING} render={(props) => <Landing {...props} />}/>
         </Switch>
       </BrowserRouter>
     </ThemeProvider>

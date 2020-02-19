@@ -1,4 +1,5 @@
-export const ABOUT = '/';
+export const LANDING = '/';
+export const ABOUT = '/about';
 export const SIGN_UP = '/signup';
 export const SIGN_IN = '/signin';
 export const QUIZ = '/quiz';
