@@ -2,21 +2,24 @@ import React, { Component } from 'react';
 import { Link, withRouter } from 'react-router-dom';
 import { compose } from 'recompose';
 
+import Button from 'react-bootstrap/Button'
+import Card from 'react-bootstrap/Card'
+import Col from 'react-bootstrap/Col'
+import Form from 'react-bootstrap/Form'
+
 import { withFirebase } from '../Firebase';
 import * as ROUTES from '../../constants/routes';
 
 const SignUpPage = () => (
-  <div>
-    <h1>SignUp</h1>
-    <SignUpForm />
-  </div>
+  <SignUpForm />
 );
 
 const INITIAL_STATE = {
-  username: '',
+  firstname: '',
+  lastname: '',
   email: '',
-  password: '',
-  confirmedPassword: '',
+  passwordOne: '',
+  passwordTwo: '',
   error: null,
 };
 
@@ -45,50 +48,59 @@ class SignUpFormBase extends Component {
 
   render() {
     const {
-      username,
+      firstname,
+      lastname,
       email,
-      password: password,
-      confirmedPassword: confirmedPassword,
+      passwordOne: passwordOne,
+      passwordTwo: passwordTwo,
       error,
     } = this.state;
+
     const isInvalid =
-      password !== confirmedPassword ||
-      password === '' ||
+      passwordOne !== passwordTwo ||
+      passwordOne === '' ||
       email === '' ||
-      username === '';
+      firstname === '' ||
+      lastname === '';
+
     return (
-      <form onSubmit={this.onSubmit}>
-        <input
-          name="username"
-          value={username}
-          onChange={this.onChange}
-          type="text"
-          placeholder="Username"
-        />
-        <input
-          name="email"
-          value={email}
-          onChange={this.onChange}
-          type="text"
-          placeholder="Email Address"
-        />
-        <input
-          name="password"
-          value={password}
-          onChange={this.onChange}
-          type="password"
-          placeholder="Password"
-        />
-        <input
-          name="confirmedPassword"
-          value={confirmedPassword}
-          onChange={this.onChange}
-          type="password"
-          placeholder="Confirm Password"
-        />
-        <button type="submit">Sign Up</button>
-        {error && <p>{error.message}</p>}
-      </form>
+      <div id="centered-masthead">
+        <div className="row h-100 justify-content-center align-items-center">
+          <Card style={{ width:'25rem' }}>
+            <Card.Header as="h3" style={{ color: 'black', textAlign: 'left' }}>
+              Sign Up
+            </Card.Header>
+            <Card.Body>
+              <Form onSubmit={this.onSubmit}>
+                <Form.Group controlId="formSignUpEmail">
+                  <Form.Control name="email" value={email} onChange={this.onChange} type="email" placeholder="Email Address"/>
+                </Form.Group>
+
+                <Form.Row>
+                  <Form.Group as={Col} controlId="formSignUpFirstName">
+                    <Form.Control name="firstName" value={firstname} onChange={this.onChange} type="text" placeholder="First Name"/>
+                  </Form.Group>
+
+                  <Form.Group as={Col} controlId="formSignUpLastName">
+                    <Form.Control name="lastName" value={lastname} onChange={this.onChange} type="text" placeholder="Last Name"/>
+                  </Form.Group>
+                </Form.Row>
+
+                <Form.Group controlId="formSignUpPassOne">
+                  <Form.Control name="passwordOne" value={passwordOne} onChange={this.onChange} type="password" placeholder="Password"/>
+                </Form.Group>
+
+                <Form.Group controlId="formSignUpPassTwo">
+                  <Form.Control name="passwordTwo" value={passwordTwo} onChange={this.onChange} type="password" placeholder="Confirm Password"/>
+                </Form.Group>
+
+                {error && <Card.Text style={{ color: 'red', fontSize:'small'}}>{error.message}</Card.Text>}
+                <Button disabled={isInvalid} type="submit" variant='primary' block>Sign Up</Button>
+              </Form>
+            </Card.Body>
+          </Card>
+        </div>
+      </div>
     );  
   }
 }
