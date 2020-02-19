@@ -2,8 +2,11 @@ import React from 'react';
 import { Typography } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
 import background from '../../assets/background.png';
+import { Link } from 'react-router-dom'
+import { LinkContainer } from 'react-router-bootstrap'
+import * as ROUTES from '../../constants/routes';
 
-import CTAButton from '../CTAButton/CTAButton';
+import Button from 'react-bootstrap/Button'
 import './Landing.css';
 
 const styles = () => ({
@@ -32,18 +35,21 @@ const styles = () => ({
 
 const Landing = ({ classes }) => (
   <div id="container">
-    <img src={background} id="background"/>
-    <div id="content-container">
+    <div id="centered-masthead content-container">
       <div id="title-container">
         <Typography className={classes.smallTitle}>Life's already full of surprises...</Typography>
         <Typography className={classes.bigTitle}>...why not add one more?</Typography>
       </div>
       <div id="line"></div>
       <Typography className={classes.description}>Answer a few questions about who you are and the things that you like to do—let us handle the rest. </Typography>
-      <CTAButton margin="40px 0px 0px 0px">TAKE THE QUIZ</CTAButton>
+      
+      <LinkContainer to={ROUTES.QUIZ}>
+        <Button margin="40px 0px 0px 0px">TAKE THE QUIZ</Button>
+      </LinkContainer>
+
       <div id="bottom-text">
         <Typography className={classes.alreadyHasAccount}>
-          Already have an account? <a href="#">Log in</a>
+          Already have an account? <Link to={ROUTES.SIGN_IN}>Log in</Link>
         </Typography>
       </div>
     </div>

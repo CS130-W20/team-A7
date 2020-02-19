@@ -1,6 +1,8 @@
 import React from 'react';
 import { AppBar, Button, Toolbar, IconButton, Typography } from '@material-ui/core';
 import { LinkContainer } from 'react-router-bootstrap'
+import { Link } from 'react-router-dom'
+import Image from 'react-bootstrap/Image'
 import { withStyles } from '@material-ui/core/styles';
 import logo from '../../assets/logo.png'
 
@@ -68,9 +70,11 @@ const NavBar = ({ classes }) => (
       <div className={classes.root}>
       <AppBar position="static" className={classes.bar}>
         <Toolbar>
-          <img src={logo} className={classes.logo}/>
+        <Link to={ROUTES.LANDING}>
+          <Image src={logo} className={classes.logo} />
+        </Link>
+
         <Typography variant="h6" className={classes.title}>
-  
         </Typography>
   
         <LinkContainer to={ROUTES.QUIZ}>
