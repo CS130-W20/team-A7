@@ -19,6 +19,15 @@ import Box from '@material-ui/core/Box';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
+import Autocomplete from '@material-ui/lab/Autocomplete';
+import {airports} from "./airport.js";
+
+
+function countryToFlag(isoCode) {
+  return typeof String.fromCodePoint !== 'undefined'
+    ? isoCode.toUpperCase().replace(/./g, char => String.fromCodePoint(char.charCodeAt(0) + 127397))
+    : isoCode;
+}
 
 const ColoredLine = ({ color }) => (
   <hr
@@ -50,9 +59,15 @@ const useStyles = makeStyles(theme => ({
     fontSize: 30,
     color: 'black',
     textAlign: 'center',
-    margin: theme.spacing(0, 0, 0),
+    margin: theme.spacing(0, 0, 4),
   },
-
+  option: {
+    fontSize: 15,
+    '& > span': {
+      marginRight: 10,
+      fontSize: 18,
+    },
+  },
   paper: {
     marginTop: theme.spacing(8),
     display: 'flex',
@@ -77,6 +92,7 @@ const useStyles = makeStyles(theme => ({
   submit: {
     margin: theme.spacing(3, 0, 2),
   },
+
 }));
 
 const INITIAL_STATE = {
@@ -94,30 +110,47 @@ const INITIAL_STATE = {
 export default function Quiz() {
   const classes = useStyles();
   const [selectedDate, handleDateChange] = useState(new Date());
+
   return (
+    
     <Typography className={classes.smallTitle}>
     Give us a few details to help us gererate your adventure
     <ColoredLine color="black" />
     <Container component="main" maxWidth="sm">
       <CssBaseline />
       <div className={classes.paper}>
-       
-        
         <form className={classes.form} noValidate>
         <Typography className={classes.smallTitleForm2}>
              What airport would you like to depart from and when do you want your trip to be?
-          </Typography>
-          <TextField
-            variant="outlined"
-            margin="normal"
-            required
-            fullWidth
-            id="email"
-            label="Departure Airport"
-            name="dep_air"
-            autoComplete="dep_air"
-            autoFocus
-          />
+        </Typography>
+        <Autocomplete
+          id="airport-select"
+          style={{ width: 500, align: 'center'}}
+          options={airports}
+          classes={{
+            option: classes.option,
+          }}
+          autoHighlight
+          getOptionLabel={option => option.name}
+          renderOption={option => (
+            <React.Fragment>
+            {option.name} - {option.code} 
+            </React.Fragment>
+          )}
+      renderInput={params => (
+        <TextField
+          {...params}
+          label="Departure Airport"
+          variant="outlined"
+          fullWidth
+          inputProps={{
+            ...params.inputProps,
+            autoComplete: 'new-password', // disable autocomplete and autofill
+          }}
+        />
+
+  )}
+/>
           <MuiPickersUtilsProvider utils={DateFnsUtils}>
             <DatePicker value={selectedDate} onChange={handleDateChange} label="Departure Date" margin="normal" />
             <DatePicker value={selectedDate} onChange={handleDateChange} label="Return Date" margin="normal" />
@@ -169,3 +202,7 @@ export default function Quiz() {
     </Typography>
   );
 }
+
+
+
+

@@ -2,11 +2,10 @@ import React from 'react';
 import { Typography } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
 import background from '../../assets/background.png';
-import { Link } from 'react-router-dom'
-import { LinkContainer } from 'react-router-bootstrap'
+import { Link } from 'react-router-dom';
 import * as ROUTES from '../../constants/routes';
 
-import Button from 'react-bootstrap/Button'
+import CTAButton from '../CTAButton/CTAButton';
 import './Landing.css';
 
 const styles = () => ({
@@ -35,7 +34,8 @@ const styles = () => ({
 
 const Landing = ({ classes }) => (
   <div id="container">
-    <div id="centered-masthead content-container">
+    <img src={background} id="background"/>
+    <div id="content-container">
       <div id="title-container">
         <Typography className={classes.smallTitle}>Life's already full of surprises...</Typography>
         <Typography className={classes.bigTitle}>...why not add one more?</Typography>
@@ -43,9 +43,9 @@ const Landing = ({ classes }) => (
       <div id="line"></div>
       <Typography className={classes.description}>Answer a few questions about who you are and the things that you like to do—let us handle the rest. </Typography>
       
-      <LinkContainer to={ROUTES.QUIZ}>
-        <Button margin="40px 0px 0px 0px">TAKE THE QUIZ</Button>
-      </LinkContainer>
+      <Link to={ROUTES.QUIZ}>
+        <CTAButton margin="40px 0px 0px 0px">TAKE THE QUIZ</CTAButton>
+      </Link>
 
       <div id="bottom-text">
         <Typography className={classes.alreadyHasAccount}>
