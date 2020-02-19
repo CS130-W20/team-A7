@@ -10,6 +10,7 @@ import SignUp from '../SignUp';
 import About from '../About';
 import Quiz from '../Quiz';
 import MyTrips from '../MyTrips';
+import TripBooked from '../TripBooked';
 
 import * as ROUTES from '../../constants/routes';
 import { withAuthentication } from '../Session';
