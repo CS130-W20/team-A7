@@ -10,6 +10,8 @@ import SignUp from '../SignUp';
 import About from '../About';
 import Quiz from '../Quiz';
 import MyTrips from '../MyTrips';
+import Price from '../Price';
+import GeneratedTrip from '../GeneratedTrip';
 
 import * as ROUTES from '../../constants/routes';
 import { withAuthentication } from '../Session';
@@ -41,6 +43,8 @@ function App() {
             <Route exact path={ROUTES.SIGN_IN} render={(props) => <SignIn {...props} />}/>
             <Route exact path={ROUTES.QUIZ} render={(props) => <Quiz {...props} />}/>
             <Route exact path={ROUTES.MY_TRIPS} render={(props) => <MyTrips {...props} />}/>
+            <Route exact path={ROUTES.PRICE} render={(props) => <Price {...props} />}/>
+            <Route exact path={ROUTES.GENERATED_TRIP} render={(props) => <GeneratedTrip {...props} />}/>
             <Redirect to={ROUTES.LANDING} render={(props) => <Landing {...props} />}/>
         </Switch>
       </BrowserRouter>
