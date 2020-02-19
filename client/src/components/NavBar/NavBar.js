@@ -47,12 +47,6 @@ const NavBar = ({ classes }) => (
     
           </Typography>
     
-          <Button style={{color: "white"}}>Foo</Button>
-    
-          <Button style={{color: "white"}}>Bar</Button>
-    
-          <Button style={{color: "white"}}>Foo - Bar</Button>
-    
           <LinkContainer to={ROUTES.QUIZ}>
             <Button className={classes.button}>Quiz</Button>
           </LinkContainer>

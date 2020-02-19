@@ -13,6 +13,7 @@ import MyTrips from '../MyTrips';
 
 import * as ROUTES from '../../constants/routes';
 import { withAuthentication } from '../Session';
+import PasswordChange from '../PasswordChange';
 
 const theme = createMuiTheme({
   palette: {
@@ -36,6 +37,7 @@ function App() {
             <Route exact path={ROUTES.LANDING} render={(props) => <Landing {...props} />} />
             <Route exact path={ROUTES.ABOUT} render={(props) => <About {...props} />} />
             <Route exact path={ROUTES.SIGN_UP} render={(props) => <SignUp {...props} />} />
+            <Route exact path={ROUTES.PASSWORD_FORGET} render={(props) => <PasswordChange {...props} />} />
             <Route exact path={ROUTES.SIGN_IN} render={(props) => <SignIn {...props} />}/>
             <Route exact path={ROUTES.QUIZ} render={(props) => <Quiz {...props} />}/>
             <Route exact path={ROUTES.MY_TRIPS} render={(props) => <MyTrips {...props} />}/>
