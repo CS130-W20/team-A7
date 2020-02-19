@@ -1,5 +1,6 @@
 div#container {
   position: relative;
+  overflow: hidden;
 }
 
 img#background {
