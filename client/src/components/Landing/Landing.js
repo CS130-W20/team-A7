@@ -2,6 +2,8 @@ import React from 'react';
 import { Typography } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
 import background from '../../assets/background.png';
+import { Link } from 'react-router-dom';
+import * as ROUTES from '../../constants/routes';
 
 import CTAButton from '../CTAButton/CTAButton';
 import './Landing.css';
@@ -40,10 +42,14 @@ const Landing = ({ classes }) => (
       </div>
       <div id="line"></div>
       <Typography className={classes.description}>Answer a few questions about who you are and the things that you like to do—let us handle the rest. </Typography>
-      <CTAButton margin="40px 0px 0px 0px">TAKE THE QUIZ</CTAButton>
+      
+      <Link to={ROUTES.QUIZ}>
+        <CTAButton margin="40px 0px 0px 0px">TAKE THE QUIZ</CTAButton>
+      </Link>
+
       <div id="bottom-text">
         <Typography className={classes.alreadyHasAccount}>
-          Already have an account? <a href="#">Log in</a>
+          Already have an account? <Link to={ROUTES.SIGN_IN}>Log in</Link>
         </Typography>
       </div>
     </div>
