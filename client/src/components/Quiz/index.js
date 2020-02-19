@@ -16,6 +16,10 @@ import Container from '@material-ui/core/Container';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import {airports} from "./airport.js";
 
+import { BrowserRouter as Router, Redirect, Route, Switch, Link, NavLink } from 'react-router-dom';
+import * as ROUTES from '../../constants/routes';
+import Price from '../Price';
+
 const ColoredLine = ({ color }) => (
   <hr
   style={{
@@ -137,16 +141,24 @@ class Quiz extends Component {
   };
 
   handleSubmit = () => {
-    window.alert(
+    /*window.alert(
       "You input:\n" +
       this.state.departureAirport.code + '\n' +
-      this.state.departureDate.toDateString() + '\n' +
-      this.state.returnDate.toDateString() + '\n' + 
+      this.state.departureDate.toISOString() + '\n' +
+      this.state.returnDate.toISOString() + '\n' + 
       (this.state.cheapest ? "cheapest\n" : "") +
       (this.state.underBudget ? "under budget\n" : "") +
       (this.state.farthest ? "farthest\n" : "") +
       (this.state.withinUS ? "within u.s.\n" : "") +
-      (this.state.international ? "international\n" : ""))
+      (this.state.international ? "international\n" : ""))*/
+    
+    var departDate = this.state.departureDate.toISOString();
+    departDate = departDate.slice(0,10);
+    var returnDate = this.state.returnDate.toISOString();
+    returnDate = returnDate.slice(0, 10);
+    
+    console.log(departDate);
+    console.log(returnDate);
   }
 
   render() {
@@ -253,6 +265,7 @@ class Quiz extends Component {
                 control={<Checkbox name="international" value={international} onChange={(event, value) => this.onChange(event, value)} color="primary" />}
                 label="International, Please!"
               />
+              
               <Button
                 type="submit"
                 disabled={isInvalid}
@@ -262,7 +275,10 @@ class Quiz extends Component {
                 color="primary"
                 className={classes.submit}
               >
-                Generate My Trip
+                <Router>
+                <NavLink to="/price" color="primary">Generate My Trip</NavLink>
+                <Route exact path={ROUTES.PRICE} render={(props) => (<Price {...props} state={this.state}/>)}/>
+                </Router>
               </Button>
               
             </form>
