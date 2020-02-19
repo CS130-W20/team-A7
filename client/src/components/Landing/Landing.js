@@ -2,8 +2,7 @@ import React from 'react';
 import { Typography } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
 import background from '../../assets/background.png';
-import { Link } from 'react-router-dom'
-import { LinkContainer } from 'react-router-bootstrap'
+import { Link } from 'react-router-dom';
 import * as ROUTES from '../../constants/routes';
 
 import CTAButton from '../CTAButton/CTAButton';
