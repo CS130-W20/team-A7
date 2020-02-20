@@ -1,5 +1,5 @@
 # Serendipity
-An app for those who are spontanious but indecisive to make travel plans
+An app for those who are spontaneous but indecisive to make travel plans
 
 
 # Group Members
