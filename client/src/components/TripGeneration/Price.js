@@ -47,7 +47,7 @@ class Price extends Component {
                 "x-rapidapi-key": "c0df19373bmshbec042d361c58f1p176ba3jsnb25321ccb0ab"
             });
 
-            var inter = outFlightReq.end(function (res) {
+            outFlightReq.end(function (res) {
                 if (res.error) throw new Error(res.error);
                 //return resolve(res);
                 var quotes = res.body.Quotes;
