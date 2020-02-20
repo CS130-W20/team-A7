@@ -33,9 +33,10 @@ class SignUpFormBase extends Component {
   };
   
   onSubmit = event => {
-    const { username, email, password } = this.state;
+    event.preventDefault();
+    const { username, email, passwordOne } = this.state;
     this.props.firebase
-      .doCreateUserWithEmailAndPassword(email, password)
+      .doCreateUserWithEmailAndPassword(email, passwordOne)
       .then(authUser => {
         this.setState({ ...INITIAL_STATE });
         this.props.history.push(ROUTES.LANDING);
@@ -43,7 +44,6 @@ class SignUpFormBase extends Component {
       .catch(error => {
         this.setState({ error });
       });
-    event.preventDefault();
   };
 
   render() {
@@ -78,11 +78,11 @@ class SignUpFormBase extends Component {
 
                 <Form.Row>
                   <Form.Group as={Col} controlId="formSignUpFirstName">
-                    <Form.Control name="firstName" value={firstname} onChange={this.onChange} type="text" placeholder="First Name"/>
+                    <Form.Control name="firstname" value={firstname} onChange={this.onChange} type="text" placeholder="First Name"/>
                   </Form.Group>
 
                   <Form.Group as={Col} controlId="formSignUpLastName">
-                    <Form.Control name="lastName" value={lastname} onChange={this.onChange} type="text" placeholder="Last Name"/>
+                    <Form.Control name="lastname" value={lastname} onChange={this.onChange} type="text" placeholder="Last Name"/>
                   </Form.Group>
                 </Form.Row>
 
@@ -106,7 +106,7 @@ class SignUpFormBase extends Component {
 }
 
 const SignUpLink = () => (
-<p>
+  <p>
     Don't have an account? <Link to={ROUTES.SIGN_UP}>Sign Up</Link>
   </p>
 );
