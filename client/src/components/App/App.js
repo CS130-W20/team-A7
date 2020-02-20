@@ -37,7 +37,7 @@ function App() {
           <NavBar/>
         </header>
         <Switch>
-            <Route exact path={ROUTES.LANDING} render={(props) => <TripBooked {...props} />} />
+            <Route exact path={ROUTES.LANDING} render={(props) => <Landing {...props} />} />
             <Route exact path={ROUTES.ABOUT} render={(props) => <About {...props} />} />
             <Route exact path={ROUTES.SIGN_UP} render={(props) => <SignUp {...props} />} />
             <Route exact path={ROUTES.PASSWORD_FORGET} render={(props) => <PasswordChange {...props} />} />
