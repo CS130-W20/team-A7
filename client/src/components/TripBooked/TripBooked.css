@@ -2,15 +2,107 @@ div#trip-booked-container {
   overflow: hidden;
   background-image: url("../../assets/background.png");
   object-fit: cover;
-  padding: 45px;
+  padding: 45px 200px;
   height: 100%;
 }
 
 div#trip-booked-content-container {
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: stretch;
   background-color: white;
+  border-radius: 15px;
+  padding: 30px 100px;
   width: 100%;
   height: 100%;
+}
+
+div#congrats-title-container {
+  flex: 0 1 auto;
+}
+
+div#trip-booked-ticket-container {
+  flex: 0 1 auto;
+  display: flex;
+  align-items: stretch;
+  border-style: solid;
+  border-radius: 40px;
+  border-width: 12px;
+  border-color: #55A3FF;
+  margin: 15px 0px;
+  height: 250px;
+  overflow: hidden;
+}
+
+div#destination-container {
+  flex: 0 1 auto;
+  width: 40%;
+  background-image: url("../../assets/background.png");
+  background-size: cover;
+  position: relative;
+}
+
+div#destination-text-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-image: linear-gradient(to bottom, #00000000, #000000ff);
+  width: 100%;
+  height: 40%;
+  position: absolute;
+  left: 0px;
+  bottom: 0px;
+}
+
+div#ticket-divider {
+  width: 12px;
+  background-color: #55A3FF;
+}
+
+div#ticket-info-container {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 14px;
+  height: 100%
+}
+
+div#ticket-name-field-container {
+  display: flex;
+  align-items: center;
+  height: 50px;
+}
+
+div#ticket-name-container {
+  flex: 1 1 auto;
+  background-color: #FFEEB1;
+  font-family: "Indie Flower";
+  font-size: 22px;
+  padding: 2px 10px;
+}
+
+div#ticket-logistics-container {
+  width: 100%;
+}
+
+div#ticket-logistics-fields-container {
+  display: flex;
+  width: 100%;
+  margin-bottom: 8px;
+}
+
+div#ticket-logistics-values-container {
+  display: flex;
+  background-color: #FFEEB1;
+  width: 100%;
+  padding: 4px 2px 0px 4px;
+}
+
+div#trip-booked-actions-container {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-evenly;
 }
