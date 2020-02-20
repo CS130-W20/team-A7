@@ -14,23 +14,22 @@ import Checkbox from '@material-ui/core/Checkbox';
 import Typography from '@material-ui/core/Typography';
 import Container from '@material-ui/core/Container';
 import Autocomplete from '@material-ui/lab/Autocomplete';
+import FlatButton from 'material-ui/FlatButton';
 import {airports} from "./airport.js";
 
 import { BrowserRouter as Router, Redirect, Route, Switch, Link, NavLink } from 'react-router-dom';
-import * as ROUTES from '../../constants/routes';
-import Price from '../Price';
+// import * as ROUTES from '../../constants/routes';
+import Price from './Price';
 
 const ColoredLine = ({ color }) => (
   <hr
-  style={{
-    color: color,
-    backgroundColor: color,
-    height: 5
-  }}
+    style={{
+      color: color,
+      backgroundColor: color,
+      height: 5
+    }}
   />
-  );
-
-console.log("testing")
+);
 
 const styles = (theme) => ({
   smallTitle: {
@@ -90,107 +89,23 @@ const styles = (theme) => ({
 
 });
 
-const INITIAL_STATE = {
-  departureAirport: null,
-  departureDate: null,
-  returnDate: null,
-  cheapest: false,
-  underBudget: false,
-  farthest: false,
-  withinUS: false,
-  international: false,
-  error: null,
-};
-
 class Quiz extends Component {
   constructor(props) {
     super(props);
-    this.state = { ...INITIAL_STATE };
-  }
-  
-  onChange = (event, value) => {
-    this.setState({ [event.target.name]: value });
-  };
-
-  handleAutocomplete = (airport) => {
-    this.setState({
-      departureAirport: airport
-    });
   }
 
-  handleDepartureDate = (date) => {
-    if (this.state.returnDate !== null &&  this.state.departureDate >= date) {
-      window.alert("Please enter a departure date before your return date :)");
-    }
-    else {
-      this.setState({
-        departureDate: date
-      });
-    }
+  continue = e => {
+    e.preventDefault();
+    this.props.nextStep();
   };
-
-  handleReturnDate = (date) => {
-    if (this.state.departureDate !== null && date <= this.state.departureDate) {
-      window.alert("Please enter a return date after your departure date :)");
-    }
-    else {
-      this.setState({
-        returnDate: date
-      });
-    }
-  };
-
-  handleSubmit = () => {
-    /*window.alert(
-      "You input:\n" +
-      this.state.departureAirport.code + '\n' +
-      this.state.departureDate.toISOString() + '\n' +
-      this.state.returnDate.toISOString() + '\n' + 
-      (this.state.cheapest ? "cheapest\n" : "") +
-      (this.state.underBudget ? "under budget\n" : "") +
-      (this.state.farthest ? "farthest\n" : "") +
-      (this.state.withinUS ? "within u.s.\n" : "") +
-      (this.state.international ? "international\n" : ""))*/
-    
-    var departDate = this.state.departureDate.toISOString();
-    departDate = departDate.slice(0,10);
-    var returnDate = this.state.returnDate.toISOString();
-    returnDate = returnDate.slice(0, 10);
-    
-    console.log(departDate);
-    console.log(returnDate);
-  }
 
   render() {
-    const { classes } = this.props;
-    
-    const {
-      departureAirport,
-      departureDate,
-      returnDate,
-      cheapest,
-      underBudget,
-      farthest,
-      withinUS,
-      international,
-      error,
-    } = this.state;
-    
+    const { values, handleChange, classes } = this.props;
     const isInvalid = 
-      departureAirport === null ||
-      departureDate === null ||
-      returnDate === null;
+      values.departureAirport === null ||
+      values.departureDate === null ||
+      values.returnDate === null;
 
-    if (this.state.departureAirport) {
-      console.log("departureAirport: " + this.state.departureAirport.code);
-    }
-    if (this.state.departureDate) {
-      console.log("departureDate: " + this.state.departureDate);
-    }
-    if (this.state.returnDate) {
-      console.log("returnDate: " + this.state.returnDate);
-    }
-    
     return (
       <Typography className={classes.smallTitle}>
         Give us a few details to help us generate your adventure
@@ -204,8 +119,8 @@ class Quiz extends Component {
               </Typography>
               <Autocomplete
                 id="airport-select"
-                value={departureAirport}
-                onChange={(event, value) => this.handleAutocomplete(value)}
+                value={values.departureAirport}
+                onChange={(event, value) => handleChange("autocomplete", value)}
                 style={{ width: 500, align: 'center'}}
                 options={airports}
                 classes={{
@@ -233,8 +148,8 @@ class Quiz extends Component {
                 )}
               />
               <MuiPickersUtilsProvider utils={DateFnsUtils}>
-                <DatePicker name="startDate" value={departureDate} onChange={(value) => this.handleDepartureDate(value)} label="Departure Date" margin="normal" />
-                <DatePicker name="returnDate" value={returnDate} onChange={(value) => this.handleReturnDate(value)} label="Return Date" margin="normal" />
+                <DatePicker name="startDate" value={values.departureDate} onChange={(value) => handleChange("departureDate", value)} label="Departure Date" margin="normal" />
+                <DatePicker name="returnDate" value={values.returnDate} onChange={(value) => handleChange("returnDate", value)} label="Return Date" margin="normal" />
               </MuiPickersUtilsProvider>
               <Typography className={classes.smallTitleForm}>
                 What kind of trip are you looking to have?     (check all that apply)
@@ -243,44 +158,38 @@ class Quiz extends Component {
                 Price:
               </Typography>
               <FormControlLabel
-                control={<Checkbox name="cheapest" value={cheapest} onChange={(event, value) => this.onChange(event, value)} color="primary" />}
+                control={<Checkbox name="cheapest" value={values.cheapest} onChange={(event, value) => handleChange(event, value)} color="primary" />}
                 label="Cheapest possible trip"
               />
               <FormControlLabel
-                control={<Checkbox name="underBudget" value={underBudget} onChange={(event, value) => this.onChange(event, value)} color="primary" />}
+                control={<Checkbox name="underBudget" value={values.underBudget} onChange={(event, value) => handleChange(event, value)} color="primary" />}
                 label="Just keep it under my budget"
               />
               <Typography className={classes.form2}>
                 Location:
               </Typography>
               <FormControlLabel
-                control={<Checkbox name="farthest" value={farthest} onChange={(event, value) => this.onChange(event, value)} color="primary" />}
+                control={<Checkbox name="farthest" value={values.farthest} onChange={(event, value) => handleChange(event, value)} color="primary" />}
                 label="Farthest destination, take me away!"
               />
               <FormControlLabel
-                control={<Checkbox name="withinUS" value={withinUS} onChange={(event, value) => this.onChange(event, value)} color="primary" />}
+                control={<Checkbox name="withinUS" value={values.withinUS} onChange={(event, value) => handleChange(event, value)} color="primary" />}
                 label="I want to stay within the US"
               />
               <FormControlLabel
-                control={<Checkbox name="international" value={international} onChange={(event, value) => this.onChange(event, value)} color="primary" />}
+                control={<Checkbox name="international" value={values.international} onChange={(event, value) => handleChange(event, value)} color="primary" />}
                 label="International, Please!"
               />
               
-              <Button
-                type="submit"
-                disabled={isInvalid}
-                onClick={this.handleSubmit}
-                fullWidth
-                variant="contained"
-                color="primary"
-                className={classes.submit}
-              >
-                <Router>
-                <NavLink to="/price" color="primary">Generate My Trip</NavLink>
-                <Route exact path={ROUTES.PRICE} render={(props) => (<Price {...props} state={this.state}/>)}/>
-                </Router>
-              </Button>
               
+              <Button label="submit"
+              type="submit"
+              disabled={isInvalid}
+              onClick={this.continue}
+              fullWidth
+              variant="contained">
+                Submit
+              </Button>
             </form>
           </div>
 
