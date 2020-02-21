@@ -15,6 +15,7 @@ const INITIAL_STATE = {
   withinUS: false,
   international: false,
   error: null,
+  totalPrice: null,
 };
 
 export class UserForm extends Component {
@@ -91,8 +92,8 @@ export class UserForm extends Component {
   
   render() {
     const { step } = this.state;
-    const { departureAirport, departureDate, returnDate, cheapest, underBudget, farthest, withinUS, international } =  this.state;
-    const values = { departureAirport, departureDate, returnDate, cheapest, underBudget, farthest, withinUS, international };
+    const { departureAirport, departureDate, returnDate, cheapest, underBudget, farthest, withinUS, international, error, totalPrice } =  this.state;
+    const values = { departureAirport, departureDate, returnDate, cheapest, underBudget, farthest, withinUS, international, totalPrice };
   
     switch (step) {
       case 1:
