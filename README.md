@@ -5,29 +5,29 @@ Made by a dedicated team of five UCLA students: Jair Hinojosa, Steven Lara, Chri
 # Code Structure
   Since we decided to build a React application, we utilize a standard structure for React apps in which we store all components inside client/src/components. Within this folder, we keep each component in a seperate file. This is the main structure of our critical components:
   
-  client
-    src
-      assets
-        [..assets..]
-      components
-        About
-        Account
-        Admin
-        App
-        CTAButton
-        Firebase
-        Home
-        Landing
-        MyTrips
-        NavBar
-        PasswordChange
-        PasswordForget
-        Session
-        SignIn
-        SignOut
-        SignUp
-        TripGeneration
-      constants
+  client  
+    src  
+      assets  
+        [..assets..]  
+      components  
+        About  
+        Account  
+        Admin  
+        App  
+        CTAButton  
+        Firebase  
+        Home  
+        Landing  
+        MyTrips  
+        NavBar  
+        PasswordChange  
+        PasswordForget  
+        Session  
+        SignIn  
+        SignOut  
+        SignUp  
+        TripGeneration  
+      constants  
 
 # Testing
 
