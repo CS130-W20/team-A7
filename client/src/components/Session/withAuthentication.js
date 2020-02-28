@@ -9,17 +9,37 @@ const withAuthentication = Component => {
       super(props);
       this.state = {
         authUser: null,
+        user: null,
       };
     }
-  
-    componentDidMount() {
-      this.listener = this.props.firebase.auth.onAuthStateChanged(
-        authUser => {
-          authUser
-            ? this.setState({ authUser })
-            : this.setState({ authUser: null });
+    
+    authStateChanged =
+      this.props.firebase.auth.onAuthStateChanged(authUser => 
+        {
+          if (authUser) {
+            this.setState({ authUser });
+            // const user = this.props.firebase.user(authUser.uid).val();
+            // this.setState({ user });
+            this.props.firebase.user(authUser.uid).on('value', snapshot => {
+              const userObject = snapshot.val();
+              if (userObject) {
+                // convert messages list from snapshot
+                this.setState({ user: userObject });
+              } else {
+                this.setState({ user: null });
+              }
+            });
+          }
+          else {
+            this.setState({ authUser: null });
+            this.setState({ user: null });
+          }
         },
       );
+
+    componentDidMount() {
+      this.listener = this.authStateChanged;
+      // document.addEventListener('authState', this.authStateChanged);
     }
     
     componentWillUnmount() {
@@ -28,7 +48,10 @@ const withAuthentication = Component => {
     
     render() {
       return (
-        <AuthUserContext.Provider value={this.state.authUser}>
+        <AuthUserContext.Provider value={{
+          authUser: this.state.authUser,
+          user: this.state.user,
+        }}>
           <Component {...this.props} />
         </AuthUserContext.Provider>
       );
