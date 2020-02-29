@@ -2,13 +2,51 @@ import React, { Component } from 'react';
 import { Link, withRouter } from 'react-router-dom';
 import { compose } from 'recompose';
 
-import Button from 'react-bootstrap/Button'
-import Card from 'react-bootstrap/Card'
-import Col from 'react-bootstrap/Col'
-import Form from 'react-bootstrap/Form'
+import Button from '@material-ui/core/Button';
+import CssBaseline from '@material-ui/core/CssBaseline';
+import TextField from '@material-ui/core/TextField';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
+import Grid from '@material-ui/core/Grid';
+import Typography from '@material-ui/core/Typography';
+import { withStyles } from '@material-ui/core/styles';
+import Container from '@material-ui/core/Container';
+import Card from '@material-ui/core/Card'
+import CardContent from '@material-ui/core/CardContent'
 
+import { SignInLink } from '../SignIn';
 import { withFirebase } from '../Firebase';
 import * as ROUTES from '../../constants/routes';
+
+const styles = (theme) => ({
+  card: {
+    marginTop: 50,
+    maxWidth: 500,
+    margin: "auto",
+    transition: "0.3s",
+    boxShadow: "0 8px 40px -12px rgba(0,0,0,0.3)",
+    "&:hover": {
+      boxShadow: "0 16px 70px -12.125px rgba(0,0,0,0.3)"
+    }
+  },
+  paper: {
+    marginTop: theme.spacing(8),
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+  },
+  form: {
+    width: '100%', // Fix IE 11 issue.
+    marginTop: theme.spacing(3),
+  },
+  submit: {
+    margin: theme.spacing(3, 0, 2),
+  },
+  error: {
+    color: 'red',
+    fontSize: 'small',
+    margin: theme.spacing(3, 0, 2),
+  }
+});
 
 const SignUpPage = () => (
   <SignUpForm />
@@ -33,6 +71,7 @@ class SignUpFormBase extends Component {
   };
   
   onSubmit = event => {
+    console.log("OnSubmit Called")
     event.preventDefault();
     const { firstname, lastname, email, passwordOne } = this.state;
     this.props.firebase
@@ -52,11 +91,14 @@ class SignUpFormBase extends Component {
         this.props.history.push(ROUTES.LANDING);
       })
       .catch(error => {
+        console.log('Error: ', error.message);
         this.setState({ error });
       });
   };
 
   render() {
+    const { classes } = this.props;
+
     const {
       firstname,
       lastname,
@@ -75,43 +117,113 @@ class SignUpFormBase extends Component {
 
     return (
       <div id="centered-masthead">
-        <div className="row h-100 justify-content-center align-items-center">
-          <Card style={{ width:'25rem' }}>
-            <Card.Header as="h3" style={{ color: 'black', textAlign: 'left' }}>
-              Sign Up
-            </Card.Header>
-            <Card.Body>
-              <Form onSubmit={this.onSubmit}>
-                <Form.Group controlId="formSignUpEmail">
-                  <Form.Control name="email" value={email} onChange={this.onChange} type="email" placeholder="Email Address"/>
-                </Form.Group>
+      <Card className={classes.card}>
+        <CardContent>
+          <Container component="main" maxWidth="xs">
+            <CssBaseline />
+            <div className={classes.paper}>
+              <Typography component="h1" variant="h5">
+                Sign up
+              </Typography>
+              <form className={classes.form} noValidate>
+                <Grid container spacing={2}>
+                  <Grid item xs={12} sm={6}>
+                    <TextField
+                      autoComplete="fname"
+                      name="firstname"
+                      value={firstname}
+                      onChange={this.onChange}
+                      variant="outlined"
+                      required
+                      fullWidth
+                      id="firstname"
+                      label="First Name"
+                      autoFocus
+                    />
+                  </Grid>
+                  <Grid item xs={12} sm={6}>
+                    <TextField
+                      variant="outlined"
+                      required
+                      fullWidth
+                      id="lastname"
+                      label="Last Name"
+                      name="lastname"
+                      value={lastname}
+                      onChange={this.onChange}
+                      autoComplete="lname"
+                    />
+                  </Grid>
+                  <Grid item xs={12}>
+                    <TextField
+                      variant="outlined"
+                      required
+                      fullWidth
+                      id="email"
+                      label="Email Address"
+                      name="email"
+                      value={email}
+                      onChange={this.onChange}
+                      name="email"
+                      autoComplete="email"
+                    />
+                  </Grid>
+                  <Grid item xs={12}>
+                    <TextField
+                      variant="outlined"
+                      required
+                      fullWidth
+                      name="passwordOne"
+                      label="Password"
+                      type="password"
+                      id="password"
+                      value={passwordOne}
+                      onChange={this.onChange}
+                      autoComplete="current-password"
+                    />
+                  </Grid>
+                  <Grid item xs={12}>
+                    <TextField
+                      variant="outlined"
+                      required
+                      fullWidth
+                      name="passwordTwo"
+                      label="Confirm Password"
+                      type="password"
+                      id="password"
+                      value={passwordTwo}
+                      onChange={this.onChange}
+                      autoComplete="current-password"
+                    />
+                  </Grid>
+                </Grid>
+                <Button
+                  disabled={isInvalid}
+                  onClick={this.onSubmit}
+                  variant='primary'
+                  type="submit"
+                  fullWidth
+                  variant="contained"
+                  color="primary"
+                  className={classes.submit}
+                >
+                  Sign Up
+                </Button>
+                
+                {error && <Typography className={classes.error}>{error.message}</Typography>}
 
-                <Form.Row>
-                  <Form.Group as={Col} controlId="formSignUpFirstName">
-                    <Form.Control name="firstname" value={firstname} onChange={this.onChange} type="text" placeholder="First Name"/>
-                  </Form.Group>
-
-                  <Form.Group as={Col} controlId="formSignUpLastName">
-                    <Form.Control name="lastname" value={lastname} onChange={this.onChange} type="text" placeholder="Last Name"/>
-                  </Form.Group>
-                </Form.Row>
-
-                <Form.Group controlId="formSignUpPassOne">
-                  <Form.Control name="passwordOne" value={passwordOne} onChange={this.onChange} type="password" placeholder="Password"/>
-                </Form.Group>
-
-                <Form.Group controlId="formSignUpPassTwo">
-                  <Form.Control name="passwordTwo" value={passwordTwo} onChange={this.onChange} type="password" placeholder="Confirm Password"/>
-                </Form.Group>
-
-                {error && <Card.Text style={{ color: 'red', fontSize:'small'}}>{error.message}</Card.Text>}
-                <Button disabled={isInvalid} type="submit" variant='primary' block>Sign Up</Button>
-              </Form>
-            </Card.Body>
-          </Card>
-        </div>
+                <Grid container justify="flex-end">
+                  <Grid item>
+                    <SignInLink/>
+                  </Grid>
+                </Grid>
+              </form>
+            </div>
+          </Container>
+        </CardContent>
+      </Card>
       </div>
-    );  
+    );
   }
 }
 
@@ -124,6 +236,7 @@ const SignUpLink = () => (
 const SignUpForm = compose(
   withRouter,
   withFirebase,
+  withStyles(styles),
 )(SignUpFormBase);
 
 export default SignUpPage;
