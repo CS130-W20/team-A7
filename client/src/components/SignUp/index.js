@@ -129,6 +129,9 @@ class SignUpFormBase extends Component {
                 <Grid container spacing={2}>
                   <Grid item xs={12} sm={6}>
                     <TextField
+                      inputProps={{
+                        'data-testid': 'firstnameInput'
+                      }}
                       autoComplete="fname"
                       name="firstname"
                       value={firstname}
@@ -143,6 +146,9 @@ class SignUpFormBase extends Component {
                   </Grid>
                   <Grid item xs={12} sm={6}>
                     <TextField
+                      inputProps={{
+                        'data-testid': 'lastnameInput'
+                      }}
                       variant="outlined"
                       required
                       fullWidth
@@ -156,6 +162,9 @@ class SignUpFormBase extends Component {
                   </Grid>
                   <Grid item xs={12}>
                     <TextField
+                      inputProps={{
+                        'data-testid': 'emailInput'
+                      }}
                       variant="outlined"
                       required
                       fullWidth
@@ -170,6 +179,9 @@ class SignUpFormBase extends Component {
                   </Grid>
                   <Grid item xs={12}>
                     <TextField
+                      inputProps={{
+                        'data-testid': 'passwordOneInput'
+                      }}
                       variant="outlined"
                       required
                       fullWidth
@@ -184,6 +196,9 @@ class SignUpFormBase extends Component {
                   </Grid>
                   <Grid item xs={12}>
                     <TextField
+                      inputProps={{
+                        'data-testid': 'passwordTwoInput'
+                      }}
                       variant="outlined"
                       required
                       fullWidth
