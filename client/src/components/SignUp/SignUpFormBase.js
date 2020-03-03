@@ -66,7 +66,6 @@ class SignUpFormBase extends Component {
   };
     
   onSubmit = event => {
-    console.log("OnSubmit Called")
     event.preventDefault();
     const { firstname, lastname, email, passwordOne } = this.state;
     this.props.firebase

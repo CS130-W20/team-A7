@@ -2,13 +2,29 @@ import React from 'react';
 import { BrowserRouter } from 'react-router-dom';
 
 import { createMount } from '@material-ui/core/test-utils';
-import jest from 'jest-mock';
 import Enzyme from 'enzyme';
 import Adapter from 'enzyme-adapter-react-16';
 
 import SignUp from '.'
 import {SignUpFormBase, styles} from './SignUpFormBase'
 import { withStyles } from '@material-ui/core/styles';
+
+import Firebase from '../Firebase/firebase';
+
+// Now mock 'firebase/app`:
+jest.mock('firebase/app', () => {
+  const firebasemock = require('firebase-mock');
+  const mockauth = new firebasemock.MockAuthentication();
+  const mockdatabase = new firebasemock.MockFirebase();
+  const mocksdk = new firebasemock.MockFirebaseSdk(
+    (path) => {
+      return path ? mockdatabase.child(path) : mockdatabase;
+    },
+    () => mockauth, 
+    null,
+  );
+  return mocksdk; 
+});
 
 Enzyme.configure({ adapter: new Adapter() })
 
@@ -91,6 +107,29 @@ describe('testing button', () => {
     const eventMock = { preventDefault: jest.fn() };
     buttonInstance.props().onClick(eventMock);
     expect(buttonClick).toBeCalledWith(eventMock);
+  });
+
+  it('Firebase test', () => {
+    const SignUpFormBaseStyled = withStyles(styles)(SignUpFormBase);
+    const FirebaseInstance = new Firebase();
+    const wrapper = mount(<BrowserRouter> <SignUpFormBaseStyled firebase={FirebaseInstance}/> </BrowserRouter>);
+
+    wrapper.find('input').at(0).simulate('change', { target: { name: 'firstname', value: 'Mickey' } });
+    wrapper.find('input').at(1).simulate('change', { target: { name: 'lastname', value: 'Mouse' } });
+    wrapper.find('input').at(2).simulate('change', { target: { name: 'email', value: 'mickeymouse@disney.com' } });
+    wrapper.find('input').at(3).simulate('change', { target: { name: 'passwordOne', value: '.waltdisneyrocks' } });
+    wrapper.find('input').at(4).simulate('change', { target: { name: 'passwordTwo', value: '.waltdisneyrocks' } });
+
+    const buttonInstance = wrapper.find('button').at(0);
+    const eventMock = { preventDefault: jest.fn() };
+    buttonInstance.props().onClick(eventMock);
+
+    FirebaseInstance.auth.flush();
+    
+    return FirebaseInstance.auth.getUserByEmail('mickeymouse@disney.com').then(function(user) {
+      expect(user.email).toBe('mickeymouse@disney.com');
+      expect(user.password).toBe('.waltdisneyrocks');
+    });
   });
 });
 
