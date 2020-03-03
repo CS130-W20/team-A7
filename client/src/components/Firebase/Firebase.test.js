@@ -17,16 +17,11 @@ jest.mock('firebase/app', () => {
     () => mockauth, 
     null,
   );
-  // console.log(mocksdk.auth().flush());
   return mocksdk; 
 });
 
 describe('Testing Firebase Auth Functions', () => {
-  beforeAll(() => {
-    // Add some data to your mock firebase if you need to...
-    // firebase.firestore().collection('collectionId').doc('docId').set({foo: 'bar'});
-  });
-  
+
   it ('testing create user functionality', async () => {
     const FirebaseInstance = new Firebase();
 
@@ -40,3 +35,38 @@ describe('Testing Firebase Auth Functions', () => {
   });
 
 });
+
+describe('Testing Firebase RTDB Functions', () => {
+
+  const FirebaseInstance = new Firebase();
+  const rootRef = FirebaseInstance.db.ref('/');
+  const pushed = jest.fn();
+  
+  // Creating a listener for push
+  rootRef.on('child_added', function (snapshot) {
+    pushed(snapshot.val());
+  });
+
+  beforeAll(() => {
+    // Pushing dummy data
+    rootRef.push({
+      first: 'Mickey',
+    });
+  });
+
+  it ('testing read functionality', async () => {
+    rootRef.flush();
+    expect(pushed).toBeCalledTimes(1);
+    expect(pushed).toBeCalledWith({first: 'Mickey'});
+  });
+
+  it('testing write functionality', async () => {
+    var newUserRef = rootRef.push({first: 'Minnie'});
+    rootRef.flush();
+    var autoId = newUserRef.key;
+    var data = rootRef.getData();
+    expect(data[autoId].first).toBe('Minnie');
+  });
+
+});
+  
