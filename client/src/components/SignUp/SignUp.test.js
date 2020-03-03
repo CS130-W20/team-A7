@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter } from 'react-router-dom';
+import { BrowserRouter, withRouter } from 'react-router-dom';
 
 import { createMount } from '@material-ui/core/test-utils';
 import Enzyme from 'enzyme';
@@ -38,11 +38,11 @@ describe('testing form', () => {
   it('check if fields receive text', () => {
     const wrapper = mount(<BrowserRouter> <SignUp /> </BrowserRouter>);
 
-    expect(wrapper.find('input').at(0).value === '');
-    expect(wrapper.find('input').at(1).value === '');
-    expect(wrapper.find('input').at(2).value === '');
-    expect(wrapper.find('input').at(3).value === '');
-    expect(wrapper.find('input').at(4).value === '');
+    expect(wrapper.find('input').at(0).prop('value')).toBe('');
+    expect(wrapper.find('input').at(1).prop('value')).toBe('');
+    expect(wrapper.find('input').at(2).prop('value')).toBe('');
+    expect(wrapper.find('input').at(3).prop('value')).toBe('');
+    expect(wrapper.find('input').at(4).prop('value')).toBe('');
 
     wrapper.find('input').at(0).simulate('change', { target: { name: 'firstname', value: 'Mickey' } });
     wrapper.find('input').at(1).simulate('change', { target: { name: 'lastname', value: 'Mouse' } });
@@ -50,11 +50,11 @@ describe('testing form', () => {
     wrapper.find('input').at(3).simulate('change', { target: { name: 'passwordOne', value: '.waltdisneyrocks' } });
     wrapper.find('input').at(4).simulate('change', { target: { name: 'passwordTwo', value: '.waltdisneyrocks' } });
 
-    expect(wrapper.find('input').at(0).value === 'Mickey');
-    expect(wrapper.find('input').at(1).value === 'Mouse');
-    expect(wrapper.find('input').at(2).value === 'mickeymouse@disney.com');
-    expect(wrapper.find('input').at(3).value === '.waltdisneyrocks');
-    expect(wrapper.find('input').at(4).value === '.waltdisneyrocks');
+    expect(wrapper.find('input').at(0).prop('value')).toBe('Mickey');
+    expect(wrapper.find('input').at(1).prop('value')).toBe('Mouse');
+    expect(wrapper.find('input').at(2).prop('value')).toBe('mickeymouse@disney.com');
+    expect(wrapper.find('input').at(3).prop('value')).toBe('.waltdisneyrocks');
+    expect(wrapper.find('input').at(4).prop('value')).toBe('.waltdisneyrocks');
   });
 });
 
@@ -109,9 +109,29 @@ describe('testing button', () => {
     expect(buttonClick).toBeCalledWith(eventMock);
   });
 
-  it('Firebase test', () => {
-    const SignUpFormBaseStyled = withStyles(styles)(SignUpFormBase);
-    const FirebaseInstance = new Firebase();
+});
+
+describe('testing Firebase functionality', () => {
+  let mount;
+  const SignUpFormBaseStyled = withRouter(withStyles(styles)(SignUpFormBase));
+
+  const FirebaseInstance = new Firebase();
+  const userRef = FirebaseInstance.db.ref('/users');
+  const pushed = jest.fn();
+  FirebaseInstance.auth.autoFlush();
+  userRef.autoFlush();
+  
+  // Creating a listener for push
+  userRef.on('child_added', function (snapshot) {
+    pushed(snapshot.val());
+  });
+
+  beforeAll(() => {
+    mount = createMount({ });
+  });
+
+  it('Testing if clicking button creates user on Firebase Auth', () => {
+
     const wrapper = mount(<BrowserRouter> <SignUpFormBaseStyled firebase={FirebaseInstance}/> </BrowserRouter>);
 
     wrapper.find('input').at(0).simulate('change', { target: { name: 'firstname', value: 'Mickey' } });
@@ -119,17 +139,26 @@ describe('testing button', () => {
     wrapper.find('input').at(2).simulate('change', { target: { name: 'email', value: 'mickeymouse@disney.com' } });
     wrapper.find('input').at(3).simulate('change', { target: { name: 'passwordOne', value: '.waltdisneyrocks' } });
     wrapper.find('input').at(4).simulate('change', { target: { name: 'passwordTwo', value: '.waltdisneyrocks' } });
-
+    
     const buttonInstance = wrapper.find('button').at(0);
     const eventMock = { preventDefault: jest.fn() };
     buttonInstance.props().onClick(eventMock);
-
-    FirebaseInstance.auth.flush();
     
     return FirebaseInstance.auth.getUserByEmail('mickeymouse@disney.com').then(function(user) {
       expect(user.email).toBe('mickeymouse@disney.com');
       expect(user.password).toBe('.waltdisneyrocks');
     });
   });
-});
 
+  it('Testing if clicking button creates user on Firebase RTDB', () => {
+
+    expect(pushed).toBeCalledWith({
+      email: 'mickeymouse@disney.com',
+      firstname: 'Mickey',
+      lastname: 'Mouse'
+    });
+    expect(pushed).toBeCalledTimes(1);
+
+  });
+
+});

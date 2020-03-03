@@ -1,19 +1,15 @@
 import React, { Component } from 'react';
-import { Link, withRouter } from 'react-router-dom';
-import { compose } from 'recompose';
 
 import Button from '@material-ui/core/Button';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import TextField from '@material-ui/core/TextField';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
-import { withStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
 import Card from '@material-ui/core/Card'
 import CardContent from '@material-ui/core/CardContent'
 
 import { SignInLink } from '../SignIn';
-import { withFirebase } from '../Firebase';
 import * as ROUTES from '../../constants/routes';
 
 const styles = (theme) => ({
@@ -61,6 +57,7 @@ class SignUpFormBase extends Component {
     super(props);
     this.state = { ...INITIAL_STATE };
   }
+  
   onChange = event => {
     this.setState({ [event.target.name]: event.target.value });
   };
@@ -71,22 +68,23 @@ class SignUpFormBase extends Component {
     this.props.firebase
     .doCreateUserWithEmailAndPassword(email, passwordOne)
     .then(authUser => {
-        // Get user information
-        return this.props.firebase
-        .user(authUser.user.uid)
-        .set({
-            firstname,
-            lastname,
-            email,
-        });
+      const uid = authUser.uid ? authUser.user === 'undefined' : authUser.user.uid;
+      // Get user information
+      return this.props.firebase
+      .user(uid)
+      .set({
+        firstname,
+        lastname,
+        email,
+      });
     })
     .then(authUser => {
-        this.setState({ ...INITIAL_STATE });
-        this.props.history.push(ROUTES.LANDING);
+      this.setState({ ...INITIAL_STATE });
+      this.props.history.push(ROUTES.LANDING);
     })
     .catch(error => {
-        console.log('Error: ', error.message);
-        this.setState({ error });
+      console.log('Error: ', error.message);
+      this.setState({ error });
     });
   };
   
