@@ -56,7 +56,7 @@ class Price extends Component {
                 var carriers = res.body.Carriers;
                 
                 var numResults = quotes.length;
-                if (numResults == 0) {
+                if (numResults === 0) {
                     apiErr = "No results found. Please try new flight information."
                 }
                 
@@ -66,7 +66,7 @@ class Price extends Component {
                 //Get the index of which entry we should use. If cheapest selected take the first entry b/c it's ordered.
                 var randomIndex = values.cheapest ? 0 : Math.floor(Math.random() * numResults);
                 var chosenQuote = quotes[randomIndex];
-                airportPlace = res.body.Places.find(element => element.PlaceId == chosenQuote.OutboundLeg.DestinationId);
+                airportPlace = res.body.Places.find(element => element.PlaceId === chosenQuote.OutboundLeg.DestinationId);
                 console.log(airportPlace);
                 resolve(chosenQuote);
             });
@@ -96,7 +96,7 @@ class Price extends Component {
                 if (inRes.error) throw new Error(inRes.error);
                 var inQuotes = inRes.body.Quotes;
                 var numResults = inQuotes.length;
-                if (numResults == 0) {
+                if (numResults === 0) {
                     apiErr = "No results found. Please try new flight information.";
                 }
                 var inCarriers = inRes.body.Carriers;
@@ -179,9 +179,9 @@ class Price extends Component {
 
                 var hotels = res.body.data;
                 console.log(hotels);
-                hotels = hotels.filter(hotel => hotel.hac_offers.availability == "available");
+                hotels = hotels.filter(hotel => hotel.hac_offers.availability === "available");
                 console.log(hotels);
-                if (hotels.length == 0) {
+                if (hotels.length === 0) {
                     apiErr = "No available hotels in the area we searched. Woops! Please retry the quiz.";
                     resolve(undefined);
                 }
