@@ -1,11 +1,10 @@
 class Flight {
-  constructor(departureCity, destinationCity, departureDate, returnDate, departureAirport, returnAirport) {
+  constructor(departureCity, destinationCity, departureDate, departureAirport, destinationAirport) {
     this.departureCity = departureCity;
     this.destinationCity = destinationCity;
     this.departureDate = departureDate;
-    this.returnDate = returnDate;
     this.departureAirport = departureAirport;
-    this.returnAirport = returnAirport;
+    this.destinationAirport = destinationAirport;
   }
 }
 
@@ -18,9 +17,9 @@ class HotelStay {
 }
 
 class Trip {
-  constructor(name, destinationFlight, returnFlight, hotelStay) {
+  constructor(name, departureFlight, returnFlight, hotelStay) {
     this.name = name;
-    this.destinationFlight = destinationFlight;
+    this.departureFlight = departureFlight;
     this.returnFlight = returnFlight;
     this.hotelStay = hotelStay;
   }

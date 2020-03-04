@@ -17,7 +17,6 @@ const styles = theme => ({
     position: "relative",
     marginLeft: "auto",
     background: "#ffffff",
-    // alignItems: "center",
     display: "flex",
     paddingTop: theme.spacing(2),
     paddingBottom: theme.spacing(2)
@@ -36,7 +35,7 @@ const styles = theme => ({
     flexDirection: "column"
   },
   details: {
-    marginLeft: theme.spacing(1);
+    marginLeft: theme.spacing(1),
   },
 });
 
@@ -44,6 +43,7 @@ class TripCard extends Component {
   constructor(props) {
     super(props);
   }
+
   render() {
     const { classes } = this.props;
     return (
@@ -57,14 +57,14 @@ class TripCard extends Component {
         <div className={classes.tripInfo}>
           <CardContent>
             <Typography gutterBottom variant="h4">
-              Trip Name
+              {this.props.trip.name}
             </Typography>
             <div className={classes.details}>
               <Typography variant="body1" gutterBottom>
-                Los Angeles to London
+                {this.props.trip.departureFlight.departureCity} to {this.props.trip.departureFlight.destinationCity}
               </Typography>
               <Typography variant="body1" color="textSecondary">
-                <i> March 2 to March 15 </i>
+                <i> {this.props.trip.departureFlight.departureDate.toDateString()} to {this.props.trip.returnFlight.departureDate.toDateString()} </i>
               </Typography>
             </div>
           </CardContent>
@@ -74,4 +74,4 @@ class TripCard extends Component {
   }
 }
 
-export default TripCard;
+export default withStyles(styles)(TripCard);
