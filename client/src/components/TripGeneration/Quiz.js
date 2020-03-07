@@ -25,9 +25,10 @@ import Price from './Price';
 const ColoredLine = ({ color }) => (
   <hr
     style={{
+      //marginBottom: ,
       color: color,
       backgroundColor: color,
-      height: 5
+      height: 1
     }}
   />
 );
@@ -35,6 +36,7 @@ const ColoredLine = ({ color }) => (
 const styles = (theme) => ({
   card: {
     marginTop: 50,
+    marginBottom: 50,
     maxWidth: 1000,
     margin: "auto",
     transition: "0.3s",
@@ -45,7 +47,7 @@ const styles = (theme) => ({
   },
   smallTitle: {
     fontFamily: 'Indie Flower',
-    fontSize: 42,
+    fontSize: 62,
     color: 'black',
     textAlign: 'center',
     fontWeight: 'bold',
@@ -74,7 +76,7 @@ const styles = (theme) => ({
     },
   },
   paper: {
-    marginTop: theme.spacing(8),
+    marginTop: theme.spacing(3),
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
@@ -96,6 +98,7 @@ const styles = (theme) => ({
   },
   submit: {
     margin: theme.spacing(3, 0, 2),
+    marginBottom: 50,
   },
 
 });
@@ -121,14 +124,14 @@ class Quiz extends Component {
       <div id="centered-flex-masthead">
       <Card className={classes.card}>
       <Typography className={classes.smallTitle}>
-        Give us a few details to help us generate your adventure
-        <ColoredLine color="black" />
+        Tell us About Your Trip
+        <ColoredLine  />
         <Container component="main" maxWidth="sm">
           <CssBaseline />
           <div className={classes.paper}>
             <form className={classes.form} noValidate>
               <Typography className={classes.smallTitleForm2}>
-                What airport would you like to depart from and when do you want your trip to be?
+
               </Typography>
               <Autocomplete
                 id="airport-select"
@@ -164,9 +167,7 @@ class Quiz extends Component {
                 <DatePicker name="startDate" value={values.departureDate} onChange={(value) => handleChange("departureDate", value)} label="Departure Date" margin="normal" />
                 <DatePicker name="returnDate" value={values.returnDate} onChange={(value) => handleChange("returnDate", value)} label="Return Date" margin="normal" />
               </MuiPickersUtilsProvider>
-              <Typography className={classes.smallTitleForm}>
-                What kind of trip are you looking to have?     (check all that apply)
-              </Typography>
+ 
               <Typography className={classes.form2}>
                 Price:
               </Typography>
@@ -193,7 +194,6 @@ class Quiz extends Component {
                 control={<Checkbox name="international" value={values.international} onChange={(event, value) => handleChange(event, value)} color="primary" />}
                 label="International, Please!"
               />
-              
               
               <Button label="submit"
               type="submit"
