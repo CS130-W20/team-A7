@@ -32,3 +32,8 @@ Made by a dedicated team of five UCLA students: Jair Hinojosa, Steven Lara, Chri
 # Testing
 
 Tests can be found under client/src/components/App/README.md, since App constitutes the main React functionality.
+
+# How to Build/Run
+
+run npm install to install relative dependencies.
+run npm start to start the application
