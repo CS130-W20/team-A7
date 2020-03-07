@@ -10,9 +10,6 @@ import SignUp from '../SignUp';
 import About from '../About';
 import TripGeneration from '../TripGeneration/TripGeneration';
 import MyTrips from '../MyTrips';
-import TripBooked from '../TripBooked';
-import Price from '../Price';
-import GeneratedTrip from '../GeneratedTrip';
 
 import * as ROUTES from '../../constants/routes';
 import { withAuthentication } from '../Session';
