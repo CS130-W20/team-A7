@@ -15,7 +15,7 @@ class MyTripsBase extends Component {
 
   render() {
     return(
-      <div id="centered-masthead">
+      <div id="centered-flex-masthead">
         <TripTabs/>
       </div>
     );
