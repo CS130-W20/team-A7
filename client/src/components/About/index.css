@@ -1,0 +1,38 @@
+div#container {
+    position: relative;
+    overflow: hidden;
+  }
+  
+  img#background {
+    object-fit: cover;
+    width: 100%;
+  }
+  
+  div#content-container {
+    position: absolute;
+    top: 0px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+  }
+
+  div#description-container {
+    width: 80%;
+    margin-top: 20px;
+  }
+  
+  div#title-container {
+    width: 80%;
+    margin-top: 50px;
+  }
+  
+  div#line {
+    width: 50%;
+    height: 1px;
+    margin-top: 20px;
+    margin-bottom: 20px;
+    background-color: #FFEEB1;
+  }
+ 
