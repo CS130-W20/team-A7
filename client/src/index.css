@@ -21,9 +21,9 @@ code {
   bottom: 0;
   height: 100vh;
   color: white;
-  overflow: hidden;
+  overflow: scroll;
   background-repeat: no-repeat;
-  background-attachment: scroll;
+  background-attachment: fixed;
   -webkit-background-size: cover;
   -moz-background-size: cover;
   -o-background-size: cover;
