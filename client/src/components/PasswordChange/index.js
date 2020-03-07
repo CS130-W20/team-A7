@@ -32,7 +32,7 @@ class PasswordChange extends Component {
     if (error === 'success') return <Redirect to={ROUTES.SIGN_IN}> </Redirect>
 
     return (
-      <div id="centered-masthead">
+      <div id="centered-fixed-masthead">
         <div className="row h-100 justify-content-center align-items-center">
           <Card style={{ width:'25rem' }}>
             <Card.Header as="h3" style={{ color: 'black', textAlign: 'left'}}>

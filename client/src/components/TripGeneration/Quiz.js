@@ -15,6 +15,7 @@ import Typography from '@material-ui/core/Typography';
 import Container from '@material-ui/core/Container';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import {airports} from "./airport.js";
+import Card from '@material-ui/core/Card'
 
 // import { BrowserRouter as Router, Redirect, Route, Switch, Link, NavLink } from 'react-router-dom';
 // import * as ROUTES from '../../constants/routes';
@@ -23,17 +24,29 @@ import {airports} from "./airport.js";
 const ColoredLine = ({ color }) => (
   <hr
     style={{
+      //marginBottom: ,
       color: color,
       backgroundColor: color,
-      height: 5
+      height: 1
     }}
   />
 );
 
 const styles = (theme) => ({
+  card: {
+    marginTop: 50,
+    marginBottom: 50,
+    maxWidth: 1000,
+    margin: "auto",
+    transition: "0.3s",
+    boxShadow: "0 8px 40px -12px rgba(0,0,0,0.3)",
+    "&:hover": {
+      boxShadow: "0 16px 70px -12.125px rgba(0,0,0,0.3)"
+    }
+  },
   smallTitle: {
     fontFamily: 'Indie Flower',
-    fontSize: 42,
+    fontSize: 62,
     color: 'black',
     textAlign: 'center',
     fontWeight: 'bold',
@@ -62,7 +75,7 @@ const styles = (theme) => ({
     },
   },
   paper: {
-    marginTop: theme.spacing(8),
+    marginTop: theme.spacing(3),
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
@@ -84,6 +97,7 @@ const styles = (theme) => ({
   },
   submit: {
     margin: theme.spacing(3, 0, 2),
+    marginBottom: 50,
   },
 
 });
@@ -106,15 +120,17 @@ class Quiz extends Component {
       values.returnDate === null;
 
     return (
+      <div id="centered-flex-masthead">
+      <Card className={classes.card}>
       <Typography className={classes.smallTitle}>
-        Give us a few details to help us generate your adventure
-        <ColoredLine color="black" />
+        Tell us About Your Trip
+        <ColoredLine  />
         <Container component="main" maxWidth="sm">
           <CssBaseline />
           <div className={classes.paper}>
             <form className={classes.form} noValidate>
               <Typography className={classes.smallTitleForm2}>
-                What airport would you like to depart from and when do you want your trip to be?
+
               </Typography>
               <Autocomplete
                 id="airport-select"
@@ -150,9 +166,7 @@ class Quiz extends Component {
                 <DatePicker name="startDate" value={values.departureDate} onChange={(value) => handleChange("departureDate", value)} label="Departure Date" margin="normal" />
                 <DatePicker name="returnDate" value={values.returnDate} onChange={(value) => handleChange("returnDate", value)} label="Return Date" margin="normal" />
               </MuiPickersUtilsProvider>
-              <Typography className={classes.smallTitleForm}>
-                What kind of trip are you looking to have?     (check all that apply)
-              </Typography>
+ 
               <Typography className={classes.form2}>
                 Price:
               </Typography>
@@ -180,7 +194,6 @@ class Quiz extends Component {
                 label="International, Please!"
               />
               
-              
               <Button label="submit"
               type="submit"
               disabled={isInvalid}
@@ -194,6 +207,8 @@ class Quiz extends Component {
 
         </Container>
       </Typography>
+      </Card>
+      </div>
     );
   }
 }

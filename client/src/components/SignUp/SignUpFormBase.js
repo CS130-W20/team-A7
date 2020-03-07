@@ -108,7 +108,7 @@ class SignUpFormBase extends Component {
       lastname === '';
   
     return (
-      <div id="centered-masthead">
+      <div id="centered-fixed-masthead">
         <Card className={classes.card}>
           <CardContent>
             <Container component="main" maxWidth="xs">
