@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React from 'react';
 import { createMuiTheme, ThemeProvider } from '@material-ui/core/styles';
 import { BrowserRouter, Redirect, Route, Switch } from 'react-router-dom';
 import './App.css';
@@ -8,7 +8,7 @@ import Landing from '../Landing/Landing';
 import SignIn from '../SignIn';
 import SignUp from '../SignUp';
 import About from '../About';
-import Quiz from '../Quiz';
+import TripGeneration from '../TripGeneration/TripGeneration';
 import MyTrips from '../MyTrips';
 import TripBooked from '../TripBooked';
 import Price from '../Price';
@@ -42,10 +42,8 @@ function App() {
             <Route exact path={ROUTES.SIGN_UP} render={(props) => <SignUp {...props} />} />
             <Route exact path={ROUTES.PASSWORD_FORGET} render={(props) => <PasswordChange {...props} />} />
             <Route exact path={ROUTES.SIGN_IN} render={(props) => <SignIn {...props} />}/>
-            <Route exact path={ROUTES.QUIZ} render={(props) => <Quiz {...props} />}/>
             <Route exact path={ROUTES.MY_TRIPS} render={(props) => <MyTrips {...props} />}/>
-            <Route exact path={ROUTES.PRICE} render={(props) => <Price {...props} />}/>
-            <Route exact path={ROUTES.GENERATED_TRIP} render={(props) => <GeneratedTrip {...props} />}/>
+            <Route exact path={ROUTES.QUIZ} render={(props) => < TripGeneration {...props} />}/>
             <Redirect to={ROUTES.LANDING} render={(props) => <Landing {...props} />}/>
         </Switch>
       </BrowserRouter>

@@ -36,58 +36,57 @@ const styles = (theme) => ({
 const NavBar = ({ classes }) => (
   <div>
     <AuthUserContext.Consumer>
-      {authUser =>
-        authUser ? 
-        // User is authorized
+      {context =>
+        context.user ? 
         <div className={classes.root}>
-        <AppBar position="static" className={classes.bar}>
-          <Toolbar>
-          <Link to={ROUTES.LANDING}>
-            <Image src={logo} className={classes.logo} />
-          </Link>
-          <Typography variant="h6" className={classes.title}>
-    
-          </Typography>
-    
-          <LinkContainer to={ROUTES.QUIZ}>
-            <Button className={classes.button}>Quiz</Button>
-          </LinkContainer>
-    
-          <LinkContainer to={ROUTES.ABOUT}>
-            <Button className={classes.button}>About</Button>
-          </LinkContainer>
-    
-          <SignOutButton/>
-    
-          </Toolbar>
-        </AppBar>
-      </div> :
-      // User not authorized
-      <div className={classes.root}>
-      <AppBar position="static" className={classes.bar}>
-        <Toolbar>
-        <Link to={ROUTES.LANDING}>
-          <Image src={logo} className={classes.logo} />
-        </Link>
+          <AppBar position="static" className={classes.bar}>
+            <Toolbar>
+              <Link to={ROUTES.LANDING}>
+                <Image src={logo} className={classes.logo} />
+              </Link>
 
-        <Typography variant="h6" className={classes.title}>
-        </Typography>
-  
-        <LinkContainer to={ROUTES.QUIZ}>
-          <Button className={classes.button}>Quiz</Button>
-        </LinkContainer>
-  
-        <LinkContainer to={ROUTES.ABOUT}>
-          <Button className={classes.button}>About</Button>
-        </LinkContainer>
+              <Typography variant="h6" className={classes.title}>
+              </Typography>
+              
+              <LinkContainer to={ROUTES.QUIZ}>
+                <Button className={classes.button}> Quiz </Button>
+              </LinkContainer>
+              
+              <LinkContainer to={ROUTES.ABOUT}>
+                <Button className={classes.button}> About </Button>
+              </LinkContainer>
+              
+              <SignOutButton/>
+
+            </Toolbar>
+          </AppBar>
+        </div> :
+        // User not authorized
+        <div className={classes.root}>
+          <AppBar position="static" className={classes.bar}>
+            <Toolbar>
+            <Link to={ROUTES.LANDING}>
+              <Image src={logo} className={classes.logo} />
+            </Link>
+
+            <Typography variant="h6" className={classes.title}>
+            </Typography>
+      
+            <LinkContainer to={ROUTES.QUIZ}>
+              <Button className={classes.button}>Quiz</Button>
+            </LinkContainer>
+      
+            <LinkContainer to={ROUTES.ABOUT}>
+              <Button className={classes.button}>About</Button>
+            </LinkContainer>
+                
+            <LinkContainer to={ROUTES.SIGN_IN}>
+              <Button className={classes.button}>Login</Button>
+            </LinkContainer>
             
-        <LinkContainer to={ROUTES.SIGN_IN}>
-          <Button className={classes.button}>Login</Button>
-        </LinkContainer>
-  
-        </Toolbar>
-      </AppBar>
-    </div>
+            </Toolbar>
+          </AppBar>
+        </div>
       }
     </AuthUserContext.Consumer>
   </div>

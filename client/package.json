@@ -23,6 +23,7 @@
     "react-router-dom": "^5.1.2",
     "react-scripts": "3.4.0",
     "recompose": "^0.30.0",
+    "unirest": "^0.6.0",
     "yarn": "^1.22.0"
   },
   "scripts": {
@@ -45,5 +46,10 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "enzyme": "^3.11.0",
+    "enzyme-adapter-react-16": "^1.15.2",
+    "firebase-mock": "^2.3.2"
   }
 }
