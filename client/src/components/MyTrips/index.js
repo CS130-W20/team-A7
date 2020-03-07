@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 
 import TripTabs from './TripTabs';
-import { airports } from "../TripGeneration/airport.js";
 
 const INITIAL_STATE = {
   trips: [],

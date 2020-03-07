@@ -16,7 +16,7 @@ class HotelStay {
   }
 }
 
-class Trip {
+class BookedTrip {
   constructor(name, departureFlight, returnFlight, hotelStay) {
     this.name = name;
     this.departureFlight = departureFlight;
@@ -26,4 +26,4 @@ class Trip {
 }
 
 export {Flight, HotelStay};
-export default Trip;
+export default BookedTrip;

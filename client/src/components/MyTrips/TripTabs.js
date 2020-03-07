@@ -7,8 +7,8 @@ import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 import Typography from '@material-ui/core/Typography';
 import Box from '@material-ui/core/Box';
-import BookedTrips from './BookedTrips.js'
-import SavedTrips from './SavedTrips.js'
+import BookedTrips from './BookedTrips/BookedTrips.js'
+import SavedTrips from './SavedTrips/SavedTrips.js'
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -59,7 +59,7 @@ const StyledTab = withStyles(theme => ({
   },
 }))(props => <Tab disableRipple {...props} />);
 
-const TripTabs = ({children}) => {
+const TripTabs = () => {
   const classes = useStyles();
   const theme = useTheme();
   const [value, setValue] = React.useState(0);
@@ -74,7 +74,7 @@ const TripTabs = ({children}) => {
 
   return (
     <div className={classes.root}>
-      <AppBar position="static" color="primary">
+      <AppBar position="static" style={{backgroundColor: '#000655'}}>
         <Tabs
           value={value}
           onChange={handleChange}
@@ -87,12 +87,18 @@ const TripTabs = ({children}) => {
           <StyledTab label="Saved Trips" {...a11yProps(1)} />
         </Tabs>
       </AppBar>
-      <TabPanel value={value} index={0} dir={theme.direction}>
-        <BookedTrips/>
-      </TabPanel>
-      <TabPanel value={value} index={1} dir={theme.direction}>
-        <SavedTrips/>
-      </TabPanel>
+      <SwipeableViews
+        axis={theme.direction === 'rtl' ? 'x-reverse' : 'x'}
+        index={value}
+        onChangeIndex={handleChangeIndex}
+      >
+        <TabPanel value={value} index={0} dir={theme.direction}>
+          <BookedTrips/>
+        </TabPanel>
+        <TabPanel value={value} index={1} dir={theme.direction}>
+          <SavedTrips/>
+        </TabPanel>
+      </SwipeableViews>
     </div>
   );
 };

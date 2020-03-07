@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 
 import { withStyles } from "@material-ui/core";
 import Card from "@material-ui/core/Card";
-import CardMedia from "@material-ui/core/CardMedia";
 import CardContent from "@material-ui/core/CardContent";
 import Typography from "@material-ui/core/Typography";
 
@@ -39,7 +38,7 @@ const styles = theme => ({
   },
 });
 
-class TripCard extends Component {
+class SavedTripCard extends Component {
   constructor(props) {
     super(props);
   }
@@ -48,23 +47,17 @@ class TripCard extends Component {
     const { classes } = this.props;
     return (
       <Card className={classes.root}>
-        <CardMedia
-          className={classes.media}
-          image={
-            "https://upload.wikimedia.org/wikipedia/commons/d/d6/London-Eye-2009.JPG"
-          }
-        />
         <div className={classes.tripInfo}>
           <CardContent>
-            <Typography gutterBottom variant="h4">
-              {this.props.trip.name}
+            <Typography gutterBottom variant="h3">
+              $532.12
             </Typography>
             <div className={classes.details}>
               <Typography variant="body1" gutterBottom>
-                {this.props.trip.departureFlight.departureCity} to {this.props.trip.departureFlight.destinationCity}
+                Departing from: {this.props.trip.criteria.departureAirport.city}
               </Typography>
               <Typography variant="body1" color="textSecondary">
-                <i> {this.props.trip.departureFlight.departureDate.toDateString()} to {this.props.trip.returnFlight.departureDate.toDateString()} </i>
+                <i> {this.props.trip.criteria.departureDate.toDateString()} to {this.props.trip.criteria.returnDate.toDateString()} </i>
               </Typography>
             </div>
           </CardContent>
@@ -74,4 +67,4 @@ class TripCard extends Component {
   }
 }
 
-export default withStyles(styles)(TripCard);
+export default withStyles(styles)(SavedTripCard);
