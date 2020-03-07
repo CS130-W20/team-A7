@@ -14,13 +14,12 @@ import Checkbox from '@material-ui/core/Checkbox';
 import Typography from '@material-ui/core/Typography';
 import Container from '@material-ui/core/Container';
 import Autocomplete from '@material-ui/lab/Autocomplete';
-import FlatButton from 'material-ui/FlatButton';
 import {airports} from "./airport.js";
 import Card from '@material-ui/core/Card'
 
-import { BrowserRouter as Router, Redirect, Route, Switch, Link, NavLink } from 'react-router-dom';
+// import { BrowserRouter as Router, Redirect, Route, Switch, Link, NavLink } from 'react-router-dom';
 // import * as ROUTES from '../../constants/routes';
-import Price from './Price';
+// import Price from './Price';
 
 const ColoredLine = ({ color }) => (
   <hr
