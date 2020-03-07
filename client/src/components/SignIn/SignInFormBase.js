@@ -79,7 +79,7 @@ class SignInFormBase extends Component {
     const { email, password, error } = this.state;
     const isInvalid = password === '' || email === '';
     return (
-      <div id="centered-masthead">
+      <div id="centered-fixed-masthead">
       <Card className={classes.card}>
       <Container component="main" maxWidth="xs">
         <CssBaseline />

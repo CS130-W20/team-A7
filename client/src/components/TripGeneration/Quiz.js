@@ -16,6 +16,7 @@ import Container from '@material-ui/core/Container';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import FlatButton from 'material-ui/FlatButton';
 import {airports} from "./airport.js";
+import Card from '@material-ui/core/Card'
 
 import { BrowserRouter as Router, Redirect, Route, Switch, Link, NavLink } from 'react-router-dom';
 // import * as ROUTES from '../../constants/routes';
@@ -32,6 +33,16 @@ const ColoredLine = ({ color }) => (
 );
 
 const styles = (theme) => ({
+  card: {
+    marginTop: 50,
+    maxWidth: 1000,
+    margin: "auto",
+    transition: "0.3s",
+    boxShadow: "0 8px 40px -12px rgba(0,0,0,0.3)",
+    "&:hover": {
+      boxShadow: "0 16px 70px -12.125px rgba(0,0,0,0.3)"
+    }
+  },
   smallTitle: {
     fontFamily: 'Indie Flower',
     fontSize: 42,
@@ -107,6 +118,8 @@ class Quiz extends Component {
       values.returnDate === null;
 
     return (
+      <div id="centered-flex-masthead">
+      <Card className={classes.card}>
       <Typography className={classes.smallTitle}>
         Give us a few details to help us generate your adventure
         <ColoredLine color="black" />
@@ -195,6 +208,8 @@ class Quiz extends Component {
 
         </Container>
       </Typography>
+      </Card>
+      </div>
     );
   }
 }
