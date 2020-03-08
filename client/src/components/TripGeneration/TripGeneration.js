@@ -76,10 +76,12 @@ export class UserForm extends Component {
   };
     
   handleAutocomplete = (airport) => {
-    console.log("Listener (Autocomplete): " + airport.code);
-    this.setState({
-      departureAirport: airport
-    });
+    if (airport !== null){
+      console.log("Listener (Autocomplete): " + airport.code);
+      this.setState({
+        departureAirport: airport
+      });
+  }
   }
 
   handleDepartureDate = (date) => {
