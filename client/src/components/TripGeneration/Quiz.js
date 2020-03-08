@@ -1,7 +1,6 @@
 import DateFnsUtils from '@date-io/date-fns';
 import Button from '@material-ui/core/Button';
 import Card from '@material-ui/core/Card';
-import Checkbox from '@material-ui/core/Checkbox';
 import Container from '@material-ui/core/Container';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
@@ -10,8 +9,6 @@ import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 
-import {airports} from "./airport.js";
-import Card from '@material-ui/core/Card'
 import Grid from '@material-ui/core/Grid';
 import { addDays } from 'date-fns';
 import Radio from '@material-ui/core/Radio';
