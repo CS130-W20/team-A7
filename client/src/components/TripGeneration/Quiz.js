@@ -10,17 +10,22 @@ import Button from '@material-ui/core/Button';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import TextField from '@material-ui/core/TextField';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
-import Checkbox from '@material-ui/core/Checkbox';
+//import Checkbox from '@material-ui/core/Checkbox';
 import Typography from '@material-ui/core/Typography';
 import Container from '@material-ui/core/Container';
 import Autocomplete from '@material-ui/lab/Autocomplete';
-import FlatButton from 'material-ui/FlatButton';
+//import FlatButton from 'material-ui/FlatButton';
 import {airports} from "./airport.js";
 import Card from '@material-ui/core/Card'
+import Grid from '@material-ui/core/Grid';
+import { addDays } from 'date-fns';
+import Radio from '@material-ui/core/Radio';
+import RadioGroup from '@material-ui/core/RadioGroup';
 
-import { BrowserRouter as Router, Redirect, Route, Switch, Link, NavLink } from 'react-router-dom';
+
+//import { BrowserRouter as Router, Redirect, Route, Switch, Link, NavLink } from 'react-router-dom';
 // import * as ROUTES from '../../constants/routes';
-import Price from './Price';
+//import Price from './Price';
 
 const ColoredLine = ({ color }) => (
   <hr
@@ -93,6 +98,14 @@ const styles = (theme) => ({
   form2: {
     width: '100%', // Fix IE 11 issue.
     marginTop: theme.spacing(1),
+    marginBottom: theme.spacing(2),
+    textAlign: 'left',
+    fontWeight: 'bold'
+  },
+  form3: {
+    width: '100%', // Fix IE 11 issue.
+    marginTop: theme.spacing(5),
+    marginBottom: theme.spacing(2),
     textAlign: 'left',
     fontWeight: 'bold'
   },
@@ -114,7 +127,8 @@ class Quiz extends Component {
   };
 
   render() {
-    const { values, handleChange, classes } = this.props;
+    const { values, handleChange, classes } = this.props; 
+
     const isInvalid = 
       values.departureAirport === null ||
       values.departureDate === null ||
@@ -123,15 +137,15 @@ class Quiz extends Component {
     return (
       <div id="centered-flex-masthead">
       <Card className={classes.card}>
-      <Typography className={classes.smallTitle}>
+      <Typography className={classes.smallTitle} component={'div'}>
         Tell us About Your Trip
         <ColoredLine  />
         <Container component="main" maxWidth="sm">
           <CssBaseline />
           <div className={classes.paper}>
             <form className={classes.form} noValidate>
-              <Typography className={classes.smallTitleForm2}>
-
+            <Typography className={classes.form2} component={'div'}>
+                The Basics:
               </Typography>
               <Autocomplete
                 id="airport-select"
@@ -164,36 +178,32 @@ class Quiz extends Component {
                 )}
               />
               <MuiPickersUtilsProvider utils={DateFnsUtils}>
-                <DatePicker name="startDate" value={values.departureDate} onChange={(value) => handleChange("departureDate", value)} label="Departure Date" margin="normal" />
-                <DatePicker name="returnDate" value={values.returnDate} onChange={(value) => handleChange("returnDate", value)} label="Return Date" margin="normal" />
+              <Grid container justify="space-around">
+                <DatePicker name="startDate" value={values.departureDate} onChange={(value) => handleChange("departureDate", value)} label="Departure Date" margin="normal" minDate={addDays(new Date(), 1)} />
+                <DatePicker name="returnDate" value={values.returnDate} onChange={(value) => handleChange("returnDate", value)} label="Return Date" margin="normal" minDate={addDays(new Date(), 1)} />
+                </Grid>
               </MuiPickersUtilsProvider>
  
-              <Typography className={classes.form2}>
-                Price:
+              <Typography className={classes.form3} component={'div'}>
+                Price (Choose one):
               </Typography>
-              <FormControlLabel
-                control={<Checkbox name="cheapest" value={values.cheapest} onChange={(event, value) => handleChange(event, value)} color="primary" />}
-                label="Cheapest possible trip"
-              />
-              <FormControlLabel
-                control={<Checkbox name="underBudget" value={values.underBudget} onChange={(event, value) => handleChange(event, value)} color="primary" />}
-                label="Just keep it under my budget"
-              />
-              <Typography className={classes.form2}>
-                Location:
+              
+              <RadioGroup aria-label="price" name="price"  defaultValue= "anyPrice" value={values.price} onChange={(event, value) => handleChange(event, value)}>
+                <FormControlLabel value="anyPrice" control={<Radio />} label="Cost isn't a factor" />
+                <FormControlLabel value="cheapest" control={<Radio />} label="Cheapest possible trip" />
+                <FormControlLabel value="underBudget" control={<Radio />} label="Just keep it under my budget" />
+              </RadioGroup>
+
+              <Typography className={classes.form3} component={'div'}>
+                Location (Choose One):
               </Typography>
-              <FormControlLabel
-                control={<Checkbox name="farthest" value={values.farthest} onChange={(event, value) => handleChange(event, value)} color="primary" />}
-                label="Farthest destination, take me away!"
-              />
-              <FormControlLabel
-                control={<Checkbox name="withinUS" value={values.withinUS} onChange={(event, value) => handleChange(event, value)} color="primary" />}
-                label="I want to stay within the US"
-              />
-              <FormControlLabel
-                control={<Checkbox name="international" value={values.international} onChange={(event, value) => handleChange(event, value)} color="primary" />}
-                label="International, Please!"
-              />
+
+
+              <RadioGroup aria-label="withinUS" name="destination"  defaultValue= "anyDest" value={values.destination} onChange={(event, value) => handleChange(event, value)}>
+                <FormControlLabel value="anyDest" control={<Radio />} label="Suprise me!" />
+                <FormControlLabel value="cheapest" control={<Radio />} label="Cheapest possible trip" />
+                <FormControlLabel value="international" control={<Radio />} label="Just keep it under my budget" />
+              </RadioGroup>
               
               <Button label="submit"
               type="submit"

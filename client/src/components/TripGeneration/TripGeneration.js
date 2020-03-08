@@ -9,16 +9,18 @@ const INITIAL_STATE = {
   departureAirport: null,
   departureDate: null,
   returnDate: null,
-  cheapest: false,
-  underBudget: false,
-  farthest: false,
-  withinUS: false,
-  international: false,
+  //cheapest: false,
+  //underBudget: false,
+  //farthest: false,
+  //withinUS: false,
+  //international: false,
+  destination: "anyDest",
+  price: "anyPrice",
+
   
   
   outAirline: null,
   inAirline: null,
-  destination: null,
   arrivalAirport: null,
   hotel: null,
   totalPrice: null
@@ -109,8 +111,8 @@ export class UserForm extends Component {
   
   render() {
     const { step } = this.state;
-    const { departureAirport, departureDate, returnDate, cheapest, underBudget, farthest, withinUS, international, outAirline, inAirline, destination, arrivalAirport, hotel, totalPrice } =  this.state;
-    const values = { departureAirport, departureDate, returnDate, cheapest, underBudget, farthest, withinUS, international, outAirline, inAirline, destination, arrivalAirport, hotel, totalPrice };
+    const { departureAirport, departureDate, returnDate, destination, price, outAirline, inAirline, arrivalAirport, hotel, totalPrice } =  this.state;
+    const values = { departureAirport, departureDate, returnDate, destination, price, outAirline, inAirline, arrivalAirport, hotel, totalPrice };
   
     switch (step) {
       case 1:
