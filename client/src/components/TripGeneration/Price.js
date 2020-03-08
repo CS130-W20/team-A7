@@ -79,6 +79,11 @@ class GeneratedCard extends Component {
     console.log("saved info: ", values.hotel);
   }
 
+  onClickRetakeQuiz = e => {
+    e.preventDefault();
+    this.props.goBack();
+  }
+
   render() {
     const { styles, values } = this.props;
 
@@ -102,7 +107,7 @@ class GeneratedCard extends Component {
           <Container>
             <Button label="retakeQuiz"
             type="submit"
-            onClick={this.retakeQuiz}
+            onClick={this.onClickRetakeQuiz}
             variant="contained">
               Retake Quiz
             </Button>
@@ -444,11 +449,11 @@ class Price extends Component {
   }
 
   render() {
-    const { classes, values } = this.props;
+    const { classes, values, goBack } = this.props;
     
     return (
       <div>
-        { values.totalPrice === null ? (values.apiErr === null ? <GeneratingCard styles={classes}/> : values.apiErr) : (values.apiErr === null ? <GeneratedCard styles={classes} values={values}/> : values.apiErr) }
+        { values.totalPrice === null ? (values.apiErr === null ? <GeneratingCard styles={classes}/> : values.apiErr) : (values.apiErr === null ? <GeneratedCard styles={classes} values={values} goBack={goBack}/> : values.apiErr) }
       </div>
     );
   }
