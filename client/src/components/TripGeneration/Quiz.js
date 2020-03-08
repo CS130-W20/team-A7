@@ -14,7 +14,6 @@ import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Typography from '@material-ui/core/Typography';
 import Container from '@material-ui/core/Container';
 import Autocomplete from '@material-ui/lab/Autocomplete';
-//import FlatButton from 'material-ui/FlatButton';
 import {airports} from "./airport.js";
 import Card from '@material-ui/core/Card'
 import Grid from '@material-ui/core/Grid';
@@ -23,10 +22,9 @@ import Radio from '@material-ui/core/Radio';
 import RadioGroup from '@material-ui/core/RadioGroup';
 import Slider from '@material-ui/core/Slider';
 
-
-//import { BrowserRouter as Router, Redirect, Route, Switch, Link, NavLink } from 'react-router-dom';
+// import { BrowserRouter as Router, Redirect, Route, Switch, Link, NavLink } from 'react-router-dom';
 // import * as ROUTES from '../../constants/routes';
-//import Price from './Price';
+// import Price from './Price';
 
 const ColoredLine = ({ color }) => (
   <hr
@@ -249,8 +247,8 @@ class Quiz extends Component {
 
               <RadioGroup aria-label="withinUS" name="destination"  defaultValue= "anyDest" value={values.destination} onChange={(event, value) => handleChange(event, value)}>
                 <FormControlLabel value="anyDest" control={<Radio />} label="Suprise me!" />
-                <FormControlLabel value="cheapest" control={<Radio />} label="Cheapest possible trip" />
-                <FormControlLabel value="international" control={<Radio />} label="Just keep it under my budget" />
+                <FormControlLabel value="withinUS" control={<Radio />} label="Keep it within the U.S." />
+                <FormControlLabel value="international" control={<Radio />} label="International" />
               </RadioGroup>
 
 

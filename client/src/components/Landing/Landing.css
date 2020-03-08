@@ -1,16 +1,10 @@
-div#container {
-  position: relative;
+div#landing-container {
   overflow: hidden;
+  background-image: url("../../assets/background.png");
+  height: 100%;
 }
 
-img#background {
-  object-fit: cover;
-  width: 100%;
-}
-
-div#content-container {
-  position: absolute;
-  top: 0px;
+div#landing-content-container {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -18,12 +12,12 @@ div#content-container {
   height: 100%;
 }
 
-div#title-container {
+div#landing-title-container {
   width: 80%;
   margin-top: 50px;
 }
 
-div#line {
+div#landing-line {
   width: 50%;
   height: 1px;
   margin-top: 60px;
@@ -31,6 +25,6 @@ div#line {
   background-color: #FFEEB1;
 }
 
-div#bottom-text {
+div#landing-bottom-text {
   margin-top: 100px;
 }

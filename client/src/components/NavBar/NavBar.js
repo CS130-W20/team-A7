@@ -1,5 +1,5 @@
 import React from 'react';
-import { AppBar, Button, Toolbar, IconButton, Typography } from '@material-ui/core';
+import { AppBar, Button, Toolbar, Typography } from '@material-ui/core';
 import { LinkContainer } from 'react-router-bootstrap'
 import { Link } from 'react-router-dom'
 import Image from 'react-bootstrap/Image'
