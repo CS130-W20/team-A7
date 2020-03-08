@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import Button from '@material-ui/core/Button';
 import BookedTrip, {Flight, HotelStay} from '../MyTrips/BookedTrips/BookedTrip.js';
 import SavedTrip from '../MyTrips/SavedTrips/SavedTrip.js';
+const MAX_TRIES = 5;
 
 class Price extends Component {
   constructor(props) {
@@ -9,8 +10,6 @@ class Price extends Component {
     this.state = {
       trip: null,
       hotel : null,
-      totalPrice : null,
-      error : null,
     }
   }
   
@@ -21,24 +20,26 @@ class Price extends Component {
   
   
   componentDidMount() {
-    const { values, setTripData, classes } = this.props;
-    var totalPrice = 0;
+    const { values, setTripData, setApiErr, classes } = this.props;
     var tripDestination = "";
     var departDate = values.departureDate.toISOString();
     departDate = departDate.slice(0,10);
     var returnDate = values.returnDate.toISOString();
     returnDate = returnDate.slice(0, 10);
+    console.log(departDate);
+    console.log(returnDate);
     //Default value so the API request doesn't crash the mf webpage
     var airportPlace = null;
     var apiErr = null;
+    var cheapestIndex = 0;
     
     function startOutFlight() {
+      console.log("ATTEMPTING TRIP GENERATION", cheapestIndex);
       return new Promise((resolve, reject) => {
         var outDestination = values.withinUS ? "US" : "anywhere";
         var unirest = require("unirest");
  
         var outFlightUrl = "https://skyscanner-skyscanner-flight-search-v1.p.rapidapi.com/apiservices/browsequotes/v1.0/US/USD/en-US/" + values.departureAirport.code + "-sky/" + outDestination + "/" + departDate;
-        var totalPrice = 0;
         var outFlightReq = unirest("GET", outFlightUrl);
            
         //Leaving this blank ensures we get a one-way flight. The API is crap and doesn't guarantee if it returns one-way or two-way flights so this is a precaution!
@@ -58,16 +59,18 @@ class Price extends Component {
           var carriers = res.body.Carriers;
           
           var numResults = quotes.length;
-          if (numResults == 0) {
+          //We try UP TO 5 times. If there's no results then we give up.
+          if (numResults == 0 || cheapestIndex > numResults - 1) {
             apiErr = "No results found. Please try new flight information."
+            resolve(undefined);
           }
                 
           //Order the flights by price
           quotes.sort((a, b) => (a.MinPrice > b.MinPrice) ? 1 : -1);
         
           //Get the index of which entry we should use. If cheapest selected take the first entry b/c it's ordered.
-          var randomIndex = values.cheapest ? 0 : Math.floor(Math.random() * numResults);
-          var chosenQuote = quotes[randomIndex];
+          var tripIndex = values.cheapest ? cheapestIndex : Math.floor(Math.random() * numResults);
+          var chosenQuote = quotes[tripIndex];
           chosenQuote.carriers = carriers;
           airportPlace = res.body.Places.find(element => element.PlaceId == chosenQuote.OutboundLeg.DestinationId);
           //console.log(chosenQuote);
@@ -98,10 +101,11 @@ class Price extends Component {
         //INBOUND FLIGHT
         inFlightReq.end(function (inRes) {
           if (inRes.error) throw new Error(inRes.error);
+            //console.log(inRes);
             var inQuotes = inRes.body.Quotes;
             var numResults = inQuotes.length;
             if (numResults == 0) {
-              apiErr = "No results found. Please try new flight information.";
+              apiErr = "No returning flights found. Trying a new destination...";
             }
             var inCarriers = {carriers : inRes.body.Carriers};
             inQuotes.sort((a, b) => (a.MinPrice > b.MinPrice) ? 1 : -1);
@@ -218,94 +222,119 @@ class Price extends Component {
       });
     }
     
-    startOutFlight().then(function(outFlight) {
-      return startInFlight(outFlight).then(inFlight => [outFlight, inFlight]);
-    }).then(function([outFlight, inFlight]) {
-      return startPlace(outFlight, inFlight).then(placeId => [outFlight, inFlight, placeId]);
-    }).then(function([outFlight, inFlight, placeId]) {
-      return startHotel(outFlight, inFlight, placeId).then(hotelResult => [outFlight, inFlight, placeId, hotelResult]);
-    }).then(function([outFlight, inFlight, placeId, hotelResult]) {
-      return getAllInfo(outFlight, inFlight, placeId, hotelResult);
-    }).then(total => {
-      console.log("outbound flight: ", total[0].OutboundLeg.DepartureDate);
-      console.log("inbound flight: ", total[1].chosenInQuote.OutboundLeg.DepartureDate);
+    function generateTrip(){
+      //since this may be called multiple times, stop after it's already done!
+      return startOutFlight().then(function(outFlight) {
+        return startInFlight(outFlight).then(inFlight => [outFlight, inFlight]);
+      }).then(function([outFlight, inFlight]) {
+        return startPlace(outFlight, inFlight).then(placeId => [outFlight, inFlight, placeId]);
+      }).then(function([outFlight, inFlight, placeId]) {
+        return startHotel(outFlight, inFlight, placeId).then(hotelResult => [outFlight, inFlight, placeId, hotelResult]);
+      }).then(function([outFlight, inFlight, placeId, hotelResult]) {
+        return getAllInfo(outFlight, inFlight, placeId, hotelResult);
+      }).then(results => {
+        if ((typeof results[0] === 'undefined') || (typeof results[1].chosenInQuote === 'undefined') || (typeof results[3] === 'undefined')) {
+          setApiErr(apiErr);
+          return;
+        }
 
-      // Creating the trip object
-      var departureDate = new Date(total[0].OutboundLeg.DepartureDate);
-      var departureAirline = total[0].carriers.find(carr => carr.CarrierId == total[0].OutboundLeg.CarrierIds[0]);
-      var outboundDepartureAirportCode = values.departureAirport.code;
-      var outboundDepartureAirportName = values.departureAirport.name;
-      var outboundDepartureCity = values.departureAirport.city;
-      var outboundDestinationAirportCode = total[0].airport.IataCode;
-      var outboundDestinationAirportName = total[0].airport.Name;
-      var outboundDestinationCity = total[0].airport.CityName;
-      var departureFlight = new Flight(
-        outboundDepartureCity,
-        outboundDestinationCity,
-        departureDate,
-        departureAirline,
-        {
-          name: outboundDepartureAirportName,
-          code: outboundDepartureAirportCode,
-        },
-        {
-          name: outboundDestinationAirportName,
-          code: outboundDestinationAirportCode,
-        },
-      );
+        console.log("outbound flight: ", results[0].OutboundLeg.DepartureDate);
+        console.log("inbound flight: ", results[1].chosenInQuote.OutboundLeg.DepartureDate);
 
-      var returnDate = new Date(total[1].chosenInQuote.OutboundLeg.DepartureDate);
-      var returnAirline = total[1].inCarriers.carriers.find(carr => carr.CarrierId == total[1].chosenInQuote.OutboundLeg.CarrierIds[0]);
-      var inboundDepartureAirportName = total[0].airport.Name;
-      var inboundDepartureAirportCode = total[0].airport.IataCode;
-      var inboundDepartureCity = total[0].airport.CityName;
-      var inboundDestinationAirportCode = values.departureAirport.code;
-      var inboundDestinationAirportName = values.departureAirport.name;
-      var inboundDestinationCity = values.departureAirport.city;
-      var returnFlight = new Flight(
-        inboundDepartureCity,
-        inboundDestinationCity,
-        returnDate,
-        returnAirline,
-        {
-          name: inboundDepartureAirportName,
-          code: inboundDepartureAirportCode,
-        },
-        {
-          name: inboundDestinationAirportName,
-          code: inboundDestinationAirportCode,
-        },
-      );
+        // Creating the trip object
+        var departureDate = new Date(results[0].OutboundLeg.DepartureDate);
+        var departureAirline = results[0].carriers.find(carr => carr.CarrierId == results[0].OutboundLeg.CarrierIds[0]).Name;
+        var outboundDepartureAirportCode = values.departureAirport.code;
+        var outboundDepartureAirportName = values.departureAirport.name;
+        var outboundDepartureCity = values.departureAirport.city;
+        var outboundDestinationAirportCode = results[0].airport.IataCode;
+        var outboundDestinationAirportName = results[0].airport.Name;
+        var outboundDestinationCity = results[0].airport.CityName;
+        var departureFlight = new Flight(
+          outboundDepartureCity,
+          outboundDestinationCity,
+          departureDate,
+          departureAirline,
+          {
+            name: outboundDepartureAirportName,
+            code: outboundDepartureAirportCode,
+          },
+          {
+            name: outboundDestinationAirportName,
+            code: outboundDestinationAirportCode,
+          },
+        );
+        
+        // Created the Trip object
+        var returnDate = new Date(results[1].chosenInQuote.OutboundLeg.DepartureDate);
+        var returnAirline = results[1].inCarriers.carriers.find(carr => carr.CarrierId == results[1].chosenInQuote.OutboundLeg.CarrierIds[0]).Name;
+        var inboundDepartureAirportName = results[0].airport.Name;
+        var inboundDepartureAirportCode = results[0].airport.IataCode;
+        var inboundDepartureCity = results[0].airport.CityName;
+        var inboundDestinationAirportCode = values.departureAirport.code;
+        var inboundDestinationAirportName = values.departureAirport.name;
+        var inboundDestinationCity = values.departureAirport.city;
+        var returnFlight = new Flight(
+          inboundDepartureCity,
+          inboundDestinationCity,
+          returnDate,
+          returnAirline,
+          {
+            name: inboundDepartureAirportName,
+            code: inboundDepartureAirportCode,
+          },
+          {
+            name: inboundDestinationAirportName,
+            code: inboundDestinationAirportCode,
+          },
+        );
 
-      var hotelStay = new HotelStay(total[3].hotelResult, total[3].numNights);
-      var trip = new BookedTrip('BookedTrip1', departureFlight, returnFlight, hotelStay);
-      
-      // Calculating total price
-      var price = total[0].MinPrice + total[1].chosenInQuote.MinPrice + (total[3].hotelResult.price * total[3].numNights)
+        var hotelStay = new HotelStay(results[3].hotelResult, results[3].numNights);
+        var trip = new BookedTrip('BookedTrip1', departureFlight, returnFlight, hotelStay);
+        
+        // Calculating total price
+        var price = results[0].MinPrice + results[1].chosenInQuote.MinPrice + (results[3].hotelResult.price * results[3].numNights)
 
-      // Set the new state
-      this.setState({totalPrice : price});
-      this.setState({trip : trip});
-      this.setState({hotel : hotelStay});
-      setTripData(trip, hotelStay);
-    });
+        // Set the new state
+        setTripData(trip, hotelStay, price);
+        
+        cheapestIndex = MAX_TRIES;
+      });
+    }
+    
+    function attemptTrip() {
+        return new Promise(resolve => {generateTrip().then(result => {
+          if (cheapestIndex < MAX_TRIES) {
+            console.log("TRIP GENERATION ATTEMPT", cheapestIndex, "FAILED");
+            setApiErr(null);
+            cheapestIndex++;
+            resolve(attemptTrip());
+          } else {
+            console.log("TRIP GENERATION SUCCEEDED");
+            resolve(0);
+          }
+        });
+      });
+    }
+    
+    //We try to generate a trip *up to* MAX_TRIES times.
+    attemptTrip().then(() => console.log("Finishing attempts to generate a trip."));
   }
 
   onClick = e => {
     e.preventDefault();
     // Writing to firebase
-    console.log("saved info: ", this.state.trip);
-    console.log("saved info: ", this.state.hotel);
+    const { values } = this.props;
+    console.log("saved info: ", values.generatedTrip);
+    console.log("saved info: ", values.hotel);
   }
 
   render() {
     const { values, handleChange, classes } = this.props;
-    console.log('error state: ', this.state.error);
-    console.log('error state: ', this.state.totalPrice);
     const isInvalid =
-      this.state.error !== null ||
-      this.state.totalPrice === null;
-
+      values.apiErr !== null ||
+      values.totalPrice === null;
+    
     return (
       <div>
         <h1> Price for... </h1>
@@ -317,7 +346,7 @@ class Price extends Component {
         { (values.farthest ? "farthest\n" : "") } <br/>
         { (values.withinUS ? "within u.s.\n" : "") } <br/>
         { (values.international ? "international\n" : "") } <br/>
-        <p>{this.state.totalPrice === null ? (this.state.error === null? "Generating..." : this.state.error) : (this.state.error === null? this.state.totalPrice : this.state.error)}</p>
+        <p>{this.state.totalPrice === null ? (values.apiErr === null? "Generating..." : values.apiErr) : (values.apiErr === null? values.totalPrice : values.apiErr)}</p>
         <Button label="book"
         type="submit"
         disabled={isInvalid}
