@@ -21,6 +21,7 @@ import Grid from '@material-ui/core/Grid';
 import { addDays } from 'date-fns';
 import Radio from '@material-ui/core/Radio';
 import RadioGroup from '@material-ui/core/RadioGroup';
+import Slider from '@material-ui/core/Slider';
 
 
 //import { BrowserRouter as Router, Redirect, Route, Switch, Link, NavLink } from 'react-router-dom';
@@ -116,6 +117,8 @@ const styles = (theme) => ({
 
 });
 
+
+
 class Quiz extends Component {
   constructor(props) {
     super(props);
@@ -126,8 +129,40 @@ class Quiz extends Component {
     this.props.nextStep();
   };
 
+
+
   render() {
     const { values, handleChange, classes } = this.props; 
+    console.log(values)
+    const marks = [
+ 
+      {
+        value: 0,
+        label: '$250',
+      },
+
+      {
+        value: 25,
+        label: '$500',
+      },
+      {
+        value: 50,
+        label: '$750',
+      },
+      {
+        value: 75,
+        label: '$1000',
+      },
+      {
+        value: 100,
+        label: '$1200',
+      },
+    ];
+
+    function valuetext(value) {
+      console.log(value)
+      return `${value}`;
+    }
 
     const isInvalid = 
       values.departureAirport === null ||
@@ -191,19 +226,33 @@ class Quiz extends Component {
               <RadioGroup aria-label="price" name="price"  defaultValue= "anyPrice" value={values.price} onChange={(event, value) => handleChange(event, value)}>
                 <FormControlLabel value="anyPrice" control={<Radio />} label="Cost isn't a factor" />
                 <FormControlLabel value="cheapest" control={<Radio />} label="Cheapest possible trip" />
-                <FormControlLabel value="underBudget" control={<Radio />} label="Just keep it under my budget" />
+                <FormControlLabel value="underBudget" control={<Radio />} label="Just keep it within my budget" />
               </RadioGroup>
+
+
+              <Typography className={classes.form3} component={'div'}>
+               Budget:
+              </Typography>
+      <Slider
+        value={values.budget}
+        onChange = {(event, value) => handleChange(event, value)}
+        range = "true"
+        step={25}
+        marks={marks}
+        valueLabelDisplay="off"
+      />
 
               <Typography className={classes.form3} component={'div'}>
                 Location (Choose One):
               </Typography>
-
 
               <RadioGroup aria-label="withinUS" name="destination"  defaultValue= "anyDest" value={values.destination} onChange={(event, value) => handleChange(event, value)}>
                 <FormControlLabel value="anyDest" control={<Radio />} label="Suprise me!" />
                 <FormControlLabel value="cheapest" control={<Radio />} label="Cheapest possible trip" />
                 <FormControlLabel value="international" control={<Radio />} label="Just keep it under my budget" />
               </RadioGroup>
+
+
               
               <Button label="submit"
               type="submit"
