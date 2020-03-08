@@ -1,18 +1,18 @@
 class Flight {
-  constructor(departureCity, destinationCity, departureDate, departureAirport, destinationAirport) {
+  constructor(departureCity, destinationCity, departureDate, departureAirline, departureAirport, destinationAirport) {
     this.departureCity = departureCity;
     this.destinationCity = destinationCity;
     this.departureDate = departureDate;
+    this.departureAirline = departureAirline;
     this.departureAirport = departureAirport;
     this.destinationAirport = destinationAirport;
   }
 }
 
 class HotelStay {
-  constructor(placeId, checkIn, checkOut) {
-    this.placeId = placeId;
-    this.checkIn = checkIn;
-    this.checkOut = checkOut;
+  constructor(hotelResult, numNights) {
+    this.hotelResult = hotelResult;
+    this.numNights = numNights;
   }
 }
 

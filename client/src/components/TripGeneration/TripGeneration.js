@@ -14,14 +14,9 @@ const INITIAL_STATE = {
   farthest: false,
   withinUS: false,
   international: false,
-  
-  
-  outAirline: null,
-  inAirline: null,
-  destination: null,
-  arrivalAirport: null,
+  price: null,
+  generated_trip: null,
   hotel: null,
-  totalPrice: null
 };
 
 export class UserForm extends Component {
@@ -96,21 +91,17 @@ export class UserForm extends Component {
     }
   };
   
-  setTripData = (oAirline, iAirline, dest, arrAirport, hotelInfo, price) => {
+  setTripData = (trip, hotel) => {
     this.setState({
-      outAirline : oAirline,
-      inAirline : iAirline,
-      destination : dest,
-      arrivalAirport : arrAirport,
-      hotel : hotelInfo,
-      totalPrice : price
+      trip: trip,
+      hotel: hotel,
     });
   };
   
   render() {
     const { step } = this.state;
-    const { departureAirport, departureDate, returnDate, cheapest, underBudget, farthest, withinUS, international, outAirline, inAirline, destination, arrivalAirport, hotel, totalPrice } =  this.state;
-    const values = { departureAirport, departureDate, returnDate, cheapest, underBudget, farthest, withinUS, international, outAirline, inAirline, destination, arrivalAirport, hotel, totalPrice };
+    const { departureAirport, departureDate, returnDate, cheapest, underBudget, farthest, withinUS, international, generated_trip, hotel } =  this.state;
+    const values = { departureAirport, departureDate, returnDate, cheapest, underBudget, farthest, withinUS, international, generated_trip, hotel };
   
     switch (step) {
       case 1:
