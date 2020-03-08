@@ -1,21 +1,17 @@
-import React, { Component } from 'react';
-import DateFnsUtils from '@date-io/date-fns'; 
-
-import {
-  DatePicker,
-  MuiPickersUtilsProvider,
-} from '@material-ui/pickers';
-import { withStyles } from '@material-ui/core/styles';
+import DateFnsUtils from '@date-io/date-fns';
 import Button from '@material-ui/core/Button';
-import CssBaseline from '@material-ui/core/CssBaseline';
-import TextField from '@material-ui/core/TextField';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
+import Card from '@material-ui/core/Card';
 import Checkbox from '@material-ui/core/Checkbox';
-import Typography from '@material-ui/core/Typography';
 import Container from '@material-ui/core/Container';
+import CssBaseline from '@material-ui/core/CssBaseline';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
+import { withStyles } from '@material-ui/core/styles';
+import TextField from '@material-ui/core/TextField';
+import Typography from '@material-ui/core/Typography';
 import Autocomplete from '@material-ui/lab/Autocomplete';
-import {airports} from "./airport.js";
-import Card from '@material-ui/core/Card'
+import { DatePicker, MuiPickersUtilsProvider } from '@material-ui/pickers';
+import React, { Component } from 'react';
+import { airports } from "./airport.js";
 
 const ColoredLine = ({ color }) => (
   <hr

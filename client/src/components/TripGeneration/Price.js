@@ -5,7 +5,6 @@ import SavedTrip from '../MyTrips/SavedTrips/SavedTrip.js';
 import Card from '@material-ui/core/Card'
 import { withStyles } from '@material-ui/core/styles';
 import CircularProgress from '@material-ui/core/CircularProgress';
-import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import Container from '@material-ui/core/Container';
 import CssBaseline from '@material-ui/core/CssBaseline';
