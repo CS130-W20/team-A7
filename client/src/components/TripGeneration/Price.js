@@ -93,20 +93,32 @@ class GeneratedCard extends Component {
               </Typography>
             </div>
           </Container>
-          <div className={styles.item}>
+          <Container className={styles.item}>
             Departure Airport: {values.departureAirport.code} <br />
             Departure Date: { values.departureDate.toDateString() } <br />
             Return Date: { values.returnDate.toDateString() } <br />
             Price: {values.totalPrice} <br />
-          </div>
-          <Button label="book"
-          type="submit"
-          disabled={0}
-          onClick={this.onClick}
-          fullWidth
-          variant="contained">
-            Book
-          </Button>
+          </Container>
+          <Container>
+            <Button label="retakeQuiz"
+            type="submit"
+            onClick={this.retakeQuiz}
+            variant="contained">
+              Retake Quiz
+            </Button>
+            <Button label="saveTrip"
+            type="submit"
+            onClick={this.saveTrip}
+            variant="contained">
+              Save Trip
+            </Button>
+            <Button label="book"
+            type="submit"
+            onClick={this.onClick}
+            variant="contained">
+              Book
+            </Button>
+          </Container>
         </Card>
       </div>
     );
