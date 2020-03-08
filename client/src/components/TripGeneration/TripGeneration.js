@@ -39,6 +39,13 @@ export class UserForm extends Component {
       step: step - 1
     });
   };
+
+  // Go back to quiz page
+  goBackToQuiz = () => {
+    this.setState({
+      step: 1
+    });
+  }
   
   handleChange = (event, value) => {
       if (event === 'autocomplete') {
@@ -131,6 +138,7 @@ export class UserForm extends Component {
           <Price
             nextStep={this.nextStep}
             prevStep={this.prevStep}
+            goBack={this.goBackToQuiz}
             handleChange={this.handleChange}
             setTripData={this.setTripData}
             setApiErr={this.setApiErr}
