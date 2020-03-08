@@ -16,7 +16,7 @@ const INITIAL_STATE = {
   //international: false,
   destination: "anyDest",
   price: "anyPrice",
-  budget: [0,50],
+  budget: 0,
 
   
   
@@ -59,10 +59,19 @@ export class UserForm extends Component {
       else if (event === 'returnDate') {
         this.handleReturnDate(value);
       }
+      else if (event === 'budget'){
+        this.setState({[event.target.name]: value});
+        console.log('clicked!: ', event.target.name);
+        console.log('clicked!: ', value);
+      }
       else {
           this.handleButtonChange(event, value);
       }
   }
+
+  handleSliderChange = (value) => {
+    this.setState({ budget: value });
+  };
 
   handleButtonChange = (event, value) => {
     this.setState({ [event.target.name]: value });
@@ -120,6 +129,7 @@ export class UserForm extends Component {
         return (
           <Quiz
             nextStep={this.nextStep}
+            handleSliderChange={this.handleSliderChange}
             handleChange={this.handleChange}
             values={values}
           />

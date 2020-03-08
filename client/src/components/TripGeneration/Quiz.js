@@ -117,11 +117,35 @@ const styles = (theme) => ({
 
 });
 
+const marks = [
+ 
+  {
+    value: 0,
+    label: '$250',
+  },
 
+  {
+    value: 25,
+    label: '$500',
+  },
+  {
+    value: 50,
+    label: '$750',
+  },
+  {
+    value: 75,
+    label: '$1000',
+  },
+  {
+    value: 100,
+    label: '$1200',
+  },
+];
 
 class Quiz extends Component {
   constructor(props) {
     super(props);
+    this.slider_value = 0;
   }
 
   continue = e => {
@@ -129,38 +153,11 @@ class Quiz extends Component {
     this.props.nextStep();
   };
 
-
-
   render() {
-    const { values, handleChange, classes } = this.props; 
-    console.log(values)
-    const marks = [
- 
-      {
-        value: 0,
-        label: '$250',
-      },
-
-      {
-        value: 25,
-        label: '$500',
-      },
-      {
-        value: 50,
-        label: '$750',
-      },
-      {
-        value: 75,
-        label: '$1000',
-      },
-      {
-        value: 100,
-        label: '$1200',
-      },
-    ];
+    const { values, handleChange, handleSliderChange, classes } = this.props; 
 
     function valuetext(value) {
-      console.log(value)
+      // console.log(value)
       return `${value}`;
     }
 
@@ -233,14 +230,17 @@ class Quiz extends Component {
               <Typography className={classes.form3} component={'div'}>
                Budget:
               </Typography>
-      <Slider
-        value={values.budget}
-        onChange = {(event, value) => handleChange(event, value)}
-        range = "true"
-        step={25}
-        marks={marks}
-        valueLabelDisplay="off"
-      />
+
+              <Slider
+                name="budget"
+                value={values.budget}
+                getAriaValueText={valuetext}
+                aria-labelledby="discrete-slider-custom"
+                onChange={(event, value) => handleSliderChange(value)}
+                step={25}
+                valueLabelDisplay="off"
+                marks={marks}
+              />
 
               <Typography className={classes.form3} component={'div'}>
                 Location (Choose One):
