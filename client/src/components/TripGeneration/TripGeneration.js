@@ -9,11 +9,9 @@ const INITIAL_STATE = {
   departureAirport: null,
   departureDate: null,
   returnDate: null,
-  cheapest: false,
-  underBudget: false,
-  farthest: false,
-  withinUS: false,
-  international: false,
+  destination: "anyDest",
+  price: "anyPrice",
+  budget: 0,
   totalPrice: null,
   generatedTrip: null,
   hotel: null,
@@ -52,10 +50,19 @@ export class UserForm extends Component {
       else if (event === 'returnDate') {
         this.handleReturnDate(value);
       }
+      else if (event === 'budget'){
+        this.setState({[event.target.name]: value});
+        console.log('clicked!: ', event.target.name);
+        console.log('clicked!: ', value);
+      }
       else {
           this.handleButtonChange(event, value);
       }
   }
+
+  handleSliderChange = (value) => {
+    this.setState({ budget: value });
+  };
 
   handleButtonChange = (event, value) => {
     this.setState({ [event.target.name]: value });
@@ -106,14 +113,15 @@ export class UserForm extends Component {
   
   render() {
     const { step } = this.state;
-    const { departureAirport, departureDate, returnDate, cheapest, underBudget, farthest, withinUS, international, totalPrice, generatedTrip, hotel, apiErr } =  this.state;
-    const values = { departureAirport, departureDate, returnDate, cheapest, underBudget, farthest, withinUS, international, totalPrice, generatedTrip, hotel, apiErr };
+    const { departureAirport, departureDate, returnDate, destination, price, budget, totalPrice, generatedTrip, hotel, apiErr } =  this.state;
+    const values = { departureAirport, departureDate, returnDate, destination, price, budget, totalPrice, generatedTrip, hotel, apiErr };
   
     switch (step) {
       case 1:
         return (
           <Quiz
             nextStep={this.nextStep}
+            handleSliderChange={this.handleSliderChange}
             handleChange={this.handleChange}
             values={values}
           />

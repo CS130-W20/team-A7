@@ -78,6 +78,7 @@ class SignInFormBase extends Component {
     const { classes } = this.props;
     const { email, password, error } = this.state;
     const isInvalid = password === '' || email === '';
+    
     return (
       <div id="centered-fixed-masthead">
       <Card className={classes.card}>
@@ -148,4 +149,5 @@ class SignInFormBase extends Component {
 }
 
 export { SignInFormBase, styles };
+
 export default SignInFormBase;
