@@ -78,10 +78,12 @@ export class UserForm extends Component {
   };
     
   handleAutocomplete = (airport) => {
-    console.log("Listener (Autocomplete): " + airport.code);
-    this.setState({
-      departureAirport: airport
-    });
+    if (airport !== null){
+      console.log("Listener (Autocomplete): " + airport.code);
+      this.setState({
+        departureAirport: airport
+      });
+  }
   }
 
   handleDepartureDate = (date) => {
@@ -120,6 +122,11 @@ export class UserForm extends Component {
       apiErr : err,
   })};
   
+  setTotalPrice = (price) => {
+    this.setState({
+      totalPrice : price,
+  })};
+  
   render() {
     const { step } = this.state;
     const { departureAirport, departureDate, returnDate, destination, price, budget, totalPrice, generatedTrip, hotel, apiErr } =  this.state;
@@ -143,6 +150,7 @@ export class UserForm extends Component {
             goBack={this.goBackToQuiz}
             handleChange={this.handleChange}
             setTripData={this.setTripData}
+            setTotalPrice={this.setTotalPrice}
             setApiErr={this.setApiErr}
             values={values}
           />

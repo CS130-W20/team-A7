@@ -131,7 +131,7 @@ const marks = [
   },
   {
     value: 100,
-    label: '$1200',
+    label: '$1250',
   },
 ];
 
@@ -215,7 +215,7 @@ class Quiz extends Component {
               
               <RadioGroup aria-label="price" name="price"  defaultValue= "anyPrice" value={values.price} onChange={(event, value) => handleChange(event, value)}>
                 <FormControlLabel value="anyPrice" control={<Radio />} label="Cost isn't a factor" />
-                <FormControlLabel value="cheapest" control={<Radio />} label="Cheapest possible trip" />
+                <FormControlLabel value="cheapest" control={<Radio />} label="Cheapest possible random trip" />
                 <FormControlLabel value="underBudget" control={<Radio />} label="Just keep it within my budget" />
               </RadioGroup>
 

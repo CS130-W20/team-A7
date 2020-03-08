@@ -148,7 +148,7 @@ class Price extends Component {
   };
   
   componentDidMount() {
-    const { values, setTripData, setApiErr, classes } = this.props;
+    const { values, setTripData, setApiErr, setTotalPrice, classes } = this.props;
     var tripDestination = "";
     var departDate = values.departureDate.toISOString();
     departDate = departDate.slice(0,10);
@@ -157,17 +157,17 @@ class Price extends Component {
     // Default value so the API request doesn't crash the mf webpage
     var airportPlace = null;
     var apiErr = null;
-    var cheapestIndex = 0;
+    var retryIndex = 0;
     var internationalIndex = Math.floor(Math.random() * 8);
-    var internationalLocations = ["FR", "UK", "ES", "BE", "DK", "IT", "JP", "PL"]
+    const internationalLocations = ["FR", "UK", "ES", "CA", "DK", "IT", "JP", "PL"];
+    var budgetLeft = (values.budget + 25) * 10;
+    var tripSuccess = false;
+    
     function startOutFlight() {
-      console.log("ATTEMPTING TRIP GENERATION", cheapestIndex);
+      console.log("ATTEMPTING TRIP GENERATION", retryIndex);
       return new Promise((resolve, reject) => {
-
-        var outDestination = ((values.destination === 'withinUS') ? "US" : (values.international ? internationalLocations[internationalIndex] : "anywhere"));
-        
+        var outDestination = ((values.destination === 'withinUS') ? "US" : ((values.destination === 'international') ? internationalLocations[internationalIndex] : "anywhere"));
         var unirest = require("unirest");
- 
         var outFlightUrl = "https://skyscanner-skyscanner-flight-search-v1.p.rapidapi.com/apiservices/browsequotes/v1.0/US/USD/en-US/" + values.departureAirport.code + "-sky/" + outDestination + "/" + departDate;
         var outFlightReq = unirest("GET", outFlightUrl);
            
@@ -189,21 +189,41 @@ class Price extends Component {
           
           var numResults = quotes.length;
           //We try UP TO 5 times. If there's no results then we give up.
-          if (numResults == 0 || cheapestIndex > numResults - 1) {
+          if (numResults == 0 || retryIndex > numResults - 1) {
             apiErr = "No results found. Please try new flight information."
             resolve(undefined);
+            return;
           }
   
-          // Order the flights by price
+          // Limit the possible values if there's a budget
+          if (values.price === 'underBudget') {
+            //reserve percentage of funds for outbound flight based on trip type. international more likely to be expensive.
+            const outBudget = (values.destination === 'international') ? Math.floor(budgetLeft/3) : Math.floor(budgetLeft/4);
+            var budgetQuotes = quotes.filter(q => (q.MinPrice <= outBudget));
+            if (budgetQuotes.length == 0) {
+              setApiErr("Budget is too small for current trip.");
+              resolve(undefined);
+              return;
+            }
+            
+            quotes = budgetQuotes;
+            numResults = budgetQuotes.length;
+          }
+          
+          // Order the flights by price to make selection easier
           quotes.sort((a, b) => (a.MinPrice > b.MinPrice) ? 1 : -1);
-        
-          //Get the index of which entry we should use. If cheapest selected take the first entry b/c it's ordered.
-          var tripIndex = ((values.price === 'cheapest') ? cheapestIndex : Math.floor(Math.random() * numResults));
+          //Get the index of which entry we should use. 
+          //If cheapest, take first entry because it's ordered by price.
+          //If under budget, take last entry because we want the most bang for our buck of our allocated flight funds
+          //If cost isn't a consideration, we'll take most expensive (last) entry.
+          var tripIndex = ((values.price === 'cheapest') ? retryIndex : ((values.price === 'underBudget') ? numResults - 1 - retryIndex : numResults - 1));
           var chosenQuote = quotes[tripIndex];
           chosenQuote.carriers = carriers;
           airportPlace = res.body.Places.find(element => element.PlaceId == chosenQuote.OutboundLeg.DestinationId);
-          //console.log(chosenQuote);
           chosenQuote.airport = airportPlace;
+          if (values.price === 'underBudget') {
+            budgetLeft -= chosenQuote.MinPrice;
+          }
           resolve(chosenQuote);
         });
       });
@@ -211,11 +231,15 @@ class Price extends Component {
     
     function startInFlight(outFlight) {
       return new Promise((resolve, reject) => {
+        if (typeof outFlight === 'undefined') {
+          resolve(undefined);
+          return;
+        }
+        
         var inDeparture = airportPlace.SkyscannerCode;
         tripDestination = airportPlace.CityName;
         console.log(tripDestination);
         var inFlightUrl = "https://skyscanner-skyscanner-flight-search-v1.p.rapidapi.com/apiservices/browsequotes/v1.0/US/USD/en-US/" + inDeparture + "-sky/" + values.departureAirport.code + "-sky/" + returnDate;
-        console.log(inFlightUrl);
         var unirest = require("unirest");
         var inFlightReq = unirest("GET", inFlightUrl);
         inFlightReq.query({
@@ -230,20 +254,42 @@ class Price extends Component {
         //INBOUND FLIGHT
         inFlightReq.end(function (inRes) {
           if (inRes.error) throw new Error(inRes.error);
-            //console.log(inRes);
             var inQuotes = inRes.body.Quotes;
             var numResults = inQuotes.length;
             if (numResults == 0) {
-              apiErr = "No returning flights found. Trying a new destination...";
+              apiErr = "No returning flights found. Trying a new trip.";
+              resolve(undefined);
+              return;
             }
             var inCarriers = {carriers : inRes.body.Carriers};
+            //Sort by price once more
             inQuotes.sort((a, b) => (a.MinPrice > b.MinPrice) ? 1 : -1);
-            //take the cheapest flight back
-            var chosenInQuote = inQuotes[0];
-            //console.log("chosen in quote");
-            //console.log(chosenInQuote);
+            
+            if (values.price === 'underBudget') {
+              //reserve percentage of funds for inbound flight based on trip type and amount of funds left. international more likely to be expensive.
+              // International: (2/3)/2 => 1/3 of original budget reserved for inbound flight
+              // Otherwise: (3/4)/3 => 1/4 of original budget reserved for inbound flight 
+              const inBudget = (values.destination === 'international') ? Math.floor(budgetLeft/2) : Math.floor(budgetLeft/3);
+              var budgetQuotes = inQuotes.filter(q => (q.MinPrice <= inBudget));
+              if (budgetQuotes.length == 0) {
+                setApiErr("Budget is too small for current trip.");
+                resolve(undefined);
+                return;
+              }
+              inQuotes = budgetQuotes;
+              numResults = budgetQuotes.length;
+            }
+            
+            //Get the index of which entry we should use. 
+            //If cheapest, take first entry because it's ordered by price.
+            //If under budget, take last entry because we want the most bang for our buck of our allocated flight funds
+            //If cost isn't a consideration, we'll take most expensive (last) entry.
+            var tripIndex = ((values.price === 'cheapest') ? 0 : numResults - 1 );
+            var chosenInQuote = inQuotes[tripIndex];
+            if (values.price === 'underBudget') {
+              budgetLeft -= chosenInQuote.MinPrice;
+            }
             chosenInQuote = {chosenInQuote, inCarriers};
-            //console.log(chosenInQuote);
             resolve(chosenInQuote);
         });
       });
@@ -251,8 +297,11 @@ class Price extends Component {
 
     function startPlace(outFlight, inFlight) {
       return new Promise ((resolve, reject) => {
+        if ((typeof outFlight === 'undefined') || (typeof inFlight === 'undefined')) {
+          resolve(undefined);
+          return;
+        }
         var unirest = require("unirest");
-
         var req = unirest("GET", "https://tripadvisor1.p.rapidapi.com/locations/search");
        
         req.query({
@@ -275,8 +324,6 @@ class Price extends Component {
         req.end(function (res) {
           if (res.error) throw new Error(res.error);
           var locationId = res.body.data[0].result_object.location_id;
-          //console.log(res.body);
-          //console.log(locationId);
           resolve(locationId);
         });
       });
@@ -284,14 +331,14 @@ class Price extends Component {
     
     function startHotel(outFlight, inFlight, placeId) {
       return new Promise ((resolve, reject) => {
+        if ((typeof placeId === 'undefined') || (typeof outFlight === 'undefined') || (typeof inFlight === 'undefined')) {
+          resolve(undefined);
+          return;
+        }
         var unirest = require("unirest");
-
         var req = unirest("GET", "https://tripadvisor1.p.rapidapi.com/hotels/list");
-
         var checkInDate = outFlight.OutboundLeg.DepartureDate.slice(0,10);
-        //console.log(checkInDate);
         var numNights = (values.returnDate.getTime() - values.departureDate.getTime())/(1000*3600*24);
-        //console.log(numNights);
         req.query({
           "offset": "0",
           "subcategory": "hotel%2Clodge",
@@ -318,27 +365,40 @@ class Price extends Component {
           if (res.error) throw new Error(res.error);
 
           var hotels = res.body.data;
-          //console.log(hotels);
           hotels = hotels.filter(hotel => ((hotel.hac_offers.availability == "available" || hotel.hac_offers.availability == "pending") && hotel.hasOwnProperty('price')));
-          //console.log(hotels);
-          if (hotels.length == 0) {
-            apiErr = "No available hotels in the area we searched. Woops! Please retry the quiz.";
+          var numResults = hotels.length;
+          if (numResults == 0) {
+            apiErr = "No available hotels in the area we searched. Trying a new trip!";
             resolve(undefined);
+            return;
           }
 
           const regex = /[0-9]+/;
           //Hotel price is represented as a range "$xx - $yy" or single "$zz", so we need to get the cheaper limit thru regex
           hotels.forEach(function (item, index) {
             var price = item.price.match(regex);
-            //console.log(price);
-            //console.log(price[1]);
             item.price = parseInt(price[0]);
           });
 
           hotels.sort((a, b) => (a.price > b.price) ? 1 : -1);
-          var hotelResult = hotels[0];
+          
+          if (values.price === 'underBudget') {
+            //Spend the rest of the budget on a hotel!
+            const nightlyBudget = budgetLeft / numNights;
+            var budgetHotels = hotels.filter(hotel => (hotel.price <= nightlyBudget));
+            if (budgetHotels.length == 0) {
+              //We made it this far so we're giving them the cheapest hotel to try and stay near budget!
+              numResults = 1;
+            } else {
+              hotels = budgetHotels;
+              numResults = budgetHotels.length;
+            }
+          }
+          
+          //Same index selection logic as before. Give them the cheapest, otherwise the most expensive within their budget.
+          var hotelIndex = ((values.price === 'cheapest') ? 0 : numResults - 1 );
+          var hotelResult = hotels[hotelIndex];
           hotelResult = {hotelResult, numNights};
-          //console.log(hotelResult);
           resolve(hotelResult);
         });
       });
@@ -352,7 +412,6 @@ class Price extends Component {
     }
     
     function generateTrip(){
-      //since this may be called multiple times, stop after it's already done!
       return startOutFlight().then(function(outFlight) {
         return startInFlight(outFlight).then(inFlight => [outFlight, inFlight]);
       }).then(function([outFlight, inFlight]) {
@@ -362,13 +421,14 @@ class Price extends Component {
       }).then(function([outFlight, inFlight, placeId, hotelResult]) {
         return getAllInfo(outFlight, inFlight, placeId, hotelResult);
       }).then(results => {
-        if ((typeof results[0] === 'undefined') || (typeof results[1].chosenInQuote === 'undefined') || (typeof results[3] === 'undefined')) {
+        console.log(results);
+        if ((typeof results[0] === 'undefined') || (typeof results[1] === 'undefined') || (typeof results[3] === 'undefined')) {
           setApiErr(apiErr);
           return;
         }
 
-        console.log("outbound flight: ", results[0].OutboundLeg.DepartureDate);
-        console.log("inbound flight: ", results[1].chosenInQuote.OutboundLeg.DepartureDate);
+        //console.log("outbound flight: ", results[0].OutboundLeg.DepartureDate);
+        //console.log("inbound flight: ", results[1].chosenInQuote.OutboundLeg.DepartureDate);
 
         // Creating the trip object
         var departureDate = new Date(results[0].OutboundLeg.DepartureDate);
@@ -424,22 +484,30 @@ class Price extends Component {
         // Calculating total price
         var price = results[0].MinPrice + results[1].chosenInQuote.MinPrice + (results[3].hotelResult.price * results[3].numNights)
 
-        // Set the new state
+        // Set the new state and exit out of recursion loop
         setTripData(trip, hotelStay, price);
-        
-        cheapestIndex = MAX_TRIES;
+        tripSuccess = true;
+        retryIndex = MAX_TRIES;
       });
     }
     
     function attemptTrip() {
         return new Promise(resolve => {generateTrip().then(result => {
-          if (cheapestIndex < MAX_TRIES) {
-            console.log("TRIP GENERATION ATTEMPT", cheapestIndex, "FAILED");
+          if (retryIndex < MAX_TRIES) {
+            //If trip fails, scramble parameters and reset state.
+            console.log("TRIP GENERATION ATTEMPT", retryIndex, "FAILED");
+            retryIndex++;
+            budgetLeft = ((values.budget+25) * 10);
+            internationalIndex = Math.floor(Math.random() * 8);
             setApiErr(null);
-            cheapestIndex++;
             resolve(attemptTrip());
           } else {
-            console.log("TRIP GENERATION SUCCEEDED");
+            console.log("TRIP GENERATION ENDING");
+            if (tripSuccess == false) {
+              setTotalPrice(0);
+              setApiErr("Please try new parameters.");
+              console.log("All trips failed");
+            }
             resolve(0);
           }
         });
@@ -447,7 +515,9 @@ class Price extends Component {
     }
     
     //We try to generate a trip *up to* MAX_TRIES times.
-    attemptTrip().then(() => console.log("Finishing attempts to generate a trip."));
+    attemptTrip().then(() => {
+      console.log("Finishing attempts to generate a trip.")
+    });
   }
 
   render() {
