@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+const MAX_TRIES = 5;
 
 class Price extends Component {
   constructor(props) {
@@ -19,18 +20,23 @@ class Price extends Component {
   
   
   componentDidMount() {
-    const { values, setTripData, classes } = this.props;
+    const { values, setTripData, setApiErr, classes } = this.props;
     var totalPrice = 0;
     var tripDestination = "";
     var departDate = values.departureDate.toISOString();
     departDate = departDate.slice(0,10);
     var returnDate = values.returnDate.toISOString();
     returnDate = returnDate.slice(0, 10);
+    console.log(departDate);
+    console.log(returnDate);
     //Default value so the API request doesn't crash the mf webpage
     var airportPlace = null;
     var apiErr = null;
+    var cheapestIndex = 0;
+    var validTrip = false;
     
     function startOutFlight() {
+      console.log("ATTEMPTING TRIP GENERATION", cheapestIndex);
       return new Promise((resolve, reject) => {
         var outDestination = values.withinUS ? "US" : "anywhere";
         var unirest = require("unirest");
@@ -56,16 +62,18 @@ class Price extends Component {
           var carriers = res.body.Carriers;
           
           var numResults = quotes.length;
-          if (numResults == 0) {
+          //We try UP TO 5 times. If there's no results then we give up.
+          if (numResults == 0 || cheapestIndex > numResults - 1) {
             apiErr = "No results found. Please try new flight information."
+            resolve(undefined);
           }
                 
           //Order the flights by price
           quotes.sort((a, b) => (a.MinPrice > b.MinPrice) ? 1 : -1);
         
           //Get the index of which entry we should use. If cheapest selected take the first entry b/c it's ordered.
-          var randomIndex = values.cheapest ? 0 : Math.floor(Math.random() * numResults);
-          var chosenQuote = quotes[randomIndex];
+          var tripIndex = values.cheapest ? cheapestIndex : Math.floor(Math.random() * numResults);
+          var chosenQuote = quotes[tripIndex];
           chosenQuote.carriers = carriers;
           airportPlace = res.body.Places.find(element => element.PlaceId == chosenQuote.OutboundLeg.DestinationId);
           //console.log(chosenQuote);
@@ -96,10 +104,11 @@ class Price extends Component {
         //INBOUND FLIGHT
         inFlightReq.end(function (inRes) {
           if (inRes.error) throw new Error(inRes.error);
+            //console.log(inRes);
             var inQuotes = inRes.body.Quotes;
             var numResults = inQuotes.length;
             if (numResults == 0) {
-              apiErr = "No results found. Please try new flight information.";
+              apiErr = "No returning flights found. Trying a new destination...";
             }
             var inCarriers = {carriers : inRes.body.Carriers};
             inQuotes.sort((a, b) => (a.MinPrice > b.MinPrice) ? 1 : -1);
@@ -216,41 +225,61 @@ class Price extends Component {
       });
     }
     
-    startOutFlight().then(function(outFlight) {
-      return startInFlight(outFlight).then(inFlight => [outFlight, inFlight]);
-    }).then(function([outFlight, inFlight]) {
-      return startPlace(outFlight, inFlight).then(placeId => [outFlight, inFlight, placeId]);
-    }).then(function([outFlight, inFlight, placeId]) {
-      return startHotel(outFlight, inFlight, placeId).then(hotelResult => [outFlight, inFlight, placeId, hotelResult]);
-    }).then(function([outFlight, inFlight, placeId, hotelResult]) {
-      return getAllInfo(outFlight, inFlight, placeId, hotelResult);
-    }).then(total => {
-      //console.log("outbound flight");
-      //console.log(total[0]);
-      //console.log("inbound flight");
-      //console.log(total[1]);
-      //console.log(total[2]);
-      //console.log("hotel information");
-      //console.log(total[3]);
-      if (total[0] === undefined || total[1].chosenInQuote === undefined || total[3] === undefined) {
-        this.setState({ error: apiErr });
-        return;
-      }
-      this.setState({ hotel : total[3], outFlight : total[0], inFlight : total[1] });
-      var price = total[0].MinPrice + total[1].chosenInQuote.MinPrice + (total[3].hotelResult.price * total[3].numNights)
-      var outAirline = total[0].carriers.find(carr => carr.CarrierId == total[0].OutboundLeg.CarrierIds[0]); 
-      console.log(outAirline.Name);
-      var inAirline = total[1].inCarriers.carriers.find(carr => carr.CarrierId == total[1].chosenInQuote.OutboundLeg.CarrierIds[0]);
-      console.log(inAirline.Name);
-      var destination = total[3].hotelResult.location_string;
-      console.log(destination);
-      var hotelName = total[3].hotelResult.name;
-      console.log(hotelName);
-      var airport = total[0].airport.IataCode;
-      console.log(airport);
-      this.setState({totalPrice : price });
-      setTripData(outAirline, inAirline, destination, airport, hotelName, price);
-    });
+    function generateTrip(){
+      //since this may be called multiple times, stop after it's already done!
+      return startOutFlight().then(function(outFlight) {
+        return startInFlight(outFlight).then(inFlight => [outFlight, inFlight]);
+      }).then(function([outFlight, inFlight]) {
+        return startPlace(outFlight, inFlight).then(placeId => [outFlight, inFlight, placeId]);
+      }).then(function([outFlight, inFlight, placeId]) {
+        return startHotel(outFlight, inFlight, placeId).then(hotelResult => [outFlight, inFlight, placeId, hotelResult]);
+      }).then(function([outFlight, inFlight, placeId, hotelResult]) {
+        return getAllInfo(outFlight, inFlight, placeId, hotelResult);
+      }).then(trip => {
+        console.log("outbound flight");
+        console.log(trip[0]);
+        console.log("inbound flight");
+        console.log(trip[1]);
+        console.log(trip[2]);
+        console.log("hotel information");
+        console.log(trip[3]);
+        if ((trip[0] === undefined) || (trip[1].chosenInQuote === undefined) || (trip[3] === undefined)) {
+          setApiErr(apiErr);
+          return;
+        }
+        var price = trip[0].MinPrice + trip[1].chosenInQuote.MinPrice + (trip[3].hotelResult.price * trip[3].numNights)
+        var outAirline = trip[0].carriers.find(carr => carr.CarrierId == trip[0].OutboundLeg.CarrierIds[0]); 
+        console.log(outAirline.Name);
+        var inAirline = trip[1].inCarriers.carriers.find(carr => carr.CarrierId == trip[1].chosenInQuote.OutboundLeg.CarrierIds[0]);
+        console.log(inAirline.Name);
+        var destination = trip[3].hotelResult.location_string;
+        console.log(destination);
+        var hotelName = trip[3].hotelResult.name;
+        console.log(hotelName);
+        var airport = trip[0].airport.IataCode;
+        console.log(airport);
+        setTripData(outAirline, inAirline, destination, airport, hotelName, price);
+        cheapestIndex = MAX_TRIES;
+      });
+    }
+    
+    function attemptTrip() {
+        return new Promise(resolve => {generateTrip().then(result => {
+          if (cheapestIndex < MAX_TRIES) {
+            console.log("TRIP GENERATION ATTEMPT", cheapestIndex, "FAILED");
+            setApiErr(null);
+            cheapestIndex++;
+            resolve(attemptTrip());
+          } else {
+            console.log("TRIP GENERATION SUCCEEDED");
+            resolve(0);
+          }
+        });
+      });
+    }
+    
+    //We try to generate a trip *up to* MAX_TRIES times.
+    attemptTrip().then(() => console.log("Finishing attempts to generate a trip."));
   }
 
   render() {
@@ -266,7 +295,7 @@ class Price extends Component {
         { (values.farthest ? "farthest\n" : "") } <br/>
         { (values.withinUS ? "within u.s.\n" : "") } <br/>
         { (values.international ? "international\n" : "") } <br/>
-        <p>{ this.state.totalPrice === null ? (this.state.error === null? "Generating..." : this.state.error) : (this.state.error === null? this.state.totalPrice : this.state.error) } </p>
+        <p>{ values.totalPrice === null ? (values.apiErr === null? "Generating..." : values.apiErr) : (values.apiErr === null? values.totalPrice : values.apiErr) } </p>
       </div>
     );
   }
