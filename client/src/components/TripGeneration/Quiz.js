@@ -227,20 +227,21 @@ class Quiz extends Component {
               </RadioGroup>
 
 
-              <Typography className={classes.form3} component={'div'}>
-               Budget:
-              </Typography>
+              <div hidden={values.price !== 'underBudget'}>
+                <Typography className={classes.form3} component={'div'}>
+                  Budget:
+                </Typography>
 
-              <Slider
-                name="budget"
-                value={values.budget}
-                getAriaValueText={valuetext}
-                aria-labelledby="discrete-slider-custom"
-                onChange={(event, value) => handleSliderChange(value)}
-                step={25}
-                valueLabelDisplay="off"
-                marks={marks}
-              />
+                <Slider
+                  value={values.budget}
+                  getAriaValueText={valuetext}
+                  aria-labelledby="discrete-slider-custom"
+                  onChange={(event, value) => handleSliderChange(value)}
+                  step={25}
+                  valueLabelDisplay="off"
+                  marks={marks}
+                />
+              </div>
 
               <Typography className={classes.form3} component={'div'}>
                 Location (Choose One):
