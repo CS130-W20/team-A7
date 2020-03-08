@@ -1,57 +1,113 @@
-import React, { Component } from 'react';
+import Container from '@material-ui/core/Container';
+import CssBaseline from '@material-ui/core/CssBaseline';
+import { withStyles } from '@material-ui/core/styles';
+import Typography from '@material-ui/core/Typography';
+import React, { Component } from "react";
+import Button from "react-bootstrap/Button";
+import Card from "react-bootstrap/Card";
+import Form from "react-bootstrap/Form";
+import { Redirect } from "react-router-dom";
+import * as ROUTES from "../../constants/routes";
 
-import { Redirect } from 'react-router-dom';
-import Button from 'react-bootstrap/Button';
-import Form from 'react-bootstrap/Form';
-import Card from 'react-bootstrap/Card';
-import * as ROUTES from '../../constants/routes';
+const styles = theme => ({
+  card: {
+    paddingBottom: 30,
+    marginTop: 50,
+    maxWidth: 500,
+    margin: "auto",
+    transition: "0.3s",
+    boxShadow: "0 8px 40px -12px rgba(0,0,0,0.3)",
+    "&:hover": {
+      boxShadow: "0 16px 70px -12.125px rgba(0,0,0,0.3)"
+    }
+  },
+  paper: {
+    marginTop: theme.spacing(8),
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center"
+  },
+  form: {
+    width: "100%", // Fix IE 11 issue.
+    marginTop: theme.spacing(1)
+  },
+  submit: {
+    margin: theme.spacing(3, 0, 3)
+  },
+  error: {
+    color: "red",
+    fontSize: "small",
+    margin: theme.spacing(0, 0, 2)
+  }
+});
+
+const INITIAL_STATE = {
+  email: "",
+  error: null
+};
 
 class PasswordChange extends Component {
-  state = {
-    email: ''
-  }
-
   constructor(props) {
     super(props);
+    this.state = { ...INITIAL_STATE };
   }
 
   onSubmit = event => {
-    event.preventDefault()
-    this.props.resetPassword(this.state.email)
+    event.preventDefault();
+    this.props.resetPassword(this.state.email);
   };
 
   onChange = event => {
-    this.setState({ [event.target.name]: event.target.value })
+    this.setState({ [event.target.name]: event.target.value });
   };
 
   render() {
-    const { email } = this.state
-    const { error } = this.props
+    const { email } = this.state;
+    const { classes, error } = this.props;
 
-    const isInvalid = email === '';
-    if (error === 'success') return <Redirect to={ROUTES.SIGN_IN}> </Redirect>
+    const isInvalid = email === "";
+
+    if (error === "success") return <Redirect to={ROUTES.SIGN_IN}> </Redirect>;
 
     return (
       <div id="centered-fixed-masthead">
-        <div className="row h-100 justify-content-center align-items-center">
-          <Card style={{ width:'25rem' }}>
-            <Card.Header as="h3" style={{ color: 'black', textAlign: 'left'}}>
-              Password Reset
-            </Card.Header>
-            <Card.Body>
-              <Form onSubmit={this.onSubmit}>
-                <Form.Group controlId="formResetPassword">
-                  <Form.Control name="email" value={email} onChange={this.onChange} type="email" placeholder="Email"/>
-                </Form.Group>
-                {error && <Card.Text style={{ color: 'red', fontSize:'small'}}>{error.message}</Card.Text>}
-                <Button disabled={isInvalid} type="submit" variant='primary' block>Reset</Button>
-              </Form> 
-            </Card.Body>
-          </Card>
-        </div>
+        <Card className={classes.card}>
+          <Container component="main" maxWidth="xs">
+            <CssBaseline />
+            <div className={classes.paper}>
+              <Typography component="h1" variant="h5">
+                Reset Password
+              </Typography>
+            </div>
+            <Form className={classes.form} onSubmit={this.onSubmit}>
+              <Form.Group controlId="formResetPassword">
+                <Form.Control
+                  name="email"
+                  value={email}
+                  onChange={this.onChange}
+                  type="email"
+                  placeholder="Email"
+                />
+              </Form.Group>
+              {error && (
+                <Typography className={classes.error}>
+                  {error.message}
+                </Typography>
+              )}
+              <Button
+                disabled={isInvalid}
+                type="submit"
+                variant="primary"
+                block
+              >
+                Reset
+              </Button>
+            </Form>
+          </Container>
+        </Card>
       </div>
     );
   }
 }
 
-export default PasswordChange;
+export default withStyles(styles)(PasswordChange);

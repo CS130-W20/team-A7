@@ -39,7 +39,7 @@ code {
   height: 100vh;
   color: white;
   overflow: scroll;
-  background-repeat: repeat-y;
+  background-repeat: no-repeat;
   background-attachment: fixed;
   -webkit-background-size: cover;
   -moz-background-size: cover;
