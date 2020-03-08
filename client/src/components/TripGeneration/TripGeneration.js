@@ -3,6 +3,8 @@ import React, { Component } from 'react';
 import GeneratedTrip from './GeneratedTrip';
 import Price from './Price';
 import Quiz from './Quiz';
+import Payment from './Payment';
+import TripBooked from '../TripBooked';
 
 const INITIAL_STATE = {
   step: 1,
@@ -155,7 +157,11 @@ export class UserForm extends Component {
         );
       case 3:
         return (
-          <GeneratedTrip values={values} />
+          <Payment nextStep={this.nextStep}/>
+        );
+      case 4:
+        return (
+          <TripBooked />
         );
     }
   }

@@ -112,7 +112,6 @@ const styles = (theme) => ({
 });
 
 const marks = [
- 
   {
     value: 0,
     label: '$250',
