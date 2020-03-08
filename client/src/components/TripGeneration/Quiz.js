@@ -17,14 +17,9 @@ import Autocomplete from '@material-ui/lab/Autocomplete';
 import {airports} from "./airport.js";
 import Card from '@material-ui/core/Card'
 
-// import { BrowserRouter as Router, Redirect, Route, Switch, Link, NavLink } from 'react-router-dom';
-// import * as ROUTES from '../../constants/routes';
-// import Price from './Price';
-
 const ColoredLine = ({ color }) => (
   <hr
     style={{
-      //marginBottom: ,
       color: color,
       backgroundColor: color,
       height: 1

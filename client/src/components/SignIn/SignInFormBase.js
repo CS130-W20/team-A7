@@ -148,4 +148,5 @@ class SignInFormBase extends Component {
 }
 
 export { SignInFormBase, styles };
+
 export default SignInFormBase;
