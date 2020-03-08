@@ -6,19 +6,37 @@ import Card from '@material-ui/core/Card'
 import { withStyles } from '@material-ui/core/styles';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import Grid from '@material-ui/core/Grid';
+import Typography from '@material-ui/core/Typography';
+import Container from '@material-ui/core/Container';
+import CssBaseline from '@material-ui/core/CssBaseline';
 
 const MAX_TRIES = 5;
 
 const styles = (theme) => ({
   card: {
     marginTop: 50,
-    maxWidth: 500,
+    width: 500,
+    minHeight: 250,
     margin: "auto",
     transition: "0.3s",
     boxShadow: "0 8px 40px -12px rgba(0,0,0,0.3)",
     "&:hover": {
       boxShadow: "0 16px 70px -12.125px rgba(0,0,0,0.3)"
     }
+  },
+  item: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  paper: {
+    marginTop: theme.spacing(8),
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+  },
+  circle: {
+    marginTop: 30
   }
 });
 
@@ -33,14 +51,17 @@ class GeneratingCard extends Component {
     return (
       <div id="centered-fixed-masthead">
         <Card className={styles.card}>
-          <Grid container spacing={3}>
-            <Grid item xs>
-              <p>Generating...</p>
-            </Grid>
-            <Grid item xs>
-              <CircularProgress />
-            </Grid>
-          </Grid>
+          <Container component="main" maxWidth="xs">
+            <CssBaseline />
+            <div className={styles.paper}>
+              <Typography component="h1" variant="h5">
+                Generating...
+              </Typography>
+            </div>
+          </Container>
+          <div className={styles.item}>
+            <CircularProgress className={styles.circle}/>
+          </div>
         </Card>
       </div>
     );
