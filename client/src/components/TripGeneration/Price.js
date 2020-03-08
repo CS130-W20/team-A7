@@ -139,11 +139,13 @@ class Price extends Component {
     var airportPlace = null;
     var apiErr = null;
     var cheapestIndex = 0;
-    
+    var internationalIndex = Math.floor(Math.random() * 8);
+    var internationalLocations = ["FR", "UK", "ES", "BE", "DK", "IT", "JP", "PL"]
     function startOutFlight() {
       console.log("ATTEMPTING TRIP GENERATION", cheapestIndex);
       return new Promise((resolve, reject) => {
-        var outDestination = values.withinUS ? "US" : "anywhere";
+        var outDestination = values.withinUS ? "US" : (values.international ? internationalLocations[internationalIndex] : "anywhere");
+        
         var unirest = require("unirest");
  
         var outFlightUrl = "https://skyscanner-skyscanner-flight-search-v1.p.rapidapi.com/apiservices/browsequotes/v1.0/US/USD/en-US/" + values.departureAirport.code + "-sky/" + outDestination + "/" + departDate;
