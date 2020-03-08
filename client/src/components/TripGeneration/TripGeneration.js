@@ -21,7 +21,8 @@ const INITIAL_STATE = {
   destination: null,
   arrivalAirport: null,
   hotel: null,
-  totalPrice: null
+  totalPrice: null,
+  apiErr: null
 };
 
 export class UserForm extends Component {
@@ -107,10 +108,16 @@ export class UserForm extends Component {
     });
   };
   
+  setApiErr = (err) => {
+    this.setState({
+      apiErr : err
+    });  
+  };
+  
   render() {
     const { step } = this.state;
-    const { departureAirport, departureDate, returnDate, cheapest, underBudget, farthest, withinUS, international, outAirline, inAirline, destination, arrivalAirport, hotel, totalPrice } =  this.state;
-    const values = { departureAirport, departureDate, returnDate, cheapest, underBudget, farthest, withinUS, international, outAirline, inAirline, destination, arrivalAirport, hotel, totalPrice };
+    const { departureAirport, departureDate, returnDate, cheapest, underBudget, farthest, withinUS, international, outAirline, inAirline, destination, arrivalAirport, hotel, totalPrice, apiErr } =  this.state;
+    const values = { departureAirport, departureDate, returnDate, cheapest, underBudget, farthest, withinUS, international, outAirline, inAirline, destination, arrivalAirport, hotel, totalPrice, apiErr };
   
     switch (step) {
       case 1:
@@ -128,6 +135,7 @@ export class UserForm extends Component {
             prevStep={this.prevStep}
             handleChange={this.handleChange}
             setTripData={this.setTripData}
+            setApiErr={this.setApiErr}
             values={values}
           />
         );
