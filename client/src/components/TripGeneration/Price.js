@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import Button from '@material-ui/core/Button';
 import BookedTrip, {Flight, HotelStay} from '../MyTrips/BookedTrips/BookedTrip.js';
-import SavedTrip from '../MyTrips/SavedTrips/SavedTrip.js';
 import Card from '@material-ui/core/Card'
 import { withStyles } from '@material-ui/core/styles';
 import CircularProgress from '@material-ui/core/CircularProgress';
@@ -100,15 +99,15 @@ class GeneratedCard extends Component {
             Return Date: { values.returnDate.toDateString() } <br />
             Price: {values.totalPrice} <br />
           </div>
+          <Button label="book"
+          type="submit"
+          disabled={0}
+          onClick={this.onClick}
+          fullWidth
+          variant="contained">
+            Book
+          </Button>
         </Card>
-        <Button label="book"
-        type="submit"
-        disabled={0}
-        onClick={this.onClick}
-        fullWidth
-        variant="contained">
-          Book
-        </Button>
       </div>
     );
   }
@@ -434,10 +433,12 @@ class Price extends Component {
     
     return (
       <div>
-        { this.state.totalPrice === null ? (this.state.error === null ? <GeneratingCard styles={classes}/> : this.state.error) : (this.state.error === null ? <GeneratedCard styles={classes} values={values}/> : this.state.error) }
+        { values.totalPrice === null ? (values.apiErr === null ? <GeneratingCard styles={classes}/> : values.apiErr) : (values.apiErr === null ? <GeneratedCard styles={classes} values={values}/> : values.apiErr) }
       </div>
     );
   }
 }
+
+export { GeneratingCard, GeneratedCard }
 
 export default withStyles(styles)(Price);
