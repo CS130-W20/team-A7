@@ -1,10 +1,120 @@
 import React, { Component } from 'react';
 import Button from '@material-ui/core/Button';
 import BookedTrip, {Flight, HotelStay} from '../MyTrips/BookedTrips/BookedTrip.js';
-import SavedTrip from '../MyTrips/SavedTrips/SavedTrip.js';
+import Card from '@material-ui/core/Card'
+import { withStyles } from '@material-ui/core/styles';
+import CircularProgress from '@material-ui/core/CircularProgress';
+import Typography from '@material-ui/core/Typography';
+import Container from '@material-ui/core/Container';
+import CssBaseline from '@material-ui/core/CssBaseline';
+
 const MAX_TRIES = 5;
 
+const styles = (theme) => ({
+  card: {
+    marginTop: 50,
+    width: 500,
+    minHeight: 250,
+    margin: "auto",
+    transition: "0.3s",
+    boxShadow: "0 8px 40px -12px rgba(0,0,0,0.3)",
+    "&:hover": {
+      boxShadow: "0 16px 70px -12.125px rgba(0,0,0,0.3)"
+    }
+  },
+  item: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  paper: {
+    marginTop: theme.spacing(8),
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+  },
+  circle: {
+    marginTop: 30
+  }
+});
+
+class GeneratingCard extends Component {
+  constructor(props) {
+    super(props);
+  }
+
+  render() {
+    const { styles } = this.props;
+
+    return (
+      <div id="centered-fixed-masthead">
+        <Card className={styles.card}>
+          <Container component="main" maxWidth="xs">
+            <CssBaseline />
+            <div className={styles.paper}>
+              <Typography component="h1" variant="h5">
+                Generating...
+              </Typography>
+            </div>
+          </Container>
+          <div className={styles.item}>
+            <CircularProgress className={styles.circle}/>
+          </div>
+        </Card>
+      </div>
+    );
+  }
+}
+
+class GeneratedCard extends Component {
+  constructor(props) {
+    super(props);
+  }
+
+  onClick = e => {
+    e.preventDefault();
+    // Writing to firebase
+    const { values } = this.props;
+    console.log("saved info: ", values.generatedTrip);
+    console.log("saved info: ", values.hotel);
+  }
+
+  render() {
+    const { styles, values } = this.props;
+
+    return (
+      <div id="centered-fixed-masthead">
+        <Card className={styles.card}>
+          <Container component="main" maxWidth="xs">
+            <CssBaseline />
+            <div className={styles.paper}>
+              <Typography component="h1" variant="h5">
+                Trip Details...
+              </Typography>
+            </div>
+          </Container>
+          <div className={styles.item}>
+            Departure Airport: {values.departureAirport.code} <br />
+            Departure Date: { values.departureDate.toDateString() } <br />
+            Return Date: { values.returnDate.toDateString() } <br />
+            Price: {values.totalPrice} <br />
+          </div>
+          <Button label="book"
+          type="submit"
+          disabled={0}
+          onClick={this.onClick}
+          fullWidth
+          variant="contained">
+            Book
+          </Button>
+        </Card>
+      </div>
+    );
+  }
+}
+
 class Price extends Component {
+
   constructor(props) {
     super(props);
     this.state = {
@@ -18,7 +128,6 @@ class Price extends Component {
     this.props.nextStep();
   };
   
-  
   componentDidMount() {
     const { values, setTripData, setApiErr, classes } = this.props;
     var tripDestination = "";
@@ -26,23 +135,24 @@ class Price extends Component {
     departDate = departDate.slice(0,10);
     var returnDate = values.returnDate.toISOString();
     returnDate = returnDate.slice(0, 10);
-    console.log(departDate);
-    console.log(returnDate);
-    //Default value so the API request doesn't crash the mf webpage
+    // Default value so the API request doesn't crash the mf webpage
     var airportPlace = null;
     var apiErr = null;
     var cheapestIndex = 0;
-    
+    var internationalIndex = Math.floor(Math.random() * 8);
+    var internationalLocations = ["FR", "UK", "ES", "BE", "DK", "IT", "JP", "PL"]
     function startOutFlight() {
       console.log("ATTEMPTING TRIP GENERATION", cheapestIndex);
       return new Promise((resolve, reject) => {
-        var outDestination = ((values.destination === 'withinUS') ? "US" : "anywhere");
+
+        var outDestination = ((values.destination === 'withinUS') ? "US" : (values.international ? internationalLocations[internationalIndex] : "anywhere"));
+        
         var unirest = require("unirest");
  
         var outFlightUrl = "https://skyscanner-skyscanner-flight-search-v1.p.rapidapi.com/apiservices/browsequotes/v1.0/US/USD/en-US/" + values.departureAirport.code + "-sky/" + outDestination + "/" + departDate;
         var outFlightReq = unirest("GET", outFlightUrl);
            
-        //Leaving this blank ensures we get a one-way flight. The API is crap and doesn't guarantee if it returns one-way or two-way flights so this is a precaution!
+        // Leaving this blank ensures we get a one-way flight. The API is crap and doesn't guarantee if it returns one-way or two-way flights so this is a precaution!
         outFlightReq.query({
           "inboundpartialdate": ""
         });
@@ -64,8 +174,8 @@ class Price extends Component {
             apiErr = "No results found. Please try new flight information."
             resolve(undefined);
           }
-                
-          //Order the flights by price
+  
+          // Order the flights by price
           quotes.sort((a, b) => (a.MinPrice > b.MinPrice) ? 1 : -1);
         
           //Get the index of which entry we should use. If cheapest selected take the first entry b/c it's ordered.
@@ -321,43 +431,17 @@ class Price extends Component {
     attemptTrip().then(() => console.log("Finishing attempts to generate a trip."));
   }
 
-  onClick = e => {
-    e.preventDefault();
-    // Writing to firebase
-    const { values } = this.props;
-    console.log("saved info: ", values.generatedTrip);
-    console.log("saved info: ", values.hotel);
-  }
-
   render() {
-    const { values, handleChange, classes } = this.props;
-    const isInvalid =
-      values.apiErr !== null ||
-      values.totalPrice === null;
+    const { classes, values } = this.props;
     
     return (
       <div>
-        <h1> Price for... </h1>
-        { values.departureAirport.code } <br/>
-        { values.departureDate.toDateString() } <br/>
-        { values.returnDate.toDateString() } <br/>
-        { ((values.price === 'cheapest') ? "cheapest\n" : "") } <br/>
-        { ((values.price === 'anyPrice') ? "any price\n" : "") } <br/>
-        { ((values.price === 'underBudget') ? "under budget\n" : "") } <br/>
-        { ((values.destination === 'anyDest') ? "surprise bitch\n" : "") } <br/>
-        { ((values.destination === 'withinUS') ? "within u.s.\n" : "") } <br/>
-        { ((values.destination === 'international') ? "international\n" : "") } <br/>
-        <p>{this.state.totalPrice === null ? (values.apiErr === null? "Generating..." : values.apiErr) : (values.apiErr === null? values.totalPrice : values.apiErr)}</p>
-        <Button label="book"
-        type="submit"
-        disabled={isInvalid}
-        onClick={this.onClick}
-        fullWidth
-        variant="contained">
-          Book
-        </Button>
+        { values.totalPrice === null ? (values.apiErr === null ? <GeneratingCard styles={classes}/> : values.apiErr) : (values.apiErr === null ? <GeneratedCard styles={classes} values={values}/> : values.apiErr) }
       </div>
     );
   }
 }
-export default Price;
+
+export { GeneratingCard, GeneratedCard }
+
+export default withStyles(styles)(Price);
