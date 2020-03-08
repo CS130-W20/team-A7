@@ -1,15 +1,15 @@
 import React, { Component } from 'react';
+import Button from '@material-ui/core/Button';
+import BookedTrip, {Flight, HotelStay} from '../MyTrips/BookedTrips/BookedTrip.js';
+import SavedTrip from '../MyTrips/SavedTrips/SavedTrip.js';
 const MAX_TRIES = 5;
 
 class Price extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      outFlight : null,
-      inFlight : null,
+      trip: null,
       hotel : null,
-      totalPrice : null,
-      error : null,
     }
   }
   
@@ -21,7 +21,6 @@ class Price extends Component {
   
   componentDidMount() {
     const { values, setTripData, setApiErr, classes } = this.props;
-    var totalPrice = 0;
     var tripDestination = "";
     var departDate = values.departureDate.toISOString();
     departDate = departDate.slice(0,10);
@@ -33,7 +32,6 @@ class Price extends Component {
     var airportPlace = null;
     var apiErr = null;
     var cheapestIndex = 0;
-    var validTrip = false;
     
     function startOutFlight() {
       console.log("ATTEMPTING TRIP GENERATION", cheapestIndex);
@@ -42,7 +40,6 @@ class Price extends Component {
         var unirest = require("unirest");
  
         var outFlightUrl = "https://skyscanner-skyscanner-flight-search-v1.p.rapidapi.com/apiservices/browsequotes/v1.0/US/USD/en-US/" + values.departureAirport.code + "-sky/" + outDestination + "/" + departDate;
-        var totalPrice = 0;
         var outFlightReq = unirest("GET", outFlightUrl);
            
         //Leaving this blank ensures we get a one-way flight. The API is crap and doesn't guarantee if it returns one-way or two-way flights so this is a precaution!
@@ -235,30 +232,72 @@ class Price extends Component {
         return startHotel(outFlight, inFlight, placeId).then(hotelResult => [outFlight, inFlight, placeId, hotelResult]);
       }).then(function([outFlight, inFlight, placeId, hotelResult]) {
         return getAllInfo(outFlight, inFlight, placeId, hotelResult);
-      }).then(trip => {
-        console.log("outbound flight");
-        console.log(trip[0]);
-        console.log("inbound flight");
-        console.log(trip[1]);
-        console.log(trip[2]);
-        console.log("hotel information");
-        console.log(trip[3]);
-        if ((trip[0] === undefined) || (trip[1].chosenInQuote === undefined) || (trip[3] === undefined)) {
+      }).then(results => {
+        if ((typeof results[0] === 'undefined') || (typeof results[1].chosenInQuote === 'undefined') || (typeof results[3] === 'undefined')) {
           setApiErr(apiErr);
           return;
         }
-        var price = trip[0].MinPrice + trip[1].chosenInQuote.MinPrice + (trip[3].hotelResult.price * trip[3].numNights)
-        var outAirline = trip[0].carriers.find(carr => carr.CarrierId == trip[0].OutboundLeg.CarrierIds[0]); 
-        console.log(outAirline.Name);
-        var inAirline = trip[1].inCarriers.carriers.find(carr => carr.CarrierId == trip[1].chosenInQuote.OutboundLeg.CarrierIds[0]);
-        console.log(inAirline.Name);
-        var destination = trip[3].hotelResult.location_string;
-        console.log(destination);
-        var hotelName = trip[3].hotelResult.name;
-        console.log(hotelName);
-        var airport = trip[0].airport.IataCode;
-        console.log(airport);
-        setTripData(outAirline, inAirline, destination, airport, hotelName, price);
+
+        console.log("outbound flight: ", results[0].OutboundLeg.DepartureDate);
+        console.log("inbound flight: ", results[1].chosenInQuote.OutboundLeg.DepartureDate);
+
+        // Creating the trip object
+        var departureDate = new Date(results[0].OutboundLeg.DepartureDate);
+        var departureAirline = results[0].carriers.find(carr => carr.CarrierId == results[0].OutboundLeg.CarrierIds[0]).Name;
+        var outboundDepartureAirportCode = values.departureAirport.code;
+        var outboundDepartureAirportName = values.departureAirport.name;
+        var outboundDepartureCity = values.departureAirport.city;
+        var outboundDestinationAirportCode = results[0].airport.IataCode;
+        var outboundDestinationAirportName = results[0].airport.Name;
+        var outboundDestinationCity = results[0].airport.CityName;
+        var departureFlight = new Flight(
+          outboundDepartureCity,
+          outboundDestinationCity,
+          departureDate,
+          departureAirline,
+          {
+            name: outboundDepartureAirportName,
+            code: outboundDepartureAirportCode,
+          },
+          {
+            name: outboundDestinationAirportName,
+            code: outboundDestinationAirportCode,
+          },
+        );
+        
+        // Created the Trip object
+        var returnDate = new Date(results[1].chosenInQuote.OutboundLeg.DepartureDate);
+        var returnAirline = results[1].inCarriers.carriers.find(carr => carr.CarrierId == results[1].chosenInQuote.OutboundLeg.CarrierIds[0]).Name;
+        var inboundDepartureAirportName = results[0].airport.Name;
+        var inboundDepartureAirportCode = results[0].airport.IataCode;
+        var inboundDepartureCity = results[0].airport.CityName;
+        var inboundDestinationAirportCode = values.departureAirport.code;
+        var inboundDestinationAirportName = values.departureAirport.name;
+        var inboundDestinationCity = values.departureAirport.city;
+        var returnFlight = new Flight(
+          inboundDepartureCity,
+          inboundDestinationCity,
+          returnDate,
+          returnAirline,
+          {
+            name: inboundDepartureAirportName,
+            code: inboundDepartureAirportCode,
+          },
+          {
+            name: inboundDestinationAirportName,
+            code: inboundDestinationAirportCode,
+          },
+        );
+
+        var hotelStay = new HotelStay(results[3].hotelResult, results[3].numNights);
+        var trip = new BookedTrip('BookedTrip1', departureFlight, returnFlight, hotelStay);
+        
+        // Calculating total price
+        var price = results[0].MinPrice + results[1].chosenInQuote.MinPrice + (results[3].hotelResult.price * results[3].numNights)
+
+        // Set the new state
+        setTripData(trip, hotelStay, price);
+        
         cheapestIndex = MAX_TRIES;
       });
     }
@@ -282,8 +321,20 @@ class Price extends Component {
     attemptTrip().then(() => console.log("Finishing attempts to generate a trip."));
   }
 
+  onClick = e => {
+    e.preventDefault();
+    // Writing to firebase
+    const { values } = this.props;
+    console.log("saved info: ", values.generatedTrip);
+    console.log("saved info: ", values.hotel);
+  }
+
   render() {
     const { values, handleChange, classes } = this.props;
+    const isInvalid =
+      values.apiErr !== null ||
+      values.totalPrice === null;
+    
     return (
       <div>
         <h1> Price for... </h1>
@@ -295,7 +346,15 @@ class Price extends Component {
         { (values.farthest ? "farthest\n" : "") } <br/>
         { (values.withinUS ? "within u.s.\n" : "") } <br/>
         { (values.international ? "international\n" : "") } <br/>
-        <p>{ values.totalPrice === null ? (values.apiErr === null? "Generating..." : values.apiErr) : (values.apiErr === null? values.totalPrice : values.apiErr) } </p>
+        <p>{this.state.totalPrice === null ? (values.apiErr === null? "Generating..." : values.apiErr) : (values.apiErr === null? values.totalPrice : values.apiErr)}</p>
+        <Button label="book"
+        type="submit"
+        disabled={isInvalid}
+        onClick={this.onClick}
+        fullWidth
+        variant="contained">
+          Book
+        </Button>
       </div>
     );
   }
