@@ -82,12 +82,25 @@ class GeneratedCard extends Component {
   }
 
   render() {
-    const { styles } = this.props;
+    const { styles, values } = this.props;
 
     return (
       <div id="centered-fixed-masthead">
         <Card className={styles.card}>
-          <p>Congratulations your trip is ...</p>
+          <Container component="main" maxWidth="xs">
+            <CssBaseline />
+            <div className={styles.paper}>
+              <Typography component="h1" variant="h5">
+                Trip Details...
+              </Typography>
+            </div>
+          </Container>
+          <div className={styles.item}>
+            Departure Airport: {values.departureAirport.code} <br />
+            Departure Date: { values.departureDate.toDateString() } <br />
+            Return Date: { values.returnDate.toDateString() } <br />
+            Price: {values.totalPrice} <br />
+          </div>
         </Card>
         <Button label="book"
         type="submit"
@@ -418,11 +431,11 @@ class Price extends Component {
   }
 
   render() {
-    const { classes } = this.props;
+    const { classes, values } = this.props;
     
     return (
       <div>
-        { this.state.totalPrice === null ? (this.state.error === null ? <GeneratingCard styles={classes}/> : this.state.error) : (this.state.error === null ? <GeneratedCard styles={this.classes}/> : this.state.error) }
+        { this.state.totalPrice === null ? (this.state.error === null ? <GeneratingCard styles={classes}/> : this.state.error) : (this.state.error === null ? <GeneratedCard styles={classes} values={values}/> : this.state.error) }
       </div>
     );
   }
