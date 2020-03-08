@@ -144,7 +144,8 @@ class Price extends Component {
     function startOutFlight() {
       console.log("ATTEMPTING TRIP GENERATION", cheapestIndex);
       return new Promise((resolve, reject) => {
-        var outDestination = values.withinUS ? "US" : (values.international ? internationalLocations[internationalIndex] : "anywhere");
+
+        var outDestination = ((values.destination === 'withinUS') ? "US" : (values.international ? internationalLocations[internationalIndex] : "anywhere"));
         
         var unirest = require("unirest");
  
@@ -178,7 +179,7 @@ class Price extends Component {
           quotes.sort((a, b) => (a.MinPrice > b.MinPrice) ? 1 : -1);
         
           //Get the index of which entry we should use. If cheapest selected take the first entry b/c it's ordered.
-          var tripIndex = values.cheapest ? cheapestIndex : Math.floor(Math.random() * numResults);
+          var tripIndex = ((values.price === 'cheapest') ? cheapestIndex : Math.floor(Math.random() * numResults));
           var chosenQuote = quotes[tripIndex];
           chosenQuote.carriers = carriers;
           airportPlace = res.body.Places.find(element => element.PlaceId == chosenQuote.OutboundLeg.DestinationId);
