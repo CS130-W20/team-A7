@@ -99,16 +99,6 @@ class GeneratedCard extends Component {
     super(props);
   }
 
-  onClick = e => {
-    e.preventDefault();
-    // Writing to firebase
-    const { values } = this.props;
-    console.log("saved info: ", values.generatedTrip);
-    console.log("saved info: ", values.hotel);
-
-    this.props.nextStep();
-  }
-
   writeToBookedTrips(userId, newTrip) {
     const tripsRef = this.props.firebase.bookedTrips();
     const newTripRef = tripsRef.push();
@@ -146,7 +136,7 @@ class GeneratedCard extends Component {
   saveTrip = e => {
     e.preventDefault();
     const { values, authUser } = this.props;
-    if (authUser !== null) {
+    if (true || (authUser !== null)) {
       if (typeof authUser.uid !== 'undefined' && authUser.uid !== null) {
         const userId = authUser.uid;
         // Writing to firebase
@@ -165,7 +155,7 @@ class GeneratedCard extends Component {
   bookTrip = e => {
     e.preventDefault();
     const { values, authUser } = this.props;
-    if (authUser !== null) {
+    if (true || (authUser !== null)) {
       if (typeof authUser.uid !== 'undefined' && authUser.uid !== null) {
         const userId = authUser.uid;
         // Writing to firebase

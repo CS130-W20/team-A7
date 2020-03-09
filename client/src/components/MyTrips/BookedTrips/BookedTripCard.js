@@ -11,6 +11,10 @@ import CardMedia from "@material-ui/core/CardMedia";
 import CardContent from "@material-ui/core/CardContent";
 import Typography from "@material-ui/core/Typography";
 import ButtonBase from '@material-ui/core/ButtonBase';
+import FlightTakeoffIcon from '@material-ui/icons/FlightTakeoff';
+import FlightLandIcon from '@material-ui/icons/FlightLand';
+import HotelIcon from '@material-ui/icons/Hotel';
+import LocalActivityIcon from '@material-ui/icons/LocalActivity';
 
 const styles = theme => ({
   root: {
@@ -47,28 +51,56 @@ const styles = theme => ({
 
 function SimpleDialog(props) {
   
-  const { onClose,  open } = props;
+  const { onClose,  open , details, classes} = props;
+
   const handleClose = () => {
     onClose();
   };
 
+  console.log('debug: ', details);
+
   return (
     <Dialog onClose={handleClose} aria-labelledby="simple-dialog-title" open={open} maxWidth="md" fullWidth="true">
-      <DialogTitle id="simple-dialog-title">Trip Details</DialogTitle>
+      <DialogTitle id="simple-dialog-title">Trip Details - {details.departureFlight.destinationCity}</DialogTitle>
       <List>
           <ListItem >
-            <ListItemText primary="Outbound Flight: Airport - Date" />
+          <FlightTakeoffIcon />  <ListItemText  primary={"Outbound Flight: "} secondary={details.departureFlight.departureCity + " (" + details.departureFlight.departureAirport.code + ") to " + details.departureFlight.destinationCity + " (" + details.departureFlight.destinationAirport.code + ")   -   " + details.departureFlight.departureDate} />
           </ListItem>
           <ListItem>
-          <ListItemText primary="Return Flight: Airport - Date" />
+          <FlightLandIcon /><ListItemText primary="Return Flight: " secondary={details.returnFlight.departureCity + " (" + details.returnFlight.departureAirport.code + ") to " + details.returnFlight.destinationCity + " (" + details.returnFlight.destinationAirport.code + ")   -   " + details.returnFlight.departureDate} />
           </ListItem>
           <ListItem>
-          <ListItemText primary="Hotel: Motel 6 - 5 stars " />
+          <HotelIcon /><ListItemText primary="Hotel: " secondary = {details.hotelStay.hotelResult.name +"  -  "+ details.hotelStay.hotelResult.rating +" star hotel"}   />
           </ListItem>
           <ListItem>
-          <ListItemText primary="Things to do in [this city]:" />
+          <LocalActivityIcon/><ListItemText primary={"Things to do in " +  details.departureFlight.destinationCity + ": "} />
           </ListItem>
       </List>
+      <Card className={classes.root}>
+ 
+        <CardMedia
+          className={classes.media}
+          image={
+            "https://upload.wikimedia.org/wikipedia/commons/d/d6/London-Eye-2009.JPG"
+          }
+        />
+        <div className={classes.tripInfo}>
+          <CardContent>
+            <Typography gutterBottom variant="h4">
+              {details.name}
+            </Typography>
+            <div className={classes.details}>
+              <Typography variant="body1" gutterBottom>
+                {details.departureFlight.departureCity} to {details.departureFlight.destinationCity}
+              </Typography>
+              <Typography variant="body1" color="textSecondary">
+                <i> {details.departureFlight.departureDate} to {details.returnFlight.departureDate} </i>
+              </Typography>
+            </div>
+          </CardContent>
+        </div>
+        
+      </Card>
     </Dialog>
   );
 }
@@ -89,7 +121,8 @@ class BookedTripCard extends Component {
 
   render() {
     
-  const { classes } = this.props;
+  const { classes, trip} = this.props;
+
   const handleClickOpen = () => {
     this.setState({
       open: true
@@ -103,11 +136,10 @@ class BookedTripCard extends Component {
 
     return (
       <div>
-      <SimpleDialog  open={this.state.open} onClose={handleClose} />
+      <SimpleDialog  open={this.state.open} onClose={handleClose} details={trip} classes={classes}/>
       
       <Card className={classes.root}>
         <ButtonBase
-          className={this.props.classes.cardAction}
           onClick={handleClickOpen}
         >
         <CardMedia
