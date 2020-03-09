@@ -126,9 +126,20 @@ class BookedTripCard extends Component {
     };
   }
 
+  setDestinationImage(url) {
+    if (typeof url !== 'undefined' || url !== null) {
+      console.log('image');
+      console.log(url);
+      this.setState({
+        destinationImage: url,
+      });
+    }
+  }
+
   componentDidMount() {
-    this.setState({
-      destinationImage: getCityImage(this.props.trip.departureFlight.destinationCity)
+    const setDestinationImage_c = ((url) => this.setDestinationImage(url));
+    getCityImage(this.props.trip.departureFlight.destinationCity).then(function (url) {
+      setDestinationImage_c(url)
     });
   }
 

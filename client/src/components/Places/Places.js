@@ -16,18 +16,27 @@ export const getCityImage = async (cityName) => {
     var proxyurl = "https://cors-anywhere.herokuapp.com/";
     var apiKey = process.env.REACT_APP_PLACES_API_KEY;
     // Search using Google Places Search with cityName
-    fetch(proxyurl + 'https://maps.googleapis.com/maps/api/place/findplacefromtext/json?key=' + apiKey + '&input=' + cityName + '&inputtype=textquery').then((response) => {
-        // Finds the placeId based on the name of destination
-        return response.json()
-    }).then((response) => {
-        var placeId = response.candidates[0].place_id;
-        fetch(proxyurl + 'https://maps.googleapis.com/maps/api/place/details/json?key=' + apiKey + '&place_id=' + placeId).then((response) => {
-            // Uses the placeId to get more information on place
-            return response.json();
+    
+    // Jair's shit
+    return new Promise(function (resolve, reject) {
+      try {
+        fetch(proxyurl + 'https://maps.googleapis.com/maps/api/place/findplacefromtext/json?key=' + apiKey + '&input=' + cityName + '&inputtype=textquery').then((response) => {
+          // Finds the placeId based on the name of destination
+          return response.json()
         }).then((response) => {
-            // Extracts the photoreference of the result
+          var placeId = response.candidates[0].place_id;
+          fetch(proxyurl + 'https://maps.googleapis.com/maps/api/place/details/json?key=' + apiKey + '&place_id=' + placeId).then((response) => {
+              // Uses the placeId to get more information on place
+              return response.json();
+          }).then((response) => {
+            // Extracts the photoreference of the result and returns the url
             var photoReference = response.result.photos[0].photo_reference;
-            return fetch(proxyurl + 'https://maps.googleapis.com/maps/api/place/photo?photoreference=' + photoReference + '&key=' + apiKey + '&maxheight=250');
-        })
-    })
+            resolve('https://maps.googleapis.com/maps/api/place/photo?photoreference=' + photoReference + '&key=' + apiKey + '&maxheight=250');
+          })
+        });  
+      } catch (e) {
+        reject(e)
+      }
+    });
+    //
 };
