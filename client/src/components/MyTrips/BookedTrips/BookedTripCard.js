@@ -15,6 +15,7 @@ import FlightTakeoffIcon from '@material-ui/icons/FlightTakeoff';
 import FlightLandIcon from '@material-ui/icons/FlightLand';
 import HotelIcon from '@material-ui/icons/Hotel';
 import LocalActivityIcon from '@material-ui/icons/LocalActivity';
+import Places from '../../Places/Places.js'
 
 const styles = theme => ({
   button: {

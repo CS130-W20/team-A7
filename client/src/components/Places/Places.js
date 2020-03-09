@@ -1,19 +1,34 @@
-import React, { Component } from 'react';
 
 class Places {
-  // This class definition is wrong but this is the general idea
 
-  // Given the lat/long of hotel returns a JSON object w/ nearby points of interest
-  async getPointsOfInterest(latitude, longitude) {
-    var unirest = require("unirest");
-    var proxyurl = "https://cors-anywhere.herokuapp.com/";
-    return fetch(proxyurl + 'https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=' + latitude + ',' + longitude + '&radius=7500&type=tourist_attraction&key=' + process.env.REACT_APP_PLACES_API_KEY); 
-  }
+    // Given the lat/long of hotel returns a JSON object w/ nearby points of interest
+    async getPointsOfInterest(latitude, longitude) {
+        var unirest = require("unirest");
+        var proxyurl = "https://cors-anywhere.herokuapp.com/";
+        return fetch(proxyurl + 'https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=' + latitude + ',' + longitude + '&radius=7500&type=tourist_attraction&key=' + process.env.REACT_APP_PLACES_API_KEY); 
+    }
 
-  // Given the lat/long returns image information 
-  getImage(lat, long) {
-    return;
-  }
+    // Given the lat/long returns image information 
+    async getImage(photoReference) {
+        var unirest = require("unirest");
+        var proxyurl = "https://cors-anywhere.herokuapp.com/";
+        return fetch(proxyurl + 'https://maps.googleapis.com/maps/api/place/photo?photoreference=' + photoReference + '&key=' + process.env.REACT_APP_PLACES_API_KEY + '&maxheight=250'); 
+    }
+
+    async getCityImage(cityName) {
+        var unirest = require("unirest");
+        var proxyurl = "https://cors-anywhere.herokuapp.com/";
+        // Search using Google Place Search with cityName
+        fetch(proxyurl + 'https://maps.googleapis.com/maps/api/place/findplacefromtext/json?key=' + process.env.REACT_APP_PLACES_API_KEY + '&input=' + cityName + '&inputtype=textquery').then
+
+        // Need to swap this out to get the place based on city string then the image using getImage
+        fetch(proxyurl + 'https://maps.googleapis.com/maps/api/place/details/json?key=' + process.env.REACT_APP_PLACES_API_KEY + '&').then(
+
+        )
+
+
+        return fetch(proxyurl + 'https://maps.googleapis.com/maps/api/place/photo?photoreference=' + photoReference + '&key=' + process.env.REACT_APP_PLACES_API_KEY + '&maxheight=250');
+    }
 
 };
 
