@@ -172,6 +172,9 @@ class GeneratedCard extends Component {
   }
 
   onClickRetakeQuiz = e => {
+    const { setTotalPrice , setApiErr } = this.props;
+    setTotalPrice(null);
+    setApiErr(null);
     e.preventDefault();
     this.props.goBack();
   }
