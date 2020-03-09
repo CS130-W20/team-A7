@@ -5,7 +5,7 @@ import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
 import CTAButton from '../../CTAButton/CTAButton';
 import FlightRoute from './FlightRoute';
-import * as ROUTES from '../../constants/routes';
+import * as ROUTES from '../../../constants/routes';
 
 const ColoredLine = ({ color }) => (
   <hr

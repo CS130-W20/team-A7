@@ -3,15 +3,16 @@ import BookedTrip, {Flight, HotelStay} from '../../MyTrips/BookedTrips/BookedTri
 import GeneratingCard from './GeneratingCard';
 import GeneratedCard from './GeneratedCard';
 import { compose } from 'recompose';
-import { withFirebase } from '../Firebase';
-import { AuthUserContext } from '../Session';
+import { withFirebase } from '../../Firebase';
+import { AuthUserContext } from '../../Session';
+import Criteria from '../../../models/Criteria';
+import SavedTrip from '../../MyTrips/SavedTrips/SavedTrip';
 
 import { withRouter } from 'react-router-dom';
 
 const MAX_TRIES = 5;
 
 class Price extends Component {
-
   constructor(props) {
     super(props);
     this.state = {
@@ -422,10 +423,10 @@ class Price extends Component {
   }
 
   render() {
-    const { classes, values, goBack, nextStep } = this.props;
+    const { values, goBack, nextStep } = this.props;
     let componentToRender;
     if (values.apiErr === null) {
-      componentToRender = values.totalPrice === null ? <GeneratingCard styles={classes}/> : <GeneratedCard authUser={this.state.authUser} history={this.props.history} firebase={this.props.firebase} styles={classes} values={values} goBack={goBack} nextStep={nextStep}/>;
+      componentToRender = values.totalPrice === null ? <GeneratingCard /> : <GeneratedCard authUser={this.state.authUser} history={this.props.history} firebase={this.props.firebase} values={values} goBack={goBack} nextStep={nextStep}/>;
     } else {
       componentToRender = values.apiErr;
     }
@@ -441,7 +442,6 @@ class Price extends Component {
 Price.contextType = AuthUserContext;
 
 const PriceComposed = compose(
-  withStyles(styles),
   withFirebase,
   withRouter,
 )(Price);
