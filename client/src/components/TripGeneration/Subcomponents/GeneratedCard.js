@@ -136,7 +136,7 @@ class GeneratedCard extends Component {
   saveTrip = e => {
     e.preventDefault();
     const { values, authUser } = this.props;
-    if (true || (authUser !== null)) {
+    if (authUser !== null) {
       if (typeof authUser.uid !== 'undefined' && authUser.uid !== null) {
         const userId = authUser.uid;
         // Writing to firebase
@@ -155,7 +155,7 @@ class GeneratedCard extends Component {
   bookTrip = e => {
     e.preventDefault();
     const { values, authUser } = this.props;
-    if (true || (authUser !== null)) {
+    if (authUser !== null) {
       if (typeof authUser.uid !== 'undefined' && authUser.uid !== null) {
         const userId = authUser.uid;
         // Writing to firebase
@@ -228,6 +228,7 @@ class GeneratedCard extends Component {
                 Retake Quiz
               </Button>
               <Button label="saveTrip"
+              disabled={this.props.authUser === null}
               type="submit"
               onClick={this.saveTrip}
               variant="contained">

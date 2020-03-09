@@ -1,10 +1,24 @@
-import React from 'react';
+import React, { Component } from 'react';
 import { withFirebase } from '../Firebase';
 import { Button } from '@material-ui/core';
+import { withRouter } from 'react-router-dom';
+import * as ROUTES from '../../constants/routes';
 
-const SignOutButton = ({ firebase }) => (
-  <Button style={{color: "white"}} onClick={firebase.doSignOut}>
-    Sign Out
-  </Button>
-);
-export default withFirebase(SignOutButton);
+class SignOutButton extends Component {
+  constructor(props) {
+    super(props);
+  }
+  onClick = () => {
+    this.props.firebase.doSignOut();
+    this.props.history.push(ROUTES.LANDING);
+  }
+  render() {
+    return (
+      <Button style={{color: "white"}} onClick={this.onClick}>
+        Sign Out
+      </Button>
+    );
+  }
+}
+
+export default withRouter(withFirebase(SignOutButton));

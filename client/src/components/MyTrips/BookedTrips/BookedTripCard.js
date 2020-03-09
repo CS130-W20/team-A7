@@ -52,6 +52,9 @@ const styles = theme => ({
   details: {
     marginLeft: theme.spacing(1),
   },
+  icon: {
+    marginRight: 20,
+  }
 });
 
 function SimpleDialog(props) {
@@ -62,23 +65,21 @@ function SimpleDialog(props) {
     onClose();
   };
 
-  console.log('debug: ', details);
-
   return (
     <Dialog onClose={handleClose} aria-labelledby="simple-dialog-title" open={open} maxWidth="md" fullWidth="true">
       <DialogTitle id="simple-dialog-title">Trip Details - {details.departureFlight.destinationCity}</DialogTitle>
       <List>
           <ListItem >
-          <FlightTakeoffIcon />  <ListItemText  primary={"Outbound Flight: "} secondary={details.departureFlight.departureCity + " (" + details.departureFlight.departureAirport.code + ") to " + details.departureFlight.destinationCity + " (" + details.departureFlight.destinationAirport.code + ")   -   " + details.departureFlight.departureDate} />
+          <FlightTakeoffIcon className={classes.icon} /> <ListItemText  primary={"Outbound Flight: "} secondary={details.departureFlight.departureCity + " (" + details.departureFlight.departureAirport.code + ") to " + details.departureFlight.destinationCity + " (" + details.departureFlight.destinationAirport.code + ")   -   " + details.departureFlight.departureDate} />
           </ListItem>
           <ListItem>
-          <FlightLandIcon /><ListItemText primary="Return Flight: " secondary={details.returnFlight.departureCity + " (" + details.returnFlight.departureAirport.code + ") to " + details.returnFlight.destinationCity + " (" + details.returnFlight.destinationAirport.code + ")   -   " + details.returnFlight.departureDate} />
+          <FlightLandIcon className={classes.icon} /> <ListItemText primary="Return Flight: " secondary={details.returnFlight.departureCity + " (" + details.returnFlight.departureAirport.code + ") to " + details.returnFlight.destinationCity + " (" + details.returnFlight.destinationAirport.code + ")   -   " + details.returnFlight.departureDate} />
           </ListItem>
           <ListItem>
-          <HotelIcon /><ListItemText primary="Hotel: " secondary = {details.hotelStay.hotelResult.name +"  -  "+ details.hotelStay.hotelResult.rating +" star hotel"}   />
+          <HotelIcon className={classes.icon} /> <ListItemText primary="Hotel: " secondary = {details.hotelStay.hotelResult.name +"  -  "+ details.hotelStay.hotelResult.rating +" star hotel"}   />
           </ListItem>
           <ListItem>
-          <LocalActivityIcon/><ListItemText primary={"Things to do in " +  details.departureFlight.destinationCity + ": "} />
+          <LocalActivityIcon className={classes.icon} /> <ListItemText primary={"Things to do in " +  details.departureFlight.destinationCity + ": "} />
           </ListItem>
       </List>
       <Card className={classes.root}>
@@ -153,11 +154,11 @@ class BookedTripCard extends Component {
             />
             <div>
               <CardContent>
-                <Typography variant="h4">
+                {/* <Typography variant="h4">
                   {this.props.trip.name}
-                </Typography>
+                </Typography> */}
                 <div className={classes.details}>
-                  <Typography variant="body1">
+                  <Typography style={{marginBottom: 10, marginTop: 20}} variant="h4">
                     {this.props.trip.departureFlight.departureCity} to {this.props.trip.departureFlight.destinationCity}
                   </Typography>
                   <Typography variant="body1" color="textSecondary">
