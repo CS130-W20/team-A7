@@ -1,10 +1,16 @@
 import React, { Component } from 'react';
-
+import PropTypes from 'prop-types';
+import ListItemText from '@material-ui/core/ListItemText';
+import DialogTitle from '@material-ui/core/DialogTitle';
+import Dialog from '@material-ui/core/Dialog';
+import List from '@material-ui/core/List';
+import ListItem from '@material-ui/core/ListItem';
 import { withStyles } from "@material-ui/core";
 import Card from "@material-ui/core/Card";
 import CardMedia from "@material-ui/core/CardMedia";
 import CardContent from "@material-ui/core/CardContent";
 import Typography from "@material-ui/core/Typography";
+import ButtonBase from '@material-ui/core/ButtonBase';
 
 const styles = theme => ({
   root: {
@@ -39,11 +45,71 @@ const styles = theme => ({
   },
 });
 
+function SimpleDialog(props) {
+  
+  const { onClose,  open } = props;
+  const handleClose = () => {
+    onClose();
+  };
+
+  return (
+    <Dialog onClose={handleClose} aria-labelledby="simple-dialog-title" open={open} maxWidth="md" fullWidth="true">
+      <DialogTitle id="simple-dialog-title">Trip Details</DialogTitle>
+      <List>
+          <ListItem >
+            <ListItemText primary="Outbound Flight: Airport - Date" />
+          </ListItem>
+          <ListItem>
+          <ListItemText primary="Return Flight: Airport - Date" />
+          </ListItem>
+          <ListItem>
+          <ListItemText primary="Hotel: Motel 6 - 5 stars " />
+          </ListItem>
+          <ListItem>
+          <ListItemText primary="Things to do in [this city]:" />
+          </ListItem>
+      </List>
+    </Dialog>
+  );
+}
+
+SimpleDialog.propTypes = {
+  onClose: PropTypes.func.isRequired,
+  open: PropTypes.bool.isRequired,
+};
+
 class BookedTripCard extends Component {
+
+  constructor(props) {
+    super(props);
+    this.state = {
+      open: false
+    };
+  }
+
   render() {
-    const { classes } = this.props;
+    
+  const { classes } = this.props;
+  const handleClickOpen = () => {
+    this.setState({
+      open: true
+    });
+  };
+  const handleClose = () => {
+    this.setState({
+      open: false
+    });
+  };
+
     return (
+      <div>
+      <SimpleDialog  open={this.state.open} onClose={handleClose} />
+      
       <Card className={classes.root}>
+        <ButtonBase
+          className={this.props.classes.cardAction}
+          onClick={handleClickOpen}
+        >
         <CardMedia
           className={classes.media}
           image={
@@ -65,7 +131,9 @@ class BookedTripCard extends Component {
             </div>
           </CardContent>
         </div>
+        </ButtonBase>
       </Card>
+      </div>
     );
   }
 }
