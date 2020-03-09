@@ -7,7 +7,7 @@ class Places {
   async getPointsOfInterest(latitude, longitude) {
     var unirest = require("unirest");
     var proxyurl = "https://cors-anywhere.herokuapp.com/";
-    return fetch(proxyurl + 'https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=' + latitude + ',' + longitude + '&radius=7500&type=tourist_attraction&key=' + process.env.REACT_APP_PLACES_API_KEY);
+    return fetch(proxyurl + 'https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=' + latitude + ',' + longitude + '&radius=7500&type=tourist_attraction&key=' + process.env.REACT_APP_PLACES_API_KEY); 
   }
 
   // Given the lat/long returns image information 
