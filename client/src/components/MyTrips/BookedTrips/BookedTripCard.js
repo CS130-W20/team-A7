@@ -15,6 +15,7 @@ import FlightTakeoffIcon from '@material-ui/icons/FlightTakeoff';
 import FlightLandIcon from '@material-ui/icons/FlightLand';
 import HotelIcon from '@material-ui/icons/Hotel';
 import LocalActivityIcon from '@material-ui/icons/LocalActivity';
+import { getCityImage } from '../../Places/places.js'
 
 const styles = theme => ({
   button: {
@@ -121,8 +122,26 @@ class BookedTripCard extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      open: false
+      open: false,
+      destinationImage: null
     };
+  }
+
+  setDestinationImage(url) {
+    if (typeof url !== 'undefined' || url !== null) {
+      console.log('image');
+      console.log(url);
+      this.setState({
+        destinationImage: url,
+      });
+    }
+  }
+
+  componentDidMount() {
+    const setDestinationImage_c = ((url) => this.setDestinationImage(url));
+    getCityImage(this.props.trip.departureFlight.destinationCity).then(function (url) {
+      setDestinationImage_c(url)
+    });
   }
 
   render() {
@@ -148,9 +167,7 @@ class BookedTripCard extends Component {
         <Card className={classes.root} >
             <CardMedia
               className={classes.media}
-              image={
-                "https://upload.wikimedia.org/wikipedia/commons/d/d6/London-Eye-2009.JPG"
-              }
+              image={this.state.destinationImage}
             />
             <div>
               <CardContent>
