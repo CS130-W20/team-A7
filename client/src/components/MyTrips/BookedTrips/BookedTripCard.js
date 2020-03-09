@@ -17,6 +17,11 @@ import HotelIcon from '@material-ui/icons/Hotel';
 import LocalActivityIcon from '@material-ui/icons/LocalActivity';
 
 const styles = theme => ({
+  button: {
+    textAlign: "left",
+    margin: "auto",
+    width: "100%",
+  },
   root: {
     margin: "auto",
     width: "85%",
@@ -138,33 +143,31 @@ class BookedTripCard extends Component {
       <div>
       <SimpleDialog  open={this.state.open} onClose={handleClose} details={trip} classes={classes}/>
       
-      <Card className={classes.root}>
-        <ButtonBase
-          onClick={handleClickOpen}
-        >
-        <CardMedia
-          className={classes.media}
-          image={
-            "https://upload.wikimedia.org/wikipedia/commons/d/d6/London-Eye-2009.JPG"
-          }
-        />
-        <div className={classes.tripInfo}>
-          <CardContent>
-            <Typography gutterBottom variant="h4">
-              {this.props.trip.name}
-            </Typography>
-            <div className={classes.details}>
-              <Typography variant="body1" gutterBottom>
-                {this.props.trip.departureFlight.departureCity} to {this.props.trip.departureFlight.destinationCity}
-              </Typography>
-              <Typography variant="body1" color="textSecondary">
-                <i> {this.props.trip.departureFlight.departureDate} to {this.props.trip.returnFlight.departureDate} </i>
-              </Typography>
+      <ButtonBase className={classes.button} onClick={handleClickOpen}>
+        <Card className={classes.root} >
+            <CardMedia
+              className={classes.media}
+              image={
+                "https://upload.wikimedia.org/wikipedia/commons/d/d6/London-Eye-2009.JPG"
+              }
+            />
+            <div>
+              <CardContent>
+                <Typography variant="h4">
+                  {this.props.trip.name}
+                </Typography>
+                <div className={classes.details}>
+                  <Typography variant="body1">
+                    {this.props.trip.departureFlight.departureCity} to {this.props.trip.departureFlight.destinationCity}
+                  </Typography>
+                  <Typography variant="body1" color="textSecondary">
+                    <i> {this.props.trip.departureFlight.departureDate} to {this.props.trip.returnFlight.departureDate} </i>
+                  </Typography>
+                </div>
+              </CardContent>
             </div>
-          </CardContent>
-        </div>
-        </ButtonBase>
-      </Card>
+        </Card>
+      </ButtonBase>
       </div>
     );
   }

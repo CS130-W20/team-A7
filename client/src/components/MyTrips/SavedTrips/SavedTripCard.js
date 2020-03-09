@@ -7,6 +7,11 @@ import Typography from "@material-ui/core/Typography";
 import ButtonBase from '@material-ui/core/ButtonBase';
 
 const styles = theme => ({
+  button: {
+    textAlign: "left",
+    margin: "auto",
+    width: "100%",
+  },
   root: {
     margin: "auto",
     width: "85%",
@@ -49,27 +54,25 @@ class SavedTripCard extends Component {
     const { classes } = this.props;
     return (
       <div>
-      <Card className={classes.root}>
-        <ButtonBase
-          onClick={handleClickOpen}
-        >
-        <div className={classes.tripInfo}>
-          <CardContent>
-            <Typography gutterBottom variant="h3">
-              {this.props.trip.price}
-            </Typography>
-            <div className={classes.details}>
-              <Typography variant="body1" gutterBottom>
-                Departing from: {this.props.trip.criteria.departureAirport.city}
+      <ButtonBase className={classes.button} onClick={handleClickOpen}>
+        <Card className={classes.root}>
+          <div className={classes.tripInfo}>
+            <CardContent>
+              <Typography gutterBottom variant="h3">
+                {this.props.trip.price}
               </Typography>
-              <Typography variant="body1" color="textSecondary">
-                <i> {this.props.trip.criteria.departureDate} to {this.props.trip.criteria.returnDate} </i>
-              </Typography>
-            </div>
-          </CardContent>
-        </div>
+              <div className={classes.details}>
+                <Typography variant="body1" gutterBottom>
+                  Departing from: {this.props.trip.criteria.departureAirport.city}
+                </Typography>
+                <Typography variant="body1" color="textSecondary">
+                  <i> {this.props.trip.criteria.departureDate} to {this.props.trip.criteria.returnDate} </i>
+                </Typography>
+              </div>
+            </CardContent>
+          </div>
+        </Card>
       </ButtonBase>
-      </Card>
       </div>
     );
   }
