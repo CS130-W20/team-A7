@@ -1,16 +1,16 @@
 import React, { Component } from 'react';
-import { withRouter, Link } from 'react-router-dom';
+import { withRouter } from 'react-router-dom';
 import { compose } from 'recompose';
 
 import { withFirebase } from '../../Firebase';
+import { AuthUserContext } from '../../Session';
 
 import SavedTripCard from './SavedTripCard';
-import SavedTrip from './SavedTrip';
-import Criteria from '../../TripGeneration/Criteria.js'
-import { airports } from "../../TripGeneration/airport.js";
 
 const INITIAL_STATE = {
+  user: null,
   trips: [],
+  gotContext: false,
   error: null,
 };
 
@@ -25,24 +25,112 @@ class SavedTripsBase extends Component {
   constructor(props) {
     super(props);
     this.state = { ...INITIAL_STATE };
-    // Creating trips
-    var departureDate = new Date(2020, 5, 11);
-    var returnDate = new Date(2020, 10, 28);
-    var savedCriteria = new Criteria(
-      airports[48],
-      departureDate,
-      returnDate,
-      true,
-      false,
-      null,
-      true,
-      false
+  }
+
+  componentDidUpdate() {
+    if (typeof this.context.authUser !== 'undefined' && this.context.authUser !== null && !this.state.gotContext) {
+      this.hello = this.context;
+      this.setState({ gotContext: true });
+      this.refreshSavedTrips(this.hello.authUser);
+      // console.log('yeet (saved): ', this.context);
+    }
+  }
+  
+  getAllSavedTrips(tripIds) {
+    const tripRef = this.props.firebase.savedTrip;
+    return Promise.all(
+      tripIds.map(function(tripId) {
+        return new Promise(function(resolve, reject) {
+          try {    
+            tripRef(tripId).on("value", function(snapshot, prevChildKey) {
+              if (typeof snapshot.val() === 'undefined' || snapshot.val() === null) {
+                resolve(null);
+              } else {
+                var newTrip = snapshot.val();
+                resolve(newTrip);
+              }
+            })
+          } catch (e) {
+            reject(e)
+          }
+        })
+      })
     );
-    var savedTrip = new SavedTrip(savedCriteria);
-    var tripItem = new SavedTripsItem(savedTrip, this.state.trips.length);
+  }
+
+  getUserSavedTripIds(userId) {
+    const currentUserTripsRef = this.props.firebase.singleUserSavedTrips(userId);
+    return new Promise(function (resolve, reject) {
+      try {
+        currentUserTripsRef.on("value", function(snapshot, prevChildKey) {
+            if (typeof snapshot.val() === 'undefined') {
+              resolve(null);
+            } else {
+              var userTrips = snapshot.val();
+              resolve({
+                userTrips: userTrips,
+              });
+            }
+        })
+      } catch (e) {
+          reject(e)
+      }
+    });
+  }
+
+  // Query for the trip ids, then the trip objects
+  getUserSavedTrips(authUser) {
+    const getAllSavedTrips = ((tripIds) => this.getAllSavedTrips(tripIds));
+    const getUserSavedTripIds = ((uid) => this.getUserSavedTripIds(uid));
     
-    // Creating list
-    this.state.trips.push(tripItem);
+    return new Promise(function (resolve, reject) {
+      getUserSavedTripIds(authUser.uid).then(function (result) {
+        if (typeof result.userTrips !== 'undefined' && result.userTrips !== null) {
+          let userTrips = [];
+          // userTrips is all the user's tripIds
+          for (const [key, tripId] of Object.entries(result.userTrips)) {
+            userTrips.push(tripId);
+          }
+          const tripPromises = getAllSavedTrips(userTrips);
+          tripPromises.then(function (values) {
+            resolve(values)
+          }).catch(function (error) {
+            resolve(null);
+            console.log('debug: ', error);
+          });
+        }
+      }).catch(function (error) {
+        resolve(null);
+        console.log('debug: ', error);
+      });
+    });
+  }
+
+  // Set the trips in state
+  setSavedTrips(trips) {
+    if (typeof trips === 'undefined' || trips !== null) {
+      var tripItems = [];
+      for (const trip of trips) {
+        var tripItem = new SavedTripsItem(trip, tripItems.length);
+        tripItems.push(tripItem);
+      }
+      this.setState({
+        trips: tripItems,
+      });
+    }
+  }
+
+  // Get the full list of user trips
+  refreshSavedTrips(authUser) {
+    if (typeof authUser !== 'undefined' && authUser) {
+      var setSavedTrips_c = ((trips) => this.setSavedTrips(trips));
+      this.getUserSavedTrips(authUser).then(function (result) {
+        setSavedTrips_c(result);
+      });
+    }
+    else {
+      console.log('debug: ', 'auth user still null');
+    }
   }
 
   render() {
@@ -57,6 +145,8 @@ class SavedTripsBase extends Component {
     );
   }
 }
+
+SavedTripsBase.contextType = AuthUserContext;
 
 const SavedTrips = compose(
   withRouter,

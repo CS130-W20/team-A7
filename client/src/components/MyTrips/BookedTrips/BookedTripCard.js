@@ -126,7 +126,7 @@ class BookedTripCard extends Component {
                 {this.props.trip.departureFlight.departureCity} to {this.props.trip.departureFlight.destinationCity}
               </Typography>
               <Typography variant="body1" color="textSecondary">
-                <i> {this.props.trip.departureFlight.departureDate.toDateString()} to {this.props.trip.returnFlight.departureDate.toDateString()} </i>
+                <i> {this.props.trip.departureFlight.departureDate} to {this.props.trip.returnFlight.departureDate} </i>
               </Typography>
             </div>
           </CardContent>

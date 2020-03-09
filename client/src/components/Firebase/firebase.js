@@ -50,21 +50,37 @@ class Firebase {
     // @return Returns a reference to the users location
     users = () => this.db.ref('users');
 
-    // Trips API
+    // Booked Trips API
     // @param  trip_id  The trip id of the user being requested
     // @return Returns a reference to the query’s location
-    trip = trip => this.db.ref(`trips/${trip}`);
+    bookedTrip = trip => this.db.ref(`bookedTrips/${trip}`);
 
     // @return Returns a reference to the query’s location
-    trips = () => this.db.ref('trips');
+    bookedTrips = () => this.db.ref('bookedTrips');
 
-    // User Trips API
+    // User Booked Trips API
     // @param  uid  The trip id of the user whose trips are being requested
     // @return Returns a reference to the query’s location
-    singleUserTrips = uid => this.db.ref(`userTrips/${uid}`);
+    singleUserBookedTrips = uid => this.db.ref(`bookedUserTrips/${uid}`);
 
     // @return Returns a reference to the query’s location
-    userTrips = () => this.db.ref('userTrips');
+    userBookedTrips = () => this.db.ref('bookedUserTrips');
+
+    // Saved Trips API
+    // @param  trip_id  The trip id of the user being requested
+    // @return Returns a reference to the query’s location
+    savedTrip = trip => this.db.ref(`savedTrips/${trip}`);
+
+    // @return Returns a reference to the query’s location
+    savedTrips = () => this.db.ref('savedTrips');
+
+    // User Saved Trips API
+    // @param  uid  The trip id of the user whose trips are being requested
+    // @return Returns a reference to the query’s location
+    singleUserSavedTrips = uid => this.db.ref(`savedUserTrips/${uid}`);
+
+    // @return Returns a reference to the query’s location
+    userSavedTrips = () => this.db.ref('savedUserTrips');
 }
   
 export default Firebase;

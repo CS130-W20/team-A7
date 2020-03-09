@@ -1,6 +1,7 @@
 class SavedTrip {
-  constructor(criteria) {
+  constructor(criteria, price) {
     this.criteria = criteria;
+    this.price = price
   }
 }
 
