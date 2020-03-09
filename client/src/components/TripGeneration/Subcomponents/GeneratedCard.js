@@ -2,10 +2,10 @@ import React, { Component } from 'react';
 import { withStyles } from '@material-ui/core/styles';
 import Card from '@material-ui/core/Card';
 import Typography from '@material-ui/core/Typography';
-import Container from '@material-ui/core/Container';
 import Button from '@material-ui/core/Button';
 import CTAButton from '../../CTAButton/CTAButton';
 import FlightRoute from './FlightRoute';
+import * as ROUTES from '../../constants/routes';
 
 const ColoredLine = ({ color }) => (
   <hr
@@ -109,6 +109,78 @@ class GeneratedCard extends Component {
     this.props.nextStep();
   }
 
+  writeToBookedTrips(userId, newTrip) {
+    const tripsRef = this.props.firebase.bookedTrips();
+    const newTripRef = tripsRef.push();
+    newTripRef.set(newTrip, function(error) {
+      if (error) {
+        console.log('Error: Failed to write trip to user ', userId, ': ', error);
+      }
+    });
+    return newTripRef.key;
+  }
+
+  writeToUserBookedTrips(userId, tripId) {
+    const currentUserTripsRef = this.props.firebase.singleUserBookedTrips(userId);
+    const newIndex = currentUserTripsRef.push();
+    newIndex.set(tripId);
+  }
+
+  writeToSavedTrips(userId, newTrip) {
+    const tripsRef = this.props.firebase.savedTrips();
+    const newTripRef = tripsRef.push();
+    newTripRef.set(newTrip, function(error) {
+      if (error) {
+        console.log('Error: Failed to write trip to user ', userId, ': ', error);
+      }
+    });
+    return newTripRef.key;
+  }
+
+  writeToUserSavedTrips(userId, tripId) {
+    const currentUserTripsRef = this.props.firebase.singleUserSavedTrips(userId);
+    const newIndex = currentUserTripsRef.push();
+    newIndex.set(tripId);
+  }
+
+  saveTrip = e => {
+    e.preventDefault();
+    const { values, authUser } = this.props;
+    if (authUser !== null) {
+      if (typeof authUser.uid !== 'undefined' && authUser.uid !== null) {
+        const userId = authUser.uid;
+        // Writing to firebase
+        const newTripKey = this.writeToSavedTrips(userId, values.saveTrip);
+        if (typeof newTripKey !== 'undefined') {
+          this.writeToUserSavedTrips(userId, newTripKey);
+        }
+        else {
+          console.log('Error: ', 'Did not write to user trips, new trip key was undefined');
+        }
+      }
+    }
+    this.props.history.push(ROUTES.MY_TRIPS);
+  }
+  
+  bookTrip = e => {
+    e.preventDefault();
+    const { values, authUser } = this.props;
+    if (authUser !== null) {
+      if (typeof authUser.uid !== 'undefined' && authUser.uid !== null) {
+        const userId = authUser.uid;
+        // Writing to firebase
+        const newTripKey = this.writeToBookedTrips(userId, values.bookTrip);
+        if (typeof newTripKey !== 'undefined') {
+          this.writeToUserBookedTrips(userId, newTripKey);
+        }
+        else {
+          console.log('Error: ', 'Did not write to user trips, new trip key was undefined');
+        }
+      }
+    }
+    this.props.nextStep();
+  }
+
   onClickRetakeQuiz = e => {
     e.preventDefault();
     this.props.goBack();
@@ -168,7 +240,7 @@ class GeneratedCard extends Component {
               variant="contained">
                 Save Trip
               </Button>
-              <CTAButton onClick={this.onClick}>BOOK NOW</CTAButton>
+              <CTAButton onClick={this.bookTrip}>BOOK NOW</CTAButton>
             </div>
           </div>
         </Card>

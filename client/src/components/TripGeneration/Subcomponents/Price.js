@@ -2,6 +2,11 @@ import React, { Component } from 'react';
 import BookedTrip, {Flight, HotelStay} from '../../MyTrips/BookedTrips/BookedTrip.js';
 import GeneratingCard from './GeneratingCard';
 import GeneratedCard from './GeneratedCard';
+import { compose } from 'recompose';
+import { withFirebase } from '../Firebase';
+import { AuthUserContext } from '../Session';
+
+import { withRouter } from 'react-router-dom';
 
 const MAX_TRIES = 5;
 
@@ -12,6 +17,8 @@ class Price extends Component {
     this.state = {
       trip: null,
       hotel : null,
+      gotContext: null,
+      authUser: null,
     }
   }
   
@@ -89,7 +96,8 @@ class Price extends Component {
           //If cheapest, take first entry because it's ordered by price.
           //If under budget, take last entry because we want the most bang for our buck of our allocated flight funds
           //If cost isn't a consideration, we'll take most expensive (last) entry.
-          var tripIndex = ((values.price === 'cheapest') ? retryIndex : ((values.price === 'underBudget') ? numResults - 1 - retryIndex : numResults - 1));
+          var tripIndex = ((values.price === 'cheapest') ? retryIndex : ((values.price === 'underBudget') ? numResults - 1 - retryIndex : Math.floor(Math.random() * numResults)));
+          console.log(tripIndex);
           var chosenQuote = quotes[tripIndex];
           chosenQuote.carriers = carriers;
           airportPlace = res.body.Places.find(element => element.PlaceId == chosenQuote.OutboundLeg.DestinationId);
@@ -284,7 +292,8 @@ class Price extends Component {
       });
     }
     
-    function generateTrip(){
+    function generateTrip() {
+
       return startOutFlight().then(function(outFlight) {
         return startInFlight(outFlight).then(inFlight => [outFlight, inFlight]);
       }).then(function([outFlight, inFlight]) {
@@ -298,12 +307,12 @@ class Price extends Component {
         if ((typeof results[0] === 'undefined') || (typeof results[1] === 'undefined') || (typeof results[3] === 'undefined')) {
           setApiErr(apiErr);
           return;
-        }
+        }  
 
         //console.log("outbound flight: ", results[0].OutboundLeg.DepartureDate);
         //console.log("inbound flight: ", results[1].chosenInQuote.OutboundLeg.DepartureDate);
 
-        // Creating the trip object
+        // Creating the BookedTrip object
         var departureDate = new Date(results[0].OutboundLeg.DepartureDate);
         var departureAirline = results[0].carriers.find(carr => carr.CarrierId == results[0].OutboundLeg.CarrierIds[0]).Name;
         var outboundDepartureAirportCode = values.departureAirport.code;
@@ -315,7 +324,7 @@ class Price extends Component {
         var departureFlight = new Flight(
           outboundDepartureCity,
           outboundDestinationCity,
-          departureDate,
+          departureDate.toDateString(),
           departureAirline,
           {
             name: outboundDepartureAirportName,
@@ -327,7 +336,6 @@ class Price extends Component {
           },
         );
         
-        // Created the Trip object
         var returnDate = new Date(results[1].chosenInQuote.OutboundLeg.DepartureDate);
         var returnAirline = results[1].inCarriers.carriers.find(carr => carr.CarrierId == results[1].chosenInQuote.OutboundLeg.CarrierIds[0]).Name;
         var inboundDepartureAirportName = results[0].airport.Name;
@@ -339,7 +347,7 @@ class Price extends Component {
         var returnFlight = new Flight(
           inboundDepartureCity,
           inboundDestinationCity,
-          returnDate,
+          returnDate.toDateString(),
           returnAirline,
           {
             name: inboundDepartureAirportName,
@@ -352,13 +360,23 @@ class Price extends Component {
         );
 
         var hotelStay = new HotelStay(results[3].hotelResult, results[3].numNights);
-        var trip = new BookedTrip('BookedTrip1', departureFlight, returnFlight, hotelStay);
+        var bookTrip = new BookedTrip('BookedTrip1', departureFlight, returnFlight, hotelStay);
         
         // Calculating total price
-        var price = results[0].MinPrice + results[1].chosenInQuote.MinPrice + (results[3].hotelResult.price * results[3].numNights)
+        var price = results[0].MinPrice + results[1].chosenInQuote.MinPrice + (results[3].hotelResult.price * results[3].numNights);
+
+        // Creating the SavedTrip object
+        var inputCriteria = new Criteria(
+          values.departureAirport,
+          values.departureDate.toDateString(),
+          values.returnDate.toDateString(),
+          values.destination,
+          values.budget
+        );
+        var saveTrip = new SavedTrip(inputCriteria, price);
 
         // Set the new state and exit out of recursion loop
-        setTripData(trip, hotelStay, price);
+        setTripData(bookTrip, saveTrip, hotelStay, price);
         tripSuccess = true;
         retryIndex = MAX_TRIES;
       });
@@ -388,16 +406,26 @@ class Price extends Component {
     }
     
     //We try to generate a trip *up to* MAX_TRIES times.
-    attemptTrip().then(() => {
+    attemptTrip().then((values) => {
       console.log("Finishing attempts to generate a trip.")
     });
+  }
+
+  componentDidUpdate() {
+    if (this.state.authUser !== null && typeof this.context.authUser !== 'undefined' && this.context.authUser !== null && !this.state.gotContext) {
+      this.setState({
+        gotContext: true,
+        authUser: this.context.authUser,
+      });
+      // console.log('yeet: ', this.context);
+    }
   }
 
   render() {
     const { classes, values, goBack, nextStep } = this.props;
     let componentToRender;
     if (values.apiErr === null) {
-      componentToRender = values.totalPrice === null ? <GeneratingCard styles={classes}/> : <GeneratedCard styles={classes} values={values} goBack={goBack} nextStep={nextStep}/>;
+      componentToRender = values.totalPrice === null ? <GeneratingCard styles={classes}/> : <GeneratedCard authUser={this.state.authUser} history={this.props.history} firebase={this.props.firebase} styles={classes} values={values} goBack={goBack} nextStep={nextStep}/>;
     } else {
       componentToRender = values.apiErr;
     }
@@ -410,4 +438,12 @@ class Price extends Component {
   }
 }
 
-export default Price;
+Price.contextType = AuthUserContext;
+
+const PriceComposed = compose(
+  withStyles(styles),
+  withFirebase,
+  withRouter,
+)(Price);
+
+export default PriceComposed;
