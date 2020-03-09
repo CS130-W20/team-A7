@@ -119,15 +119,17 @@ class GeneratedCard extends Component {
   saveTrip = e => {
     e.preventDefault();
     const { values, authUser } = this.props;
-    if (typeof authUser.uid !== 'undefined' && authUser.uid !== null) {
-      const userId = authUser.uid;
-      // Writing to firebase
-      const newTripKey = this.writeToSavedTrips(userId, values.saveTrip);
-      if (typeof newTripKey !== 'undefined') {
-        this.writeToUserSavedTrips(userId, newTripKey);
-      }
-      else {
-        console.log('Error: ', 'Did not write to user trips, new trip key was undefined');
+    if (authUser !== null) {
+      if (typeof authUser.uid !== 'undefined' && authUser.uid !== null) {
+        const userId = authUser.uid;
+        // Writing to firebase
+        const newTripKey = this.writeToSavedTrips(userId, values.saveTrip);
+        if (typeof newTripKey !== 'undefined') {
+          this.writeToUserSavedTrips(userId, newTripKey);
+        }
+        else {
+          console.log('Error: ', 'Did not write to user trips, new trip key was undefined');
+        }
       }
     }
     this.props.history.push(ROUTES.MY_TRIPS);
@@ -136,15 +138,17 @@ class GeneratedCard extends Component {
   bookTrip = e => {
     e.preventDefault();
     const { values, authUser } = this.props;
-    if (typeof authUser.uid !== 'undefined' && authUser.uid !== null) {
-      const userId = authUser.uid;
-      // Writing to firebase
-      const newTripKey = this.writeToBookedTrips(userId, values.bookTrip);
-      if (typeof newTripKey !== 'undefined') {
-        this.writeToUserBookedTrips(userId, newTripKey);
-      }
-      else {
-        console.log('Error: ', 'Did not write to user trips, new trip key was undefined');
+    if (authUser !== null) {
+      if (typeof authUser.uid !== 'undefined' && authUser.uid !== null) {
+        const userId = authUser.uid;
+        // Writing to firebase
+        const newTripKey = this.writeToBookedTrips(userId, values.bookTrip);
+        if (typeof newTripKey !== 'undefined') {
+          this.writeToUserBookedTrips(userId, newTripKey);
+        }
+        else {
+          console.log('Error: ', 'Did not write to user trips, new trip key was undefined');
+        }
       }
     }
     this.props.nextStep();
@@ -605,7 +609,7 @@ class Price extends Component {
   }
 
   componentDidUpdate() {
-    if (typeof this.context.authUser !== 'undefined' && this.context.authUser !== null && !this.state.gotContext) {
+    if (this.state.authUser !== null && typeof this.context.authUser !== 'undefined' && this.context.authUser !== null && !this.state.gotContext) {
       this.setState({
         gotContext: true,
         authUser: this.context.authUser,
