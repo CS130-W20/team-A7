@@ -37,6 +37,7 @@ const CTAButton = (props) => {
         root: classes.root,
         label: classes.label,
       }}
+      onClick={props.onClick}
     >
       {props.children}
     </Button>

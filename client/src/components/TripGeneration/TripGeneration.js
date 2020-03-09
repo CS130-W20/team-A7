@@ -3,6 +3,8 @@ import React, { Component } from 'react';
 import GeneratedTrip from './GeneratedTrip';
 import Price from './Price';
 import Quiz from './Quiz';
+import Payment from './Payment';
+import TripBooked from '../TripBooked';
 
 const INITIAL_STATE = {
   step: 1,
@@ -40,6 +42,13 @@ export class UserForm extends Component {
       step: step - 1
     });
   };
+
+  // Go back to quiz page
+  goBackToQuiz = () => {
+    this.setState({
+      step: 1
+    });
+  }
   
   handleChange = (event, value) => {
       if (event === 'autocomplete') {
@@ -65,10 +74,12 @@ export class UserForm extends Component {
   };
     
   handleAutocomplete = (airport) => {
-    console.log("Listener (Autocomplete): " + airport.code);
-    this.setState({
-      departureAirport: airport
-    });
+    if (airport !== null){
+      console.log("Listener (Autocomplete): " + airport.code);
+      this.setState({
+        departureAirport: airport
+      });
+  }
   }
 
   handleDepartureDate = (date) => {
@@ -108,6 +119,11 @@ export class UserForm extends Component {
       apiErr : err,
   })};
   
+  setTotalPrice = (price) => {
+    this.setState({
+      totalPrice : price,
+  })};
+  
   render() {
     const { step } = this.state;
     const { departureAirport, departureDate, returnDate, destination, price, budget, totalPrice, bookTrip, saveTrip, hotel, apiErr } =  this.state;
@@ -128,15 +144,21 @@ export class UserForm extends Component {
           <Price
             nextStep={this.nextStep}
             prevStep={this.prevStep}
+            goBack={this.goBackToQuiz}
             handleChange={this.handleChange}
             setTripData={this.setTripData}
+            setTotalPrice={this.setTotalPrice}
             setApiErr={this.setApiErr}
             values={values}
           />
         );
       case 3:
         return (
-          <GeneratedTrip values={values} />
+          <Payment nextStep={this.nextStep}/>
+        );
+      case 4:
+        return (
+          <TripBooked />
         );
     }
   }
