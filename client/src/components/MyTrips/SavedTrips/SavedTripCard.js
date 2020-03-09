@@ -6,6 +6,11 @@ import CardContent from "@material-ui/core/CardContent";
 import Typography from "@material-ui/core/Typography";
 import ButtonBase from '@material-ui/core/ButtonBase';
 
+import UserForm from '../../TripGeneration/TripGeneration'
+
+import { withRouter, Link } from 'react-router-dom';
+import * as ROUTES from '../../../constants/routes';
+
 const styles = theme => ({
   button: {
     textAlign: "left",
@@ -45,16 +50,36 @@ const styles = theme => ({
 });
 
 class SavedTripCard extends Component {
+  constructor(props) {
+    super(props);
+  }
+  handleClickOpen = () => {
+    this.props.history.push({
+      pathname: '/quiz',
+      state: { 
+        step: 2,
+        // Criteria (set by Quiz)
+        departureAirport: this.props.trip.criteria.departureAirport,
+        departureDate: this.props.trip.criteria.departureDate,
+        returnDate: this.props.trip.criteria.returnDate,
+        destination: this.props.trip.criteria.destination,
+        price: this.props.trip.criteria.price,
+        budget: this.props.trip.criteria.budget,
+        // Trip info (set by Price)
+        totalPrice: null,
+        bookTrip: null,
+        saveTrip: null,
+        hotel: null,
+        apiErr: null
+      },
+    })
+  };
+
   render() {
-
-    const handleClickOpen = () => {
-      
-    };
-
     const { classes } = this.props;
     return (
       <div>
-      <ButtonBase className={classes.button} onClick={handleClickOpen}>
+      <ButtonBase className={classes.button} onClick={this.handleClickOpen}>
         <Card className={classes.root}>
           <div className={classes.tripInfo}>
             <CardContent>
@@ -78,4 +103,4 @@ class SavedTripCard extends Component {
   }
 }
 
-export default withStyles(styles)(SavedTripCard);
+export default withRouter(withStyles(styles)(SavedTripCard));

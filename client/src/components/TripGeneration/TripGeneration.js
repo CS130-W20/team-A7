@@ -6,12 +6,14 @@ import TripBooked from '../TripBooked';
 
 const INITIAL_STATE = {
   step: 1,
+  // Criteria (set by Quiz)
   departureAirport: null,
   departureDate: null,
   returnDate: null,
   destination: "anyDest",
   price: "anyPrice",
   budget: 0,
+  // Trip info (set by Price)
   totalPrice: null,
   bookTrip: null,
   saveTrip: null,
@@ -34,10 +36,16 @@ const formatTime = (date) => {
   return timeString + ` ${hour < 12 ? 'AM' : 'PM'}`;
 }
 
-export class UserForm extends Component {
+export class TripGeneration extends Component {
   constructor(props) {
     super(props);
-    this.state = { ...INITIAL_STATE };
+    if (typeof this.props.location.state !== 'undefined') {
+      console.log('hope: ', this.props.location.state);
+      this.state = {... this.props.location.state};
+    }
+    else {
+      this.state = { ...INITIAL_STATE };
+    }
   }
   
   // Proceed to next step
@@ -64,18 +72,18 @@ export class UserForm extends Component {
   }
   
   handleChange = (event, value) => {
-      if (event === 'autocomplete') {
-        this.handleAutocomplete(value);
-      }
-      else if (event === 'departureDate') {
-        this.handleDepartureDate(value);
-      }
-      else if (event === 'returnDate') {
-        this.handleReturnDate(value);
-      }
-      else {
-          this.handleButtonChange(event, value);
-      }
+    if (event === 'autocomplete') {
+      this.handleAutocomplete(value);
+    }
+    else if (event === 'departureDate') {
+      this.handleDepartureDate(value);
+    }
+    else if (event === 'returnDate') {
+      this.handleReturnDate(value);
+    }
+    else {
+      this.handleButtonChange(event, value);
+    }
   }
 
   handleSliderChange = (value) => {
@@ -92,7 +100,7 @@ export class UserForm extends Component {
       this.setState({
         departureAirport: airport
       });
-  }
+    }
   }
 
   handleDepartureDate = (date) => {
@@ -189,4 +197,4 @@ export class UserForm extends Component {
   }
 }
   
-export default UserForm;
+export default TripGeneration;
