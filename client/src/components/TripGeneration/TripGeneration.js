@@ -170,8 +170,9 @@ export class UserForm extends Component {
           <Payment nextStep={this.nextStep}/>
         );
       case 4:
-        console.log(this.state.generatedTrip);
-        const date = this.state.generatedTrip.departureFlight.departureDate;
+        console.log(this.state.bookTrip);
+        const dateStr = this.state.bookTrip.departureFlight.departureDate;
+        const date = new Date(dateStr);
         const yearString = `${date.getFullYear()}`.slice(-2);
         const formattedDate = `${date.getMonth() + 1}/${date.getDate()}/${yearString}`;
         const formattedTime = formatTime(date);
@@ -179,7 +180,7 @@ export class UserForm extends Component {
         return (
           <TripBooked 
             name="Kyle Romero"
-            destination={this.state.generatedTrip.departureFlight.destinationCity}
+            destination={this.state.bookTrip.departureFlight.destinationCity}
             date={formattedDate}
             time={formattedTime}
           />
