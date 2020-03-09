@@ -1,26 +1,19 @@
 import React, { Component } from 'react';
-import Button from '@material-ui/core/Button';
-import BookedTrip, {Flight, HotelStay} from '../MyTrips/BookedTrips/BookedTrip.js';
-import SavedTrip from '../MyTrips/SavedTrips/SavedTrip.js';
-import Criteria from './Criteria.js'
-import Card from '@material-ui/core/Card'
-import { withStyles } from '@material-ui/core/styles';
-import CircularProgress from '@material-ui/core/CircularProgress';
-import Typography from '@material-ui/core/Typography';
-import Container from '@material-ui/core/Container';
-import CssBaseline from '@material-ui/core/CssBaseline';
-
+import BookedTrip, {Flight, HotelStay} from '../../MyTrips/BookedTrips/BookedTrip.js';
+import GeneratingCard from './GeneratingCard';
+import GeneratedCard from './GeneratedCard';
 import { compose } from 'recompose';
-import { withFirebase } from '../Firebase';
-import { AuthUserContext } from '../Session';
+import { withFirebase } from '../../Firebase';
+import { AuthUserContext } from '../../Session';
+import Criteria from '../../../models/Criteria';
+import SavedTrip from '../../MyTrips/SavedTrips/SavedTrip';
 
-import { Link, withRouter } from 'react-router-dom';
-import * as ROUTES from '../../constants/routes';
-
-
+import { withRouter } from 'react-router-dom';
 
 const MAX_TRIES = 5;
 
+<<<<<<< HEAD:client/src/components/TripGeneration/Subcomponents/Price.js
+=======
 const styles = (theme) => ({
   card: {
     marginTop: 50,
@@ -207,8 +200,8 @@ class GeneratedCard extends Component {
   }
 }
 
+>>>>>>> master:client/src/components/TripGeneration/Price.js
 class Price extends Component {
-
   constructor(props) {
     super(props);
     this.state = {
@@ -225,7 +218,7 @@ class Price extends Component {
   };
   
   componentDidMount() {
-    const { values, setTripData, setApiErr, setTotalPrice, classes } = this.props;
+    const { values, setTripData, setApiErr, setTotalPrice } = this.props;
     var tripDestination = "";
     var departDate = values.departureDate.toISOString();
     departDate = departDate.slice(0,10);
@@ -619,10 +612,10 @@ class Price extends Component {
   }
 
   render() {
-    const { classes, values, goBack, nextStep } = this.props;
+    const { values, goBack, nextStep } = this.props;
     let componentToRender;
     if (values.apiErr === null) {
-      componentToRender = values.totalPrice === null ? <GeneratingCard styles={classes}/> : <GeneratedCard authUser={this.state.authUser} history={this.props.history} firebase={this.props.firebase} styles={classes} values={values} goBack={goBack} nextStep={nextStep}/>;
+      componentToRender = values.totalPrice === null ? <GeneratingCard /> : <GeneratedCard authUser={this.state.authUser} history={this.props.history} firebase={this.props.firebase} values={values} goBack={goBack} nextStep={nextStep}/>;
     } else {
       componentToRender = values.apiErr;
     }
@@ -638,10 +631,8 @@ class Price extends Component {
 Price.contextType = AuthUserContext;
 
 const PriceComposed = compose(
-  withStyles(styles),
   withFirebase,
   withRouter,
 )(Price);
 
-export { GeneratingCard, GeneratedCard }
 export default PriceComposed;

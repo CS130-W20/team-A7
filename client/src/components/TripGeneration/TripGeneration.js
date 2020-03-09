@@ -1,9 +1,7 @@
-  
 import React, { Component } from 'react';
-import GeneratedTrip from './GeneratedTrip';
-import Price from './Price';
-import Quiz from './Quiz';
-import Payment from './Payment';
+import Price from './Subcomponents/Price';
+import Quiz from './Subcomponents/Quiz';
+import Payment from './Subcomponents/Payment';
 import TripBooked from '../TripBooked';
 
 const INITIAL_STATE = {
@@ -20,6 +18,21 @@ const INITIAL_STATE = {
   hotel: null,
   apiErr: null
 };
+
+const formatTime = (date) => {
+  const hour = date.getHours();
+  const minutes = date.getMinutes();
+
+  let timeString;
+  if (hour == 0) {
+    timeString = '12:';
+  } else {
+    timeString = `${hour % 12}:`;
+  }
+
+  timeString += `${minutes}`.padStart(2, '0');
+  return timeString + ` ${hour < 12 ? 'AM' : 'PM'}`;
+}
 
 export class UserForm extends Component {
   constructor(props) {
@@ -157,8 +170,19 @@ export class UserForm extends Component {
           <Payment nextStep={this.nextStep}/>
         );
       case 4:
+        console.log(this.state.generatedTrip);
+        const date = this.state.generatedTrip.departureFlight.departureDate;
+        const yearString = `${date.getFullYear()}`.slice(-2);
+        const formattedDate = `${date.getMonth() + 1}/${date.getDate()}/${yearString}`;
+        const formattedTime = formatTime(date);
+
         return (
-          <TripBooked />
+          <TripBooked 
+            name="Kyle Romero"
+            destination={this.state.generatedTrip.departureFlight.destinationCity}
+            date={formattedDate}
+            time={formattedTime}
+          />
         );
     }
   }
