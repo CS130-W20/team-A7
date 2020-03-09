@@ -4,6 +4,7 @@ import { withStyles } from "@material-ui/core";
 import Card from "@material-ui/core/Card";
 import CardContent from "@material-ui/core/CardContent";
 import Typography from "@material-ui/core/Typography";
+import ButtonBase from '@material-ui/core/ButtonBase';
 
 const styles = theme => ({
   root: {
@@ -44,9 +45,18 @@ class SavedTripCard extends Component {
   }
 
   render() {
+
+    const handleClickOpen = () => {
+      
+    };
+
     const { classes } = this.props;
     return (
+      <div>
       <Card className={classes.root}>
+        <ButtonBase
+          onClick={handleClickOpen}
+        >
         <div className={classes.tripInfo}>
           <CardContent>
             <Typography gutterBottom variant="h3">
@@ -62,7 +72,9 @@ class SavedTripCard extends Component {
             </div>
           </CardContent>
         </div>
+      </ButtonBase>
       </Card>
+      </div>
     );
   }
 }

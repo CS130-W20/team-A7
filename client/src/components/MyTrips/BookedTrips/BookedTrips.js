@@ -27,8 +27,8 @@ class BookedTripsBase extends Component {
     // Creating trips
     var departureDate = new Date(2020, 2, 24);
     var returnDate = new Date(2020, 3, 24);
-    var departureFlight = new Flight(airports[0].city, airports[100].city, departureDate, airports[0], airports[100]);
-    var returnFlight = new Flight(airports[100].city, airports[0].city, returnDate, airports[100], airports[0]);
+    var departureFlight = new Flight(airports[0].city, airports[100].city, departureDate, 'fakeAirline', {name: airports[0].name, code: airports[0].code}, {name: airports[100].name, code: airports[100].code});
+    var returnFlight = new Flight(airports[100].city, airports[0].city, returnDate, 'fakeAirline',  {name: airports[100].name, code: airports[100].code}, {name: airports[0].name, code: airports[0].code});
     var hotelStay = new HotelStay('hotelId:1', departureDate, returnDate)
     var trip = new BookedTrip('BookedTrip1', departureFlight, returnFlight, hotelStay);
     var tripItem = new BookedTripsItem(trip, 0);
