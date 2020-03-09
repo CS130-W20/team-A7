@@ -119,7 +119,7 @@ class GeneratedCard extends Component {
   saveTrip = e => {
     e.preventDefault();
     const { values, authUser } = this.props;
-    if (authUser !== null) {
+    if (true || (authUser !== null)) {
       if (typeof authUser.uid !== 'undefined' && authUser.uid !== null) {
         const userId = authUser.uid;
         // Writing to firebase
@@ -138,7 +138,7 @@ class GeneratedCard extends Component {
   bookTrip = e => {
     e.preventDefault();
     const { values, authUser } = this.props;
-    if (authUser !== null) {
+    if (true || (authUser !== null)) {
       if (typeof authUser.uid !== 'undefined' && authUser.uid !== null) {
         const userId = authUser.uid;
         // Writing to firebase
@@ -609,7 +609,7 @@ class Price extends Component {
   }
 
   componentDidUpdate() {
-    if (this.state.authUser !== null && typeof this.context.authUser !== 'undefined' && this.context.authUser !== null && !this.state.gotContext) {
+    if (typeof this.context.authUser !== 'undefined' && this.context.authUser !== null && !this.state.gotContext) {
       this.setState({
         gotContext: true,
         authUser: this.context.authUser,
