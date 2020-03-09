@@ -61,7 +61,7 @@ class TripBooked extends Component {
   }
 
   render() {
-    const { classes } = this.props;
+    const { classes, name, destination, date, time } = this.props;
 
     return (<div id="trip-booked-container">
       <div id="trip-booked-content-container">
@@ -72,7 +72,7 @@ class TripBooked extends Component {
         <div id="trip-booked-ticket-container">
           <div id="destination-container">
             <div id="destination-text-container">
-              <Typography className={classes.destinationText}><b>Osaka,</b> Japan</Typography>
+              <Typography className={classes.destinationText}><b>{destination}</b></Typography>
             </div>
           </div>
           <div id="ticket-divider"></div>
@@ -80,7 +80,7 @@ class TripBooked extends Component {
             <Typography className={classes.ticketTitle}>BOARDING PASS</Typography>
             <div id="ticket-name-field-container">
               <Typography className={classes.ticketNameField}>Name:</Typography>
-              <Typography className={classes.ticketNameValue}>Kyle Romero</Typography>
+              <Typography className={classes.ticketNameValue}>{name}</Typography>
             </div>
             <div id="ticket-logistics-container">
               <div id="ticket-logistics-fields-container">
@@ -90,8 +90,8 @@ class TripBooked extends Component {
                 <Typography className={classes.ticketField}>Seat</Typography>
               </div>
               <div id="ticket-logistics-values-container">
-                <Typography className={classes.ticketValue}>3/19/20</Typography>
-                <Typography className={classes.ticketValue}>9 AM</Typography>
+                <Typography className={classes.ticketValue}>{date}</Typography>
+                <Typography className={classes.ticketValue}>{time}</Typography>
                 <Typography className={classes.ticketValue}>TBD</Typography>
                 <Typography className={classes.ticketValue}>17A</Typography>
               </div>
