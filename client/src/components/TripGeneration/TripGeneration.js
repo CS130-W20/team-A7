@@ -1,10 +1,7 @@
-// TODO
-const key = 'AIzaSyC_ij_Rh2ybv5NATzG4EHvqURa-uyikm4Y';
 import React, { Component } from 'react';
-import GeneratedTrip from './GeneratedTrip';
-import Price from './Price';
-import Quiz from './Quiz';
-import Payment from './Payment';
+import Price from './Subcomponents/Price';
+import Quiz from './Subcomponents/Quiz';
+import Payment from './Subcomponents/Payment';
 import TripBooked from '../TripBooked';
 
 const INITIAL_STATE = {

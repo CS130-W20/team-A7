@@ -21,7 +21,7 @@ import Slider from '@material-ui/core/Slider';
 
 import { DatePicker, MuiPickersUtilsProvider } from '@material-ui/pickers';
 import React, { Component } from 'react';
-import { airports } from "./airport.js";
+import { airports } from "../../../constants/airport.js";
 
 const ColoredLine = ({ color }) => (
   <hr
@@ -61,7 +61,6 @@ const styles = (theme) => ({
     margin: theme.spacing(8, 0, 0),
   },
   smallTitleForm2: {
-
     fontSize: 26,
     color: 'black',
     textAlign: 'center',

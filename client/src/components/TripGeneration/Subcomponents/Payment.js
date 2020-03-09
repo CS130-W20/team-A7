@@ -6,7 +6,7 @@ import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Checkbox from '@material-ui/core/Checkbox';
 import Card from '@material-ui/core/Card';
 import { withStyles } from '@material-ui/core/styles';
-import CTAButton from '../CTAButton/CTAButton';
+import CTAButton from '../../CTAButton/CTAButton';
 
 const styles = (theme) => ({
   card: {

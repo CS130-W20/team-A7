@@ -1,136 +1,9 @@
 import React, { Component } from 'react';
-import Button from '@material-ui/core/Button';
-import BookedTrip, {Flight, HotelStay} from '../MyTrips/BookedTrips/BookedTrip.js';
-import Card from '@material-ui/core/Card'
-import { withStyles } from '@material-ui/core/styles';
-import CircularProgress from '@material-ui/core/CircularProgress';
-import Typography from '@material-ui/core/Typography';
-import Container from '@material-ui/core/Container';
-import CssBaseline from '@material-ui/core/CssBaseline';
+import BookedTrip, {Flight, HotelStay} from '../../MyTrips/BookedTrips/BookedTrip.js';
+import GeneratingCard from './GeneratingCard';
+import GeneratedCard from './GeneratedCard';
 
 const MAX_TRIES = 5;
-
-const styles = (theme) => ({
-  card: {
-    marginTop: 50,
-    width: 500,
-    minHeight: 250,
-    margin: "auto",
-    transition: "0.3s",
-    boxShadow: "0 8px 40px -12px rgba(0,0,0,0.3)",
-    "&:hover": {
-      boxShadow: "0 16px 70px -12.125px rgba(0,0,0,0.3)"
-    }
-  },
-  item: {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  paper: {
-    marginTop: theme.spacing(8),
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-  },
-  circle: {
-    marginTop: 30
-  }
-});
-
-class GeneratingCard extends Component {
-  constructor(props) {
-    super(props);
-  }
-
-  render() {
-    const { styles } = this.props;
-
-    return (
-      <div id="centered-fixed-masthead">
-        <Card className={styles.card}>
-          <Container component="main" maxWidth="xs">
-            <CssBaseline />
-            <div className={styles.paper}>
-              <Typography component="h1" variant="h5">
-                Generating...
-              </Typography>
-            </div>
-          </Container>
-          <div className={styles.item}>
-            <CircularProgress className={styles.circle}/>
-          </div>
-        </Card>
-      </div>
-    );
-  }
-}
-
-class GeneratedCard extends Component {
-  constructor(props) {
-    super(props);
-  }
-
-  onClick = e => {
-    e.preventDefault();
-    // Writing to firebase
-    const { values } = this.props;
-    console.log("saved info: ", values.generatedTrip);
-    console.log("saved info: ", values.hotel);
-
-    this.props.nextStep();
-  }
-
-  onClickRetakeQuiz = e => {
-    e.preventDefault();
-    this.props.goBack();
-  }
-
-  render() {
-    const { styles, values } = this.props;
-
-    return (
-      <div id="centered-fixed-masthead">
-        <Card className={styles.card}>
-          <Container component="main" maxWidth="xs">
-            <CssBaseline />
-            <div className={styles.paper}>
-              <Typography component="h1" variant="h5">
-                Trip Details...
-              </Typography>
-            </div>
-          </Container>
-          <Container className={styles.item}>
-            Departure Airport: {values.departureAirport.code} <br />
-            Departure Date: { values.departureDate.toDateString() } <br />
-            Return Date: { values.returnDate.toDateString() } <br />
-            Price: {values.totalPrice} <br />
-          </Container>
-          <Container>
-            <Button label="retakeQuiz"
-            type="submit"
-            onClick={this.onClickRetakeQuiz}
-            variant="contained">
-              Retake Quiz
-            </Button>
-            <Button label="saveTrip"
-            type="submit"
-            onClick={this.saveTrip}
-            variant="contained">
-              Save Trip
-            </Button>
-            <Button label="book"
-            type="submit"
-            onClick={this.onClick}
-            variant="contained">
-              Book
-            </Button>
-          </Container>
-        </Card>
-      </div>
-    );
-  }
-}
 
 class Price extends Component {
 
@@ -148,7 +21,7 @@ class Price extends Component {
   };
   
   componentDidMount() {
-    const { values, setTripData, setApiErr, setTotalPrice, classes } = this.props;
+    const { values, setTripData, setApiErr, setTotalPrice } = this.props;
     var tripDestination = "";
     var departDate = values.departureDate.toISOString();
     departDate = departDate.slice(0,10);
@@ -537,6 +410,4 @@ class Price extends Component {
   }
 }
 
-export { GeneratingCard, GeneratedCard }
-
-export default withStyles(styles)(Price);
+export default Price;

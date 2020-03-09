@@ -6,7 +6,7 @@ import { withFirebase } from '../../Firebase';
 
 import BookedTripCard from './BookedTripCard';
 import BookedTrip, {Flight, HotelStay} from './BookedTrip';
-import { airports } from "../../TripGeneration/airport.js";
+import { airports } from "../../../constants/airport.js";
 
 const INITIAL_STATE = {
   trips: [],
