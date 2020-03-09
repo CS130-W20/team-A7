@@ -60,8 +60,8 @@ class SavedTripCard extends Component {
         step: 2,
         // Criteria (set by Quiz)
         departureAirport: this.props.trip.criteria.departureAirport,
-        departureDate: this.props.trip.criteria.departureDate,
-        returnDate: this.props.trip.criteria.returnDate,
+        departureDate: new Date(this.props.trip.criteria.departureDate),
+        returnDate: new Date(this.props.trip.criteria.returnDate),
         destination: this.props.trip.criteria.destination,
         price: this.props.trip.criteria.price,
         budget: this.props.trip.criteria.budget,
