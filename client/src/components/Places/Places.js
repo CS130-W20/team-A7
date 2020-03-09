@@ -18,16 +18,17 @@ class Places {
     async getCityImage(cityName) {
         var unirest = require("unirest");
         var proxyurl = "https://cors-anywhere.herokuapp.com/";
-        // Search using Google Place Search with cityName
-        fetch(proxyurl + 'https://maps.googleapis.com/maps/api/place/findplacefromtext/json?key=' + process.env.REACT_APP_PLACES_API_KEY + '&input=' + cityName + '&inputtype=textquery').then
-
-        // Need to swap this out to get the place based on city string then the image using getImage
-        fetch(proxyurl + 'https://maps.googleapis.com/maps/api/place/details/json?key=' + process.env.REACT_APP_PLACES_API_KEY + '&').then(
-
-        )
-
-
-        return fetch(proxyurl + 'https://maps.googleapis.com/maps/api/place/photo?photoreference=' + photoReference + '&key=' + process.env.REACT_APP_PLACES_API_KEY + '&maxheight=250');
+        // Search using Google Places Search with cityName
+        fetch(proxyurl + 'https://maps.googleapis.com/maps/api/place/findplacefromtext/json?key=' + process.env.REACT_APP_PLACES_API_KEY + '&input=' + cityName + '&inputtype=textquery').then((response) => {
+            return response.json(); // need to extract the place ID from JSON for use w/ Places Details API
+        }).then((placeId) => {
+            fetch(proxyurl + 'https://maps.googleapis.com/maps/api/place/details/json?key=' + process.env.REACT_APP_PLACES_API_KEY + '&place_id=' + placeId).then((response) => {
+                return response.json(); // Need to extract photorreference from this fetch
+            }).then((photoReference) => {
+                // This actually returns the image
+                return fetch(proxyurl + 'https://maps.googleapis.com/maps/api/place/photo?photoreference=' + photoReference + '&key=' + process.env.REACT_APP_PLACES_API_KEY + '&maxheight=250');
+            })
+        })
     }
 
 };
