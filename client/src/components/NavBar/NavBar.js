@@ -48,6 +48,10 @@ const NavBar = ({ classes }) => (
               <Typography variant="h6" className={classes.title}>
               </Typography>
               
+              <LinkContainer to={ROUTES.MY_TRIPS}>
+                <Button className={classes.button}> My Trips </Button>
+              </LinkContainer>
+
               <LinkContainer to={ROUTES.QUIZ}>
                 <Button className={classes.button}> Quiz </Button>
               </LinkContainer>

@@ -53,6 +53,37 @@ class SavedTripCard extends Component {
   constructor(props) {
     super(props);
   }
+
+  destinationText(destinationOpt) {
+    if (destinationOpt === 'anyDest') {
+      return 'Surprise me!';
+    }
+    else if (destinationOpt === 'international') {
+      return 'International';
+    }
+    else if (destinationOpt === 'withinUS') {
+      return 'Within the U.S.';
+    }
+    else {
+      return '';
+    }
+  }
+
+  priceText(priceOpt) {
+    if (priceOpt === 'anyPrice') {
+      return "Cost isn't a factor";
+    }
+    else if (priceOpt === 'cheapest') {
+      return 'Cheapest';
+    }
+    else if (priceOpt === 'underBudget') {
+      return 'Under Budget';
+    }
+    else {
+      return '';
+    }
+  }
+
   handleClickOpen = () => {
     this.props.history.push({
       pathname: '/quiz',
@@ -84,7 +115,7 @@ class SavedTripCard extends Component {
           <div className={classes.tripInfo}>
             <CardContent>
               <Typography gutterBottom variant="h3">
-                {this.props.trip.price}
+                {"Latest Price: " + "$" + this.props.trip.price.toFixed(2)}
               </Typography>
               <div className={classes.details}>
                 <Typography variant="body1" gutterBottom>
@@ -92,6 +123,12 @@ class SavedTripCard extends Component {
                 </Typography>
                 <Typography variant="body1" color="textSecondary">
                   <i> {this.props.trip.criteria.departureDate} to {this.props.trip.criteria.returnDate} </i>
+                </Typography>
+                <Typography variant="body1" color="textSecondary">
+                  <i> {this.destinationText(this.props.trip.criteria.destination)} </i>
+                </Typography>
+                <Typography variant="body1" color="textSecondary">
+                  <i> {this.priceText(this.props.trip.criteria.price)} </i>
                 </Typography>
               </div>
             </CardContent>
