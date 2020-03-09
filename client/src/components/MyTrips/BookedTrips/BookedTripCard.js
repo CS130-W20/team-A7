@@ -15,7 +15,7 @@ import FlightTakeoffIcon from '@material-ui/icons/FlightTakeoff';
 import FlightLandIcon from '@material-ui/icons/FlightLand';
 import HotelIcon from '@material-ui/icons/Hotel';
 import LocalActivityIcon from '@material-ui/icons/LocalActivity';
-import Places from '../../Places/Places.js'
+import { getCityImage } from '../../Places/places.js'
 
 const styles = theme => ({
   button: {
@@ -149,7 +149,7 @@ class BookedTripCard extends Component {
             <CardMedia
               className={classes.media}
               image={
-                "https://upload.wikimedia.org/wikipedia/commons/d/d6/London-Eye-2009.JPG"
+                getCityImage(this.props.trip.departureFlight.destinationCity)
               }
             />
             <div>
