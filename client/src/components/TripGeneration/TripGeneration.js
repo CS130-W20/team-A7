@@ -13,7 +13,8 @@ const INITIAL_STATE = {
   price: "anyPrice",
   budget: 0,
   totalPrice: null,
-  generatedTrip: null,
+  bookTrip: null,
+  saveTrip: null,
   hotel: null,
   apiErr: null
 };
@@ -49,11 +50,6 @@ export class UserForm extends Component {
       }
       else if (event === 'returnDate') {
         this.handleReturnDate(value);
-      }
-      else if (event === 'budget'){
-        this.setState({[event.target.name]: value});
-        console.log('clicked!: ', event.target.name);
-        console.log('clicked!: ', value);
       }
       else {
           this.handleButtonChange(event, value);
@@ -99,9 +95,10 @@ export class UserForm extends Component {
     }
   };
   
-  setTripData = (trip, hotel, price) => {
+  setTripData = (bookTrip, saveTrip, hotel, price) => {
     this.setState({
-      generatedTrip: trip,
+      bookTrip: bookTrip,
+      saveTrip: saveTrip, 
       hotel: hotel,
       totalPrice: price,
   })};
@@ -113,8 +110,8 @@ export class UserForm extends Component {
   
   render() {
     const { step } = this.state;
-    const { departureAirport, departureDate, returnDate, destination, price, budget, totalPrice, generatedTrip, hotel, apiErr } =  this.state;
-    const values = { departureAirport, departureDate, returnDate, destination, price, budget, totalPrice, generatedTrip, hotel, apiErr };
+    const { departureAirport, departureDate, returnDate, destination, price, budget, totalPrice, bookTrip, saveTrip, hotel, apiErr } =  this.state;
+    const values = { departureAirport, departureDate, returnDate, destination, price, budget, totalPrice, bookTrip, saveTrip, hotel, apiErr };
   
     switch (step) {
       case 1:

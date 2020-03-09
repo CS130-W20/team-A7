@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import Button from '@material-ui/core/Button';
 import BookedTrip, {Flight, HotelStay} from '../MyTrips/BookedTrips/BookedTrip.js';
 import SavedTrip from '../MyTrips/SavedTrips/SavedTrip.js';
+import Criteria from './Criteria.js'
 import Card from '@material-ui/core/Card'
 import { withStyles } from '@material-ui/core/styles';
 import CircularProgress from '@material-ui/core/CircularProgress';
@@ -76,8 +77,9 @@ class GeneratedCard extends Component {
     e.preventDefault();
     // Writing to firebase
     const { values } = this.props;
-    console.log("saved info: ", values.generatedTrip);
-    console.log("saved info: ", values.hotel);
+    console.log("saved bookTrip: ", values.bookTrip);
+    console.log("saved saveTrip: ", values.saveTrip);
+    console.log("saved hotel: ", values.hotel);
   }
 
   render() {
@@ -348,11 +350,13 @@ class Price extends Component {
           setApiErr(apiErr);
           return;
         }
+        
+        const { values } = this.props;
 
         console.log("outbound flight: ", results[0].OutboundLeg.DepartureDate);
         console.log("inbound flight: ", results[1].chosenInQuote.OutboundLeg.DepartureDate);
 
-        // Creating the trip object
+        // Creating the BookedTrip object
         var departureDate = new Date(results[0].OutboundLeg.DepartureDate);
         var departureAirline = results[0].carriers.find(carr => carr.CarrierId == results[0].OutboundLeg.CarrierIds[0]).Name;
         var outboundDepartureAirportCode = values.departureAirport.code;
@@ -376,7 +380,6 @@ class Price extends Component {
           },
         );
         
-        // Created the Trip object
         var returnDate = new Date(results[1].chosenInQuote.OutboundLeg.DepartureDate);
         var returnAirline = results[1].inCarriers.carriers.find(carr => carr.CarrierId == results[1].chosenInQuote.OutboundLeg.CarrierIds[0]).Name;
         var inboundDepartureAirportName = results[0].airport.Name;
@@ -401,13 +404,24 @@ class Price extends Component {
         );
 
         var hotelStay = new HotelStay(results[3].hotelResult, results[3].numNights);
-        var trip = new BookedTrip('BookedTrip1', departureFlight, returnFlight, hotelStay);
+        var bookTrip = new BookedTrip('BookedTrip1', departureFlight, returnFlight, hotelStay);
         
+        // Creating the SavedTrip object
+        var inputCriteria = new Criteria(
+          values.departureAirport,
+          values.departureDate,
+          values.returnDate,
+          values.destination,
+          values.price,
+          values.budget
+        );
+        var saveTrip = new SavedTrip(inputCriteria);
+
         // Calculating total price
-        var price = results[0].MinPrice + results[1].chosenInQuote.MinPrice + (results[3].hotelResult.price * results[3].numNights)
+        var price = results[0].MinPrice + results[1].chosenInQuote.MinPrice + (results[3].hotelResult.price * results[3].numNights);
 
         // Set the new state
-        setTripData(trip, hotelStay, price);
+        setTripData(bookTrip, saveTrip, hotelStay, price);
         
         cheapestIndex = MAX_TRIES;
       });
@@ -432,17 +446,9 @@ class Price extends Component {
     attemptTrip().then(() => console.log("Finishing attempts to generate a trip."));
   }
 
-  onClick = e => {
-    e.preventDefault();
-    // Writing to firebase
-    const { values } = this.props;
-    console.log("saved info: ", values.generatedTrip);
-    console.log("saved info: ", values.hotel);
-  }
-
   render() {
     const { classes, values } = this.props;
-    
+
     return (
       <div>
         { values.totalPrice === null ? (values.apiErr === null ? <GeneratingCard styles={classes}/> : values.apiErr) : (values.apiErr === null ? <GeneratedCard styles={classes} values={values}/> : values.apiErr) }

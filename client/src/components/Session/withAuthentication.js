@@ -52,7 +52,7 @@ const withAuthentication = Component => {
           authUser: this.state.authUser,
           user: this.state.user,
         }}>
-          <Component {...this.props} />
+          <Component {...this.props} authUser={this.state.authUser} />
         </AuthUserContext.Provider>
       );
     }
