@@ -372,6 +372,7 @@ class Price extends Component {
           values.departureDate.toDateString(),
           values.returnDate.toDateString(),
           values.destination,
+          values.price,
           values.budget
         );
         var saveTrip = new SavedTrip(inputCriteria, price);
