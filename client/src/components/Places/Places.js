@@ -17,14 +17,16 @@ export const getCityImage = async (cityName) => {
     var apiKey = process.env.REACT_APP_PLACES_API_KEY;
     // Search using Google Places Search with cityName
     fetch(proxyurl + 'https://maps.googleapis.com/maps/api/place/findplacefromtext/json?key=' + apiKey + '&input=' + cityName + '&inputtype=textquery').then((response) => {
-        var response_temp = response.json()
-        console.log(response_temp)
-        return response_temp; // need to extract the place ID from JSON for use w/ Places Details API
-    }).then((placeId) => {
+        // Finds the placeId based on the name of destination
+        return response.json()
+    }).then((response) => {
+        var placeId = response.candidates[0].place_id;
         fetch(proxyurl + 'https://maps.googleapis.com/maps/api/place/details/json?key=' + apiKey + '&place_id=' + placeId).then((response) => {
-            return response.json(); // Need to extract photorreference from this fetch
-        }).then((photoReference) => {
-            // This actually returns the image
+            // Uses the placeId to get more information on place
+            return response.json();
+        }).then((response) => {
+            // Extracts the photoreference of the result
+            var photoReference = response.result.photos[0].photo_reference;
             return fetch(proxyurl + 'https://maps.googleapis.com/maps/api/place/photo?photoreference=' + photoReference + '&key=' + apiKey + '&maxheight=250');
         })
     })

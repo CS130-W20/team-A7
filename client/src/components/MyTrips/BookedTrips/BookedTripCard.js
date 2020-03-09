@@ -121,8 +121,15 @@ class BookedTripCard extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      open: false
+      open: false,
+      destinationImage: null
     };
+  }
+
+  componentDidMount() {
+    this.setState({
+      destinationImage: getCityImage(this.props.trip.departureFlight.destinationCity)
+    });
   }
 
   render() {
@@ -148,9 +155,7 @@ class BookedTripCard extends Component {
         <Card className={classes.root} >
             <CardMedia
               className={classes.media}
-              image={
-                getCityImage(this.props.trip.departureFlight.destinationCity)
-              }
+              image={this.state.destinationImage}
             />
             <div>
               <CardContent>
