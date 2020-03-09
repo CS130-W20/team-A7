@@ -1,12 +1,23 @@
 import React, { Component } from 'react';
 import Button from '@material-ui/core/Button';
 import BookedTrip, {Flight, HotelStay} from '../MyTrips/BookedTrips/BookedTrip.js';
+import SavedTrip from '../MyTrips/SavedTrips/SavedTrip.js';
+import Criteria from './Criteria.js'
 import Card from '@material-ui/core/Card'
 import { withStyles } from '@material-ui/core/styles';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import Typography from '@material-ui/core/Typography';
 import Container from '@material-ui/core/Container';
 import CssBaseline from '@material-ui/core/CssBaseline';
+
+import { compose } from 'recompose';
+import { withFirebase } from '../Firebase';
+import { AuthUserContext } from '../Session';
+
+import { Link, withRouter } from 'react-router-dom';
+import * as ROUTES from '../../constants/routes';
+
+
 
 const MAX_TRIES = 5;
 
@@ -71,13 +82,75 @@ class GeneratedCard extends Component {
     super(props);
   }
 
-  onClick = e => {
-    e.preventDefault();
-    // Writing to firebase
-    const { values } = this.props;
-    console.log("saved info: ", values.generatedTrip);
-    console.log("saved info: ", values.hotel);
+  writeToBookedTrips(userId, newTrip) {
+    const tripsRef = this.props.firebase.bookedTrips();
+    const newTripRef = tripsRef.push();
+    newTripRef.set(newTrip, function(error) {
+      if (error) {
+        console.log('Error: Failed to write trip to user ', userId, ': ', error);
+      }
+    });
+    return newTripRef.key;
+  }
 
+  writeToUserBookedTrips(userId, tripId) {
+    const currentUserTripsRef = this.props.firebase.singleUserBookedTrips(userId);
+    const newIndex = currentUserTripsRef.push();
+    newIndex.set(tripId);
+  }
+
+  writeToSavedTrips(userId, newTrip) {
+    const tripsRef = this.props.firebase.savedTrips();
+    const newTripRef = tripsRef.push();
+    newTripRef.set(newTrip, function(error) {
+      if (error) {
+        console.log('Error: Failed to write trip to user ', userId, ': ', error);
+      }
+    });
+    return newTripRef.key;
+  }
+
+  writeToUserSavedTrips(userId, tripId) {
+    const currentUserTripsRef = this.props.firebase.singleUserSavedTrips(userId);
+    const newIndex = currentUserTripsRef.push();
+    newIndex.set(tripId);
+  }
+
+  saveTrip = e => {
+    e.preventDefault();
+    const { values, authUser } = this.props;
+    if (true || (authUser !== null)) {
+      if (typeof authUser.uid !== 'undefined' && authUser.uid !== null) {
+        const userId = authUser.uid;
+        // Writing to firebase
+        const newTripKey = this.writeToSavedTrips(userId, values.saveTrip);
+        if (typeof newTripKey !== 'undefined') {
+          this.writeToUserSavedTrips(userId, newTripKey);
+        }
+        else {
+          console.log('Error: ', 'Did not write to user trips, new trip key was undefined');
+        }
+      }
+    }
+    this.props.history.push(ROUTES.MY_TRIPS);
+  }
+  
+  bookTrip = e => {
+    e.preventDefault();
+    const { values, authUser } = this.props;
+    if (true || (authUser !== null)) {
+      if (typeof authUser.uid !== 'undefined' && authUser.uid !== null) {
+        const userId = authUser.uid;
+        // Writing to firebase
+        const newTripKey = this.writeToBookedTrips(userId, values.bookTrip);
+        if (typeof newTripKey !== 'undefined') {
+          this.writeToUserBookedTrips(userId, newTripKey);
+        }
+        else {
+          console.log('Error: ', 'Did not write to user trips, new trip key was undefined');
+        }
+      }
+    }
     this.props.nextStep();
   }
 
@@ -121,7 +194,9 @@ class GeneratedCard extends Component {
             </Button>
             <Button label="book"
             type="submit"
-            onClick={this.onClick}
+            
+            
+            onClick={this.bookTrip}
             variant="contained">
               Book
             </Button>
@@ -139,6 +214,8 @@ class Price extends Component {
     this.state = {
       trip: null,
       hotel : null,
+      gotContext: null,
+      authUser: null,
     }
   }
   
@@ -412,7 +489,8 @@ class Price extends Component {
       });
     }
     
-    function generateTrip(){
+    function generateTrip() {
+
       return startOutFlight().then(function(outFlight) {
         return startInFlight(outFlight).then(inFlight => [outFlight, inFlight]);
       }).then(function([outFlight, inFlight]) {
@@ -426,12 +504,12 @@ class Price extends Component {
         if ((typeof results[0] === 'undefined') || (typeof results[1] === 'undefined') || (typeof results[3] === 'undefined')) {
           setApiErr(apiErr);
           return;
-        }
+        }  
 
         //console.log("outbound flight: ", results[0].OutboundLeg.DepartureDate);
         //console.log("inbound flight: ", results[1].chosenInQuote.OutboundLeg.DepartureDate);
 
-        // Creating the trip object
+        // Creating the BookedTrip object
         var departureDate = new Date(results[0].OutboundLeg.DepartureDate);
         var departureAirline = results[0].carriers.find(carr => carr.CarrierId == results[0].OutboundLeg.CarrierIds[0]).Name;
         var outboundDepartureAirportCode = values.departureAirport.code;
@@ -443,7 +521,7 @@ class Price extends Component {
         var departureFlight = new Flight(
           outboundDepartureCity,
           outboundDestinationCity,
-          departureDate,
+          departureDate.toDateString(),
           departureAirline,
           {
             name: outboundDepartureAirportName,
@@ -455,7 +533,6 @@ class Price extends Component {
           },
         );
         
-        // Created the Trip object
         var returnDate = new Date(results[1].chosenInQuote.OutboundLeg.DepartureDate);
         var returnAirline = results[1].inCarriers.carriers.find(carr => carr.CarrierId == results[1].chosenInQuote.OutboundLeg.CarrierIds[0]).Name;
         var inboundDepartureAirportName = results[0].airport.Name;
@@ -467,7 +544,7 @@ class Price extends Component {
         var returnFlight = new Flight(
           inboundDepartureCity,
           inboundDestinationCity,
-          returnDate,
+          returnDate.toDateString(),
           returnAirline,
           {
             name: inboundDepartureAirportName,
@@ -480,13 +557,23 @@ class Price extends Component {
         );
 
         var hotelStay = new HotelStay(results[3].hotelResult, results[3].numNights);
-        var trip = new BookedTrip('BookedTrip1', departureFlight, returnFlight, hotelStay);
+        var bookTrip = new BookedTrip('BookedTrip1', departureFlight, returnFlight, hotelStay);
         
         // Calculating total price
-        var price = results[0].MinPrice + results[1].chosenInQuote.MinPrice + (results[3].hotelResult.price * results[3].numNights)
+        var price = results[0].MinPrice + results[1].chosenInQuote.MinPrice + (results[3].hotelResult.price * results[3].numNights);
+
+        // Creating the SavedTrip object
+        var inputCriteria = new Criteria(
+          values.departureAirport,
+          values.departureDate.toDateString(),
+          values.returnDate.toDateString(),
+          values.destination,
+          values.budget
+        );
+        var saveTrip = new SavedTrip(inputCriteria, price);
 
         // Set the new state and exit out of recursion loop
-        setTripData(trip, hotelStay, price);
+        setTripData(bookTrip, saveTrip, hotelStay, price);
         tripSuccess = true;
         retryIndex = MAX_TRIES;
       });
@@ -516,16 +603,26 @@ class Price extends Component {
     }
     
     //We try to generate a trip *up to* MAX_TRIES times.
-    attemptTrip().then(() => {
+    attemptTrip().then((values) => {
       console.log("Finishing attempts to generate a trip.")
     });
+  }
+
+  componentDidUpdate() {
+    if (typeof this.context.authUser !== 'undefined' && this.context.authUser !== null && !this.state.gotContext) {
+      this.setState({
+        gotContext: true,
+        authUser: this.context.authUser,
+      });
+      // console.log('yeet: ', this.context);
+    }
   }
 
   render() {
     const { classes, values, goBack, nextStep } = this.props;
     let componentToRender;
     if (values.apiErr === null) {
-      componentToRender = values.totalPrice === null ? <GeneratingCard styles={classes}/> : <GeneratedCard styles={classes} values={values} goBack={goBack} nextStep={nextStep}/>;
+      componentToRender = values.totalPrice === null ? <GeneratingCard styles={classes}/> : <GeneratedCard authUser={this.state.authUser} history={this.props.history} firebase={this.props.firebase} styles={classes} values={values} goBack={goBack} nextStep={nextStep}/>;
     } else {
       componentToRender = values.apiErr;
     }
@@ -538,6 +635,13 @@ class Price extends Component {
   }
 }
 
-export { GeneratingCard, GeneratedCard }
+Price.contextType = AuthUserContext;
 
-export default withStyles(styles)(Price);
+const PriceComposed = compose(
+  withStyles(styles),
+  withFirebase,
+  withRouter,
+)(Price);
+
+export { GeneratingCard, GeneratedCard }
+export default PriceComposed;

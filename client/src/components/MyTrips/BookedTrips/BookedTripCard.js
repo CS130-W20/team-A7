@@ -64,10 +64,10 @@ function SimpleDialog(props) {
       <DialogTitle id="simple-dialog-title">Trip Details - {details.departureFlight.destinationCity}</DialogTitle>
       <List>
           <ListItem >
-          <FlightTakeoffIcon />  <ListItemText  primary={"Outbound Flight: "} secondary={details.departureFlight.departureCity + " (" + details.departureFlight.departureAirport.code + ") to " + details.departureFlight.destinationCity + " (" + details.departureFlight.destinationAirport.code + ")   -   " + details.departureFlight.departureDate.toDateString()} />
+          <FlightTakeoffIcon />  <ListItemText  primary={"Outbound Flight: "} secondary={details.departureFlight.departureCity + " (" + details.departureFlight.departureAirport.code + ") to " + details.departureFlight.destinationCity + " (" + details.departureFlight.destinationAirport.code + ")   -   " + details.departureFlight.departureDate} />
           </ListItem>
           <ListItem>
-          <FlightLandIcon /><ListItemText primary="Return Flight: " secondary={details.returnFlight.departureCity + " (" + details.returnFlight.departureAirport.code + ") to " + details.returnFlight.destinationCity + " (" + details.returnFlight.destinationAirport.code + ")   -   " + details.returnFlight.departureDate.toDateString()} />
+          <FlightLandIcon /><ListItemText primary="Return Flight: " secondary={details.returnFlight.departureCity + " (" + details.returnFlight.departureAirport.code + ") to " + details.returnFlight.destinationCity + " (" + details.returnFlight.destinationAirport.code + ")   -   " + details.returnFlight.departureDate} />
           </ListItem>
           <ListItem>
           <HotelIcon /><ListItemText primary="Hotel: " secondary = {details.hotelStay.hotelResult.name +"  -  "+ details.hotelStay.hotelResult.rating +" star hotel"}   />
@@ -94,7 +94,7 @@ function SimpleDialog(props) {
                 {details.departureFlight.departureCity} to {details.departureFlight.destinationCity}
               </Typography>
               <Typography variant="body1" color="textSecondary">
-                <i> {details.departureFlight.departureDate.toDateString()} to {details.returnFlight.departureDate.toDateString()} </i>
+                <i> {details.departureFlight.departureDate} to {details.returnFlight.departureDate} </i>
               </Typography>
             </div>
           </CardContent>
@@ -158,7 +158,7 @@ class BookedTripCard extends Component {
                 {this.props.trip.departureFlight.departureCity} to {this.props.trip.departureFlight.destinationCity}
               </Typography>
               <Typography variant="body1" color="textSecondary">
-                <i> {this.props.trip.departureFlight.departureDate.toDateString()} to {this.props.trip.returnFlight.departureDate.toDateString()} </i>
+                <i> {this.props.trip.departureFlight.departureDate} to {this.props.trip.returnFlight.departureDate} </i>
               </Typography>
             </div>
           </CardContent>

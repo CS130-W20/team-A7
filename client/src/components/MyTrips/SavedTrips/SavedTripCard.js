@@ -40,10 +40,6 @@ const styles = theme => ({
 });
 
 class SavedTripCard extends Component {
-  constructor(props) {
-    super(props);
-  }
-
   render() {
 
     const handleClickOpen = () => {
@@ -60,14 +56,14 @@ class SavedTripCard extends Component {
         <div className={classes.tripInfo}>
           <CardContent>
             <Typography gutterBottom variant="h3">
-              $532.12
+              {this.props.trip.price}
             </Typography>
             <div className={classes.details}>
               <Typography variant="body1" gutterBottom>
                 Departing from: {this.props.trip.criteria.departureAirport.city}
               </Typography>
               <Typography variant="body1" color="textSecondary">
-                <i> {this.props.trip.criteria.departureDate.toDateString()} to {this.props.trip.criteria.returnDate.toDateString()} </i>
+                <i> {this.props.trip.criteria.departureDate} to {this.props.trip.criteria.returnDate} </i>
               </Typography>
             </div>
           </CardContent>
