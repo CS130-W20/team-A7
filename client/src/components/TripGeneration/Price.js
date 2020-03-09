@@ -216,7 +216,8 @@ class Price extends Component {
           //If cheapest, take first entry because it's ordered by price.
           //If under budget, take last entry because we want the most bang for our buck of our allocated flight funds
           //If cost isn't a consideration, we'll take most expensive (last) entry.
-          var tripIndex = ((values.price === 'cheapest') ? retryIndex : ((values.price === 'underBudget') ? numResults - 1 - retryIndex : numResults - 1));
+          var tripIndex = ((values.price === 'cheapest') ? retryIndex : ((values.price === 'underBudget') ? numResults - 1 - retryIndex : Math.floor(Math.random() * numResults)));
+          console.log(tripIndex);
           var chosenQuote = quotes[tripIndex];
           chosenQuote.carriers = carriers;
           airportPlace = res.body.Places.find(element => element.PlaceId == chosenQuote.OutboundLeg.DestinationId);
