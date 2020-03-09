@@ -423,10 +423,10 @@ class Price extends Component {
   }
 
   render() {
-    const { values, goBack, nextStep } = this.props;
+    const { values, goBack, nextStep, setApiErr, setTotalPrice } = this.props;
     let componentToRender;
     if (values.apiErr === null) {
-      componentToRender = values.totalPrice === null ? <GeneratingCard /> : <GeneratedCard authUser={this.state.authUser} history={this.props.history} firebase={this.props.firebase} values={values} goBack={goBack} nextStep={nextStep}/>;
+      componentToRender = values.totalPrice === null ? <GeneratingCard /> : <GeneratedCard authUser={this.state.authUser} history={this.props.history} firebase={this.props.firebase} values={values} goBack={goBack} nextStep={nextStep} setApiErr={setApiErr} setTotalPrice={setTotalPrice}/>;
     } else {
       componentToRender = values.apiErr;
     }
