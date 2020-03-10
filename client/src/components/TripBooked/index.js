@@ -3,6 +3,8 @@ import { Typography } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
 import CTAButton from '../CTAButton/CTAButton';
 import './TripBooked.css';
+import * as ROUTES from '../../constants/routes';
+import { withRouter } from 'react-router-dom';
 
 const styles = () => ({
   congratsPretext: {
@@ -59,6 +61,11 @@ class TripBooked extends Component {
   constructor(props) {
     super(props);
   }
+  
+  viewItinerary = e => {
+    e.preventDefault();
+    this.props.history.push(ROUTES.MY_TRIPS);
+  }    
 
   render() {
     const { classes, name, destination, date, time } = this.props;
@@ -101,11 +108,11 @@ class TripBooked extends Component {
         <div id="trip-booked-actions-container">
           <Typography className={classes.shareTitle}>SHARE</Typography>
           <Typography className={classes.orTitle}>OR</Typography>
-          <CTAButton boxShadow={3}>VIEW ITINERARY</CTAButton>
+          <CTAButton boxShadow={3} onClick={this.viewItinerary}>VIEW ITINERARY</CTAButton>
         </div>
       </div>
     </div>);
   }
 }
 
-export default withStyles(styles)(TripBooked);
+export default withRouter(withStyles(styles)(TripBooked));
