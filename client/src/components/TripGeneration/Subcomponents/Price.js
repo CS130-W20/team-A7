@@ -247,6 +247,10 @@ class Price extends Component {
           if (res.error) throw new Error(res.error);
 
           var hotels = res.body.data;
+          if (typeof hotels === 'undefined') {
+            resolve(undefined);
+            return;
+          }
           hotels = hotels.filter(hotel => ((hotel.hac_offers.availability == "available" || hotel.hac_offers.availability == "pending") && hotel.hasOwnProperty('price')));
           var numResults = hotels.length;
           if (numResults == 0) {
