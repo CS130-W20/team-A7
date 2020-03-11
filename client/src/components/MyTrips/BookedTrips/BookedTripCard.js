@@ -126,7 +126,11 @@ class BookedTripCard extends Component {
       sourceAddress: '',
       destinationAddress: '',
       destinationImage: null,
-      destinationWebsite: ''
+      destinationWebsite: '',
+      srcAddDone: false,
+      desAddDone: false,
+      destImgDone: false,
+      destWbstDone: false,
     };
   }
 
@@ -161,33 +165,73 @@ class BookedTripCard extends Component {
       });
     }
   }
+  
+  srcAddIsDone() {
+    this.setState({
+      srcAddDone : true
+    });
+  }
+  
+  desAddIsDone() {
+    this.setState({
+      desAddDone : true
+    });
+  }
+  
+  destImgIsDone() {
+    this.setState({
+      destImgDone : true
+    });
+  }
+  
+  destWbstIsDone() {
+    this.setState({
+      destWbstDone : true
+    });
+  }
 
   componentDidMount() {
     const setSourceAddress_c = ((addy) => this.setSourceAddress(addy));
     const setDestinationAddress_c = ((addy) => this.setDestinationAddress(addy));
     const setDestinationImage_c = ((url) => this.setDestinationImage(url));
-    const setDestinationWebsite_c = ((url) => this.setDestinationWebsite(url))
+    const setDestinationWebsite_c = ((url) => this.setDestinationWebsite(url));
+    const srcAddIsDone_c = (() => this.srcAddIsDone());
+    const desAddIsDone_c = (() => this.desAddIsDone());
+    const destImgIsDone_c = (() => this.destImgIsDone());
+    const destWbstIsDone_c = (() => this.destWbstIsDone());
 
-    getFormattedAddress(this.props.trip.departureFlight.departureCity).then(function (addy) {
-      setSourceAddress_c(addy)
-    });
+    if (!this.state.srcAddDone) {
+      getFormattedAddress(this.props.trip.departureFlight.departureCity).then(function (addy) {
+        setSourceAddress_c(addy);
+        srcAddIsDone_c();
+      });
+    }
 
-    getFormattedAddress(this.props.trip.departureFlight.destinationCity).then(function (addy) {
-      setDestinationAddress_c(addy)
-    });
+    if (!this.state.desAddDone) {
+      getFormattedAddress(this.props.trip.departureFlight.destinationCity).then(function (addy) {
+        setDestinationAddress_c(addy);
+        desAddIsDone_c();
+      });
+    }
 
-    getCityImage(this.props.trip.departureFlight.destinationCity).then(function (url) {
-      setDestinationImage_c(url)
-    });
+    if (!this.state.destImgDone) {
+      getCityImage(this.props.trip.departureFlight.destinationCity).then(function (url) {
+        setDestinationImage_c(url);
+        destImgIsDone_c();
+      });
+    }
 
-    getCityWebsite(this.props.trip.departureFlight.destinationCity).then(function (url) {
-      setDestinationWebsite_c(url)
-    })
+    if (!this.state.destWbstDone) {
+      getCityWebsite(this.props.trip.departureFlight.destinationCity).then(function (url) {
+        setDestinationWebsite_c(url);
+        destWbstIsDone_c();
+      });
+    }
   }
 
   render() {
     
-  const { classes, trip} = this.props;
+  const { classes, trip } = this.props;
 
   const handleClickOpen = () => {
     this.setState({
