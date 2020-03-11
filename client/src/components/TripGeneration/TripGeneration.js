@@ -26,7 +26,7 @@ const formatTime = (date) => {
   const minutes = date.getMinutes();
 
   let timeString;
-  if (hour == 0) {
+  if (hour === 0) {
     timeString = '12:';
   } else {
     timeString = `${hour % 12}:`;
@@ -41,7 +41,7 @@ export class TripGeneration extends Component {
     super(props);
     if (typeof this.props.location.state !== 'undefined') {
       console.log('hope: ', this.props.location.state);
-      this.state = {... this.props.location.state};
+      this.state = {...this.props.location.state};
     }
     else {
       this.state = { ...INITIAL_STATE };
@@ -193,6 +193,10 @@ export class TripGeneration extends Component {
             time={formattedTime}
           />
         );
+      default:
+        return(
+          <div> Error </div>
+        )
     }
   }
 }

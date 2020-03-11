@@ -58,10 +58,6 @@ const styles = () => ({
 });
 
 class TripBooked extends Component {
-  constructor(props) {
-    super(props);
-  }
-  
   viewItinerary = e => {
     e.preventDefault();
     this.props.history.push(ROUTES.MY_TRIPS);

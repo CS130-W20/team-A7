@@ -70,7 +70,7 @@ class Price extends Component {
           
           var numResults = quotes.length;
           //We try UP TO 5 times. If there's no results then we give up.
-          if (numResults == 0 || retryIndex > numResults - 1) {
+          if (numResults === 0 || retryIndex > numResults - 1) {
             apiErr = "No results found. Please try new flight information."
             resolve(undefined);
             return;
@@ -81,7 +81,7 @@ class Price extends Component {
             //reserve percentage of funds for outbound flight based on trip type. international more likely to be expensive.
             const outBudget = (values.destination === 'international') ? Math.floor(budgetLeft/3) : Math.floor(budgetLeft/4);
             var budgetQuotes = quotes.filter(q => (q.MinPrice <= outBudget));
-            if (budgetQuotes.length == 0) {
+            if (budgetQuotes.length === 0) {
               setApiErr("Budget is too small for current trip.");
               resolve(undefined);
               return;
@@ -101,7 +101,7 @@ class Price extends Component {
           console.log(tripIndex);
           var chosenQuote = quotes[tripIndex];
           chosenQuote.carriers = carriers;
-          airportPlace = res.body.Places.find(element => element.PlaceId == chosenQuote.OutboundLeg.DestinationId);
+          airportPlace = res.body.Places.find(element => element.PlaceId === chosenQuote.OutboundLeg.DestinationId);
           chosenQuote.airport = airportPlace;
           if (values.price === 'underBudget') {
             budgetLeft -= chosenQuote.MinPrice;
@@ -138,7 +138,7 @@ class Price extends Component {
           if (inRes.error) throw new Error(inRes.error);
             var inQuotes = inRes.body.Quotes;
             var numResults = inQuotes.length;
-            if (numResults == 0) {
+            if (numResults === 0) {
               apiErr = "No returning flights found. Trying a new trip.";
               resolve(undefined);
               return;
@@ -153,7 +153,7 @@ class Price extends Component {
               // Otherwise: (3/4)/3 => 1/4 of original budget reserved for inbound flight 
               const inBudget = (values.destination === 'international') ? Math.floor(budgetLeft/2) : Math.floor(budgetLeft/3);
               var budgetQuotes = inQuotes.filter(q => (q.MinPrice <= inBudget));
-              if (budgetQuotes.length == 0) {
+              if (budgetQuotes.length === 0) {
                 setApiErr("Budget is too small for current trip.");
                 resolve(undefined);
                 return;
@@ -251,9 +251,9 @@ class Price extends Component {
             resolve(undefined);
             return;
           }
-          hotels = hotels.filter(hotel => ((hotel.hac_offers.availability == "available" || hotel.hac_offers.availability == "pending") && hotel.hasOwnProperty('price')));
+          hotels = hotels.filter(hotel => ((hotel.hac_offers.availability === "available" || hotel.hac_offers.availability === "pending") && hotel.hasOwnProperty('price')));
           var numResults = hotels.length;
-          if (numResults == 0) {
+          if (numResults === 0) {
             apiErr = "No available hotels in the area we searched. Trying a new trip!";
             resolve(undefined);
             return;
@@ -272,7 +272,7 @@ class Price extends Component {
             //Spend the rest of the budget on a hotel!
             const nightlyBudget = budgetLeft / numNights;
             var budgetHotels = hotels.filter(hotel => (hotel.price <= nightlyBudget));
-            if (budgetHotels.length == 0) {
+            if (budgetHotels.length === 0) {
               //We made it this far so we're giving them the cheapest hotel to try and stay near budget!
               numResults = 1;
             } else {
@@ -319,7 +319,7 @@ class Price extends Component {
 
         // Creating the BookedTrip object
         var departureDate = new Date(results[0].OutboundLeg.DepartureDate);
-        var departureAirline = results[0].carriers.find(carr => carr.CarrierId == results[0].OutboundLeg.CarrierIds[0]).Name;
+        var departureAirline = results[0].carriers.find(carr => carr.CarrierId === results[0].OutboundLeg.CarrierIds[0]).Name;
         var outboundDepartureAirportCode = values.departureAirport.code;
         var outboundDepartureAirportName = values.departureAirport.name;
         var outboundDepartureCity = values.departureAirport.city;
@@ -342,7 +342,7 @@ class Price extends Component {
         );
         
         var returnDate = new Date(results[1].chosenInQuote.OutboundLeg.DepartureDate);
-        var returnAirline = results[1].inCarriers.carriers.find(carr => carr.CarrierId == results[1].chosenInQuote.OutboundLeg.CarrierIds[0]).Name;
+        var returnAirline = results[1].inCarriers.carriers.find(carr => carr.CarrierId === results[1].chosenInQuote.OutboundLeg.CarrierIds[0]).Name;
         var inboundDepartureAirportName = results[0].airport.Name;
         var inboundDepartureAirportCode = results[0].airport.IataCode;
         var inboundDepartureCity = results[0].airport.CityName;
@@ -394,13 +394,13 @@ class Price extends Component {
             //If trip fails, scramble parameters and reset state.
             console.log("TRIP GENERATION ATTEMPT", retryIndex, "FAILED");
             retryIndex++;
-            budgetLeft = ((values.budget+25) * 10);
+            budgetLeft = ((values.budget + 25) * 10);
             internationalIndex = Math.floor(Math.random() * 8);
             setApiErr(null);
             resolve(attemptTrip());
           } else {
             console.log("TRIP GENERATION ENDING");
-            if (tripSuccess == false) {
+            if (tripSuccess === false) {
               setTotalPrice(0);
               setApiErr("Please try new parameters.");
               console.log("All trips failed");

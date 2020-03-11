@@ -5,9 +5,6 @@ import { withRouter } from 'react-router-dom';
 import * as ROUTES from '../../constants/routes';
 
 class SignOutButton extends Component {
-  constructor(props) {
-    super(props);
-  }
   onClick = () => {
     this.props.firebase.doSignOut();
     this.props.history.push(ROUTES.LANDING);
