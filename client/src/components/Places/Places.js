@@ -7,10 +7,9 @@ export const getPointsOfInterest = async (latitude, longitude) => {
 
 // Returns a city image given the city name
 export const getCityImage = async (cityName) => {
-    var proxyurl = "https://cors-anywhere.herokuapp.com/";
+    var proxyurl = "https://salty-gorge-09496.herokuapp.com/";
     var apiKey = process.env.REACT_APP_PLACES_API_KEY;
     // Search using Google Places Search with cityName
-    
     return new Promise(function (resolve, reject) {
       try {
         fetch(proxyurl + 'https://maps.googleapis.com/maps/api/place/findplacefromtext/json?key=' + apiKey + '&input=' + cityName + '&inputtype=textquery').then((response) => {
@@ -35,7 +34,7 @@ export const getCityImage = async (cityName) => {
 };
 
 export const getFormattedAddress = async (cityName) => {
-  var proxyurl = "https://cors-anywhere.herokuapp.com/";
+  var proxyurl = "https://salty-gorge-09496.herokuapp.com/";
   var apiKey = process.env.REACT_APP_PLACES_API_KEY;
   // Search using Google Places Search with cityName
   return new Promise(function (resolve, reject) {
@@ -59,7 +58,7 @@ export const getFormattedAddress = async (cityName) => {
 };
 
 export const getCityWebsite = async (cityName) => {
-  var proxyurl = "https://cors-anywhere.herokuapp.com/";
+  var proxyurl = "https://salty-gorge-09496.herokuapp.com/";
   var apiKey = process.env.REACT_APP_PLACES_API_KEY;
   // Search using Google Places Search with cityName
 
