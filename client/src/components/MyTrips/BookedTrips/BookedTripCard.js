@@ -265,7 +265,7 @@ class BookedTripCard extends Component {
     });
   }
 
-  componentWillMount() {
+  componentDidMount() {
     const setSourceAddress_c = ((addy) => this.setSourceAddress(addy));
     const setDestinationAddress_c = ((addy) => this.setDestinationAddress(addy));
     const setDestinationImage_c = ((url) => this.setDestinationImage(url));
@@ -301,7 +301,6 @@ class BookedTripCard extends Component {
     if (!this.state.attractionsIsDone) {
       getAttractions(this.props.trip.departureFlight.destinationCity).then(function (attractions) {
         setAttractions_c(attractions);
-        console.log(attractions)
         attractionsIsDone_c();
       });
     }
