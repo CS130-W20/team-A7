@@ -305,16 +305,13 @@ class BookedTripCard extends Component {
               <CardContent>
                 <div className={classes.details}>
                   <Typography style={{marginBottom: 10, marginTop: 20}} variant="h4">
-                    {this.state.sourceAddress} to {this.state.destinationAddress}
+                    {this.state.sourceAddress} to {this.state.destinationAddress} (${this.props.trip.price})
                   </Typography>
                   <Typography variant="body1" color="textSecondary">
                     <i> {this.props.trip.departureFlight.departureDate} to {this.props.trip.returnFlight.departureDate} </i>
                   </Typography>
                   <Typography variant="body1" color="textSecondary">
                     <a href={this.state.destinationWebsite} target="_blank">{this.state.destinationWebsite}</a>
-                  </Typography>
-                  <Typography variant="body1" color="textSecondary">
-                    ${this.props.trip.price}
                   </Typography>
                 </div>
               </CardContent>
