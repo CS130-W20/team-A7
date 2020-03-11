@@ -2,6 +2,12 @@ const express = require("express");
 const fetch = require("node-fetch");
 const router = express.Router();
 
+const MAX_TRIES = 5;
+const tripAdvisorRoutes = {
+  PLACE: "/locations/search",
+  HOTEL: "/hotels/list"
+}
+
 function dateReviver(stringValue) {
   return new Date(stringValue);
 }
@@ -20,11 +26,6 @@ function makeSkyScannerRequest(departureCode, destination, departureDate) {
   };
 
   return fetch(flightUrl + "?" + queryParams, { headers });
-}
-
-const tripAdvisorRoutes = {
-  PLACE: "/locations/search",
-  HOTEL: "/hotels/list"
 }
 
 function makeTripAdvisorRequest(route, optionBag) {
@@ -199,7 +200,7 @@ async function startInFlight(tripData, outFlight, budgetLeft) {
     }
     return {
       inFlight: chosenQuote,
-      carriers: inCarriers,
+      inCarriers,
       budgetLeft
     }
   } catch(err) {
@@ -207,7 +208,7 @@ async function startInFlight(tripData, outFlight, budgetLeft) {
   }
 }
 
-async function startPlace(outFlight, inFlight) {
+async function startPlace(outFlight) {
   try {
     const res = await makeTripAdvisorRequest(tripAdvisorRoutes.PLACE, { outFlight });
     const json = await res.json();
@@ -275,23 +276,31 @@ async function startHotel(tripData, outFlight, inFlight, placeId, budgetLeft) {
 
 router.post("/", async (req, res) => {
   const { values } = req.body;
-
-  let retryIndex = 0;
-  try {
-    const { outFlight, budgetLeft: budgetLeftOut } = await startOutFlight(values, retryIndex);
-    const { inFlight, budgetLeft: budgetLeftIn } = await startInFlight(values, outFlight, budgetLeftOut);
-    const placeId = await startPlace(outFlight, inFlight);
-    const { hotel, numNights } = await startHotel(values, outFlight, inFlight, placeId, budgetLeftIn);
-
-    res.json({
-      outFlight,
-      inFlight,
-      hotel,
-      numNights
-    });
-  } catch(err) {
-    res.send(err.toString());
+  
+  let retryIndex;
+  let error;
+  for (retryIndex = 0; retryIndex < MAX_TRIES; retryIndex++) {
+    try {
+      const { outFlight, budgetLeft: budgetLeftOut } = await startOutFlight(values, retryIndex);
+      const { inFlight, inCarriers, budgetLeft: budgetLeftIn } = await startInFlight(values, outFlight, budgetLeftOut);
+      const placeId = await startPlace(outFlight);
+      const { hotel, numNights } = await startHotel(values, outFlight, inFlight, placeId, budgetLeftIn);
+  
+      res.json({
+        outFlight,
+        inFlight,
+        inCarriers,
+        hotel,
+        numNights
+      });
+      return;
+    } catch(err) {
+      console.log(err.toString());
+      error = err;
+    }
   }
+
+  res.status(500).json({ error: error.toString()});
 });
 
 module.exports = router;
