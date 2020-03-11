@@ -313,6 +313,9 @@ class BookedTripCard extends Component {
                   <Typography variant="body1" color="textSecondary">
                     <a href={this.state.destinationWebsite} target="_blank">{this.state.destinationWebsite}</a>
                   </Typography>
+                  <Typography variant="body1" color="textSecondary">
+                    ${this.props.trip.price}
+                  </Typography>
                 </div>
               </CardContent>
             </div>

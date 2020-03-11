@@ -17,11 +17,12 @@ class HotelStay {
 }
 
 class BookedTrip {
-  constructor(name, departureFlight, returnFlight, hotelStay) {
+  constructor(name, departureFlight, returnFlight, hotelStay, price) {
     this.name = name;
     this.departureFlight = departureFlight;
     this.returnFlight = returnFlight;
     this.hotelStay = hotelStay;
+    this.price = price;
   }
 }
 

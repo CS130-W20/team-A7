@@ -314,9 +314,6 @@ class Price extends Component {
           return;
         }  
 
-        //console.log("outbound flight: ", results[0].OutboundLeg.DepartureDate);
-        //console.log("inbound flight: ", results[1].chosenInQuote.OutboundLeg.DepartureDate);
-
         // Creating the BookedTrip object
         var departureDate = new Date(results[0].OutboundLeg.DepartureDate);
         var departureAirline = results[0].carriers.find(carr => carr.CarrierId === results[0].OutboundLeg.CarrierIds[0]).Name;
@@ -364,12 +361,14 @@ class Price extends Component {
           },
         );
 
-        var hotelStay = new HotelStay(results[3].hotelResult, results[3].numNights);
-        var bookTrip = new BookedTrip('BookedTrip1', departureFlight, returnFlight, hotelStay);
-        
         // Calculating total price
         var price = results[0].MinPrice + results[1].chosenInQuote.MinPrice + (results[3].hotelResult.price * results[3].numNights);
 
+        // Create trip
+        var hotelStay = new HotelStay(results[3].hotelResult, results[3].numNights);
+        var bookTrip = new BookedTrip('New', departureFlight, returnFlight, hotelStay, price);
+        console.log('debugging: ', bookTrip);
+        
         // Creating the SavedTrip object
         var inputCriteria = new Criteria(
           values.departureAirport,
