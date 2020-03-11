@@ -15,7 +15,7 @@ import FlightTakeoffIcon from '@material-ui/icons/FlightTakeoff';
 import FlightLandIcon from '@material-ui/icons/FlightLand';
 import HotelIcon from '@material-ui/icons/Hotel';
 import LocalActivityIcon from '@material-ui/icons/LocalActivity';
-import { getCityImage } from '../../Places/Places.js'
+import { getCityImage, getFormattedAddress, getCityWebsite } from '../../Places/Places.js'
 
 const styles = theme => ({
   button: {
@@ -60,7 +60,7 @@ const styles = theme => ({
 
 function SimpleDialog(props) {
   
-  const { onClose,  open , details, classes} = props;
+  const { onClose,  open , details, classes, destinationAddress} = props;
 
   const handleClose = () => {
     onClose();
@@ -68,7 +68,7 @@ function SimpleDialog(props) {
 
   return (
     <Dialog onClose={handleClose} aria-labelledby="simple-dialog-title" open={open} maxWidth="md" fullWidth="true">
-      <DialogTitle id="simple-dialog-title">Trip Details - {details.departureFlight.destinationCity}</DialogTitle>
+      <DialogTitle id="simple-dialog-title">Trip Details - {destinationAddress}</DialogTitle>
       <List>
           <ListItem >
           <FlightTakeoffIcon className={classes.icon} /> <ListItemText  primary={"Outbound Flight: "} secondary={details.departureFlight.departureCity + " (" + details.departureFlight.departureAirport.code + ") to " + details.departureFlight.destinationCity + " (" + details.departureFlight.destinationAirport.code + ")   -   " + details.departureFlight.departureDate} />
@@ -123,25 +123,66 @@ class BookedTripCard extends Component {
     super(props);
     this.state = {
       open: false,
-      destinationImage: null
+      sourceAddress: '',
+      destinationAddress: '',
+      destinationImage: null,
+      destinationWebsite: ''
     };
   }
 
+  setSourceAddress(addy) {
+    if (typeof addy !== 'undefined' && addy !== '') {
+      this.setState({
+        sourceAddress: addy,
+      });
+    }
+  }
+
+  setDestinationAddress(addy) {
+    if (typeof addy !== 'undefined' && addy !== '') {
+      this.setState({
+        destinationAddress: addy,
+      });
+    }
+  }
+
   setDestinationImage(url) {
-    if (typeof url !== 'undefined' || url !== null) {
-      console.log('image');
-      console.log(url);
+    if (typeof url !== 'undefined' && url !== null) {
       this.setState({
         destinationImage: url,
       });
     }
   }
 
+  setDestinationWebsite(url) {
+    if (typeof url !== 'undefined' && url !== null) {
+      this.setState({
+        destinationWebsite: url,
+      });
+    }
+  }
+
   componentDidMount() {
+    const setSourceAddress_c = ((addy) => this.setSourceAddress(addy));
+    const setDestinationAddress_c = ((addy) => this.setDestinationAddress(addy));
     const setDestinationImage_c = ((url) => this.setDestinationImage(url));
+    const setDestinationWebsite_c = ((url) => this.setDestinationWebsite(url))
+
+    getFormattedAddress(this.props.trip.departureFlight.departureCity).then(function (addy) {
+      setSourceAddress_c(addy)
+    });
+
+    getFormattedAddress(this.props.trip.departureFlight.destinationCity).then(function (addy) {
+      setDestinationAddress_c(addy)
+    });
+
     getCityImage(this.props.trip.departureFlight.destinationCity).then(function (url) {
       setDestinationImage_c(url)
     });
+
+    getCityWebsite(this.props.trip.departureFlight.destinationCity).then(function (url) {
+      setDestinationWebsite_c(url)
+    })
   }
 
   render() {
@@ -161,7 +202,7 @@ class BookedTripCard extends Component {
 
     return (
       <div>
-      <SimpleDialog  open={this.state.open} onClose={handleClose} details={trip} classes={classes}/>
+      <SimpleDialog  open={this.state.open} onClose={handleClose} details={trip} classes={classes} destinationAddress={this.state.destinationAddress}/>
       
       <ButtonBase className={classes.button} onClick={handleClickOpen}>
         <Card className={classes.root} >
@@ -171,15 +212,15 @@ class BookedTripCard extends Component {
             />
             <div>
               <CardContent>
-                {/* <Typography variant="h4">
-                  {this.props.trip.name}
-                </Typography> */}
                 <div className={classes.details}>
                   <Typography style={{marginBottom: 10, marginTop: 20}} variant="h4">
-                    {this.props.trip.departureFlight.departureCity} to {this.props.trip.departureFlight.destinationCity}
+                    {this.state.sourceAddress} to {this.state.destinationAddress}
                   </Typography>
                   <Typography variant="body1" color="textSecondary">
                     <i> {this.props.trip.departureFlight.departureDate} to {this.props.trip.returnFlight.departureDate} </i>
+                  </Typography>
+                  <Typography variant="body1" color="textSecondary">
+                    <a href={this.state.destinationWebsite} target="_blank">{this.state.destinationWebsite}</a>
                   </Typography>
                 </div>
               </CardContent>
