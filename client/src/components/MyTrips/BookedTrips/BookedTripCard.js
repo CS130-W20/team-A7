@@ -38,9 +38,9 @@ const styles = theme => ({
     paddingBottom: theme.spacing(2)
   },
   media: {
-    height: 300,
-    width: 300,
-    marginLeft: theme.spacing(-2),
+    height: 275,
+    width: 275,
+    marginLeft: theme.spacing(2),
     marginRight: theme.spacing(1),
     borderRadius: theme.spacing(2),
     backgroundColor: "#fff",
@@ -83,25 +83,72 @@ function SimpleDialog(props) {
           <LocalActivityIcon className={classes.icon} /> <ListItemText primary={"Things to do in " +  details.departureFlight.destinationCity + ": "} />
           </ListItem>
       </List>
-      <Card className={classes.root}>
- 
+      <Card className={classes.root} >
         <CardMedia
           className={classes.media}
           image={
             "https://upload.wikimedia.org/wikipedia/commons/d/d6/London-Eye-2009.JPG"
           }
         />
-        <div className={classes.tripInfo}>
+        <div className={classes.tripInfo} >
           <CardContent>
             <Typography gutterBottom variant="h4">
-              {details.name}
+              {"Attraction1Name"}
             </Typography>
             <div className={classes.details}>
               <Typography variant="body1" gutterBottom>
-                {details.departureFlight.departureCity} to {details.departureFlight.destinationCity}
+              {"*number of stars*"} stars <br></br> {"*description of attraction*"}
               </Typography>
               <Typography variant="body1" color="textSecondary">
-                <i> {details.departureFlight.departureDate} to {details.returnFlight.departureDate} </i>
+              <i> <a href="google.com">More Information</a> </i>  
+              </Typography>
+            </div>
+          </CardContent>
+        </div>
+
+      </Card>
+      <Card className={classes.root}>
+        <CardMedia
+          className={classes.media}
+          image={
+            "https://upload.wikimedia.org/wikipedia/commons/thumb/4/45/Green_Dragon_Tavern_%2836196%29.jpg/1920px-Green_Dragon_Tavern_%2836196%29.jpg"
+          }
+        />
+        <div className={classes.tripInfo}>
+          <CardContent>
+            <Typography gutterBottom variant="h4">
+              {"Attraction2Name"}
+            </Typography>
+            <div className={classes.details}>
+              <Typography variant="body1" gutterBottom>
+                {"*number of stars*"} stars <br></br> {"*description of attraction*nqlwjknf "}
+              </Typography>
+              <Typography variant="body1" color="textSecondary">
+                <i> <a href="google.com">More Information</a> </i>
+              </Typography>
+            </div>
+          </CardContent>
+        </div>
+        
+      </Card>
+      <Card className={classes.root}>
+        <CardMedia
+          className={classes.media}
+          image={
+            "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e7/MV_Pemulwuy_at_Milsons_Point%2C_November_2016_%284%29.jpg/1920px-MV_Pemulwuy_at_Milsons_Point%2C_November_2016_%284%29.jpg"
+          }
+        />
+        <div className={classes.tripInfo}>
+          <CardContent>
+            <Typography gutterBottom variant="h4">
+              {"Attraction3Name"}
+            </Typography>
+            <div className={classes.details}>
+              <Typography variant="body1" gutterBottom>
+              {"*number of stars*"} stars <br></br> {"*description of attraction*nqlwjknf"}
+              </Typography>
+              <Typography variant="body1" color="textSecondary">
+              <i> <a href="google.com">More Information</a> </i>
               </Typography>
             </div>
           </CardContent>
