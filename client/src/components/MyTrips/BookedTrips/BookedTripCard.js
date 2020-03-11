@@ -353,7 +353,7 @@ class BookedTripCard extends Component {
                     <i> {this.props.trip.departureFlight.departureDate} to {this.props.trip.returnFlight.departureDate} </i>
                   </Typography>
                   <Typography variant="body1" color="textSecondary">
-                    <a href={this.state.destinationWebsite} target="_blank">{this.state.destinationWebsite}</a>
+                    <a href={this.state.destinationWebsite} target="_blank">More Information</a>
                   </Typography>
                 </div>
               </CardContent>
