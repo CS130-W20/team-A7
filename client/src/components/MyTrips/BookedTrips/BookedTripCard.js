@@ -67,7 +67,7 @@ function SimpleDialog(props) {
   };
 
   return (
-    <Dialog onClose={handleClose} aria-labelledby="simple-dialog-title" open={open} maxWidth="md" fullWidth="true">
+    <Dialog onClose={handleClose} aria-labelledby="simple-dialog-title" open={open} maxWidth="md" fullWidth={true}>
       <DialogTitle id="simple-dialog-title">Trip Details - {destinationAddress}</DialogTitle>
       <List>
           <ListItem >
