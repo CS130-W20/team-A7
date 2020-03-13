@@ -5,7 +5,6 @@ import TextField from '@material-ui/core/TextField';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Card from '@material-ui/core/Card';
 import Checkbox from '@material-ui/core/Checkbox';
-import CTAButton from '../../CTAButton/CTAButton';
 import { Button } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
 import { withFirebase } from '../../Firebase';
