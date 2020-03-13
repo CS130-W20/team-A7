@@ -3,7 +3,6 @@ import Price from './Subcomponents/Price';
 import Quiz from './Subcomponents/Quiz';
 import Payment from './Subcomponents/Payment';
 import TripBooked from '../TripBooked';
-import { AuthUserContext } from '../Session';
 
 const INITIAL_STATE = {
   step: 1,
@@ -183,7 +182,7 @@ export class TripGeneration extends Component {
         );
       case 3:
         return (
-          <Payment nextStep={this.nextStep} setTicketName={this.setTicketName}/>
+          <Payment nextStep={this.nextStep} setTicketName={this.setTicketName} values={values}/>
         );
       case 4:
         console.log(this.state.bookTrip);
