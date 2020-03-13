@@ -389,26 +389,25 @@ class Price extends Component {
     }
     
     function attemptTrip() {
-        return new Promise(resolve => {generateTrip().then(result => {
-          if (retryIndex < MAX_TRIES) {
-            //If trip fails, scramble parameters and reset state.
-            console.log("TRIP GENERATION ATTEMPT", retryIndex, "FAILED");
-            retryIndex++;
-            budgetLeft = ((values.budget + 25) * 10);
-            internationalIndex = Math.floor(Math.random() * 8);
-            setApiErr(null);
-            resolve(attemptTrip());
-          } else {
-            console.log("TRIP GENERATION ENDING");
-            if (tripSuccess === false) {
-              setTotalPrice(0);
-              setApiErr("Please try new parameters.");
-              console.log("All trips failed");
-            }
-            resolve(0);
+      return new Promise(resolve => {generateTrip().then(result => {
+        if (retryIndex < MAX_TRIES) {
+          //If trip fails, scramble parameters and reset state.
+          console.log("TRIP GENERATION ATTEMPT", retryIndex, "FAILED");
+          retryIndex++;
+          budgetLeft = ((values.budget + 25) * 10);
+          internationalIndex = Math.floor(Math.random() * 8);
+          setApiErr(null);
+          resolve(attemptTrip());
+        } else {
+          console.log("TRIP GENERATION ENDING");
+          if (tripSuccess === false) {
+            setTotalPrice(0);
+            setApiErr("Please try new parameters.");
+            console.log("All trips failed");
           }
-        });
-      });
+          resolve(0);
+        }
+      })});
     }
     
     //We try to generate a trip *up to* MAX_TRIES times.
@@ -423,7 +422,6 @@ class Price extends Component {
         gotContext: true,
         authUser: this.context.authUser,
       });
-      // console.log('yeet: ', this.context);
     }
   }
 

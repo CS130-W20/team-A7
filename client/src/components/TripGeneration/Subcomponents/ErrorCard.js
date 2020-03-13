@@ -3,8 +3,6 @@ import { withStyles } from '@material-ui/core/styles';
 import Card from '@material-ui/core/Card';
 import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
-import CTAButton from '../../CTAButton/CTAButton';
-import * as ROUTES from '../../../constants/routes';
 
 const ColoredLine = ({ color }) => (
   <hr
@@ -75,10 +73,6 @@ const styles = (theme) => ({
 
 class ErrorCard extends Component {
   
-  constructor(props) {
-    super(props);
-  }
-  
   onClickRetakeQuiz = e => {
     const { setTotalPrice , setApiErr, goBack } = this.props;
     setTotalPrice(null);
@@ -88,7 +82,7 @@ class ErrorCard extends Component {
   }
   
   render() {
-    const { classes, values } = this.props;
+    const { classes } = this.props;
  
     return (
       <div id="centered-fixed-masthead">

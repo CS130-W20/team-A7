@@ -95,26 +95,6 @@ const styles = (theme) => ({
 });
 
 class GeneratedCard extends Component {
-  constructor(props) {
-    super(props);
-  }
-
-  writeToBookedTrips(userId, newTrip) {
-    const tripsRef = this.props.firebase.bookedTrips();
-    const newTripRef = tripsRef.push();
-    newTripRef.set(newTrip, function(error) {
-      if (error) {
-        console.log('Error: Failed to write trip to user ', userId, ': ', error);
-      }
-    });
-    return newTripRef.key;
-  }
-
-  writeToUserBookedTrips(userId, tripId) {
-    const currentUserTripsRef = this.props.firebase.singleUserBookedTrips(userId);
-    const newIndex = currentUserTripsRef.push();
-    newIndex.set(tripId);
-  }
 
   writeToSavedTrips(userId, newTrip) {
     const tripsRef = this.props.firebase.savedTrips();
@@ -154,20 +134,7 @@ class GeneratedCard extends Component {
   
   bookTrip = e => {
     e.preventDefault();
-    const { values, authUser } = this.props;
-    if (authUser !== null) {
-      if (typeof authUser.uid !== 'undefined' && authUser.uid !== null) {
-        const userId = authUser.uid;
-        // Writing to firebase
-        const newTripKey = this.writeToBookedTrips(userId, values.bookTrip);
-        if (typeof newTripKey !== 'undefined') {
-          this.writeToUserBookedTrips(userId, newTripKey);
-        }
-        else {
-          console.log('Error: ', 'Did not write to user trips, new trip key was undefined');
-        }
-      }
-    }
+
     this.props.nextStep();
   }
 

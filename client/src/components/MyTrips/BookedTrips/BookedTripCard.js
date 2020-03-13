@@ -106,7 +106,7 @@ function SimpleDialog(props) {
                 {attractions[0].rating} stars ({attractions[0].user_ratings_total} reviews)
               </Typography>
               <Typography variant="body1" color="textSecondary">
-                <i> <a href={'http://www.google.com/search?q=' + attractions[0].name} target="_blank">More Information</a> </i>  
+                <i> <a rel="noopener noreferrer" href={'http://www.google.com/search?q=' + attractions[0].name} target="_blank">More Information</a> </i>  
               </Typography>
             </div>
           </CardContent>
@@ -133,7 +133,7 @@ function SimpleDialog(props) {
                 {attractions[1].rating} stars ({attractions[1].user_ratings_total} reviews)
               </Typography>
               <Typography variant="body1" color="textSecondary">
-                <i> <a href={'http://www.google.com/search?q=' + attractions[1].name} target="_blank">More Information</a> </i>
+                <i> <a rel="noopener noreferrer" href={'http://www.google.com/search?q=' + attractions[1].name} target="_blank">More Information</a> </i>
               </Typography>
             </div>
           </CardContent>
@@ -160,7 +160,7 @@ function SimpleDialog(props) {
                 {attractions[2].rating} stars ({attractions[2].user_ratings_total} reviews)
               </Typography>
               <Typography variant="body1" color="textSecondary">
-              <i> <a href={'http://www.google.com/search?q=' + attractions[2].name} target="_blank">More Information</a> </i>
+              <i> <a rel="noopener noreferrer" href={'http://www.google.com/search?q=' + attractions[2].name} target="_blank">More Information</a> </i>
               </Typography>
             </div>
           </CardContent>
@@ -353,7 +353,7 @@ class BookedTripCard extends Component {
                     <i> {this.props.trip.departureFlight.departureDate} to {this.props.trip.returnFlight.departureDate} </i>
                   </Typography>
                   <Typography variant="body1" color="textSecondary">
-                    <a href={this.state.destinationWebsite} target="_blank">More Information</a>
+                    <a rel="noopener noreferrer" href={this.state.destinationWebsite} target="_blank">More Information</a>
                   </Typography>
                 </div>
               </CardContent>

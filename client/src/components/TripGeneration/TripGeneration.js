@@ -22,6 +22,9 @@ const INITIAL_STATE = {
   apiErr: null,
   // Ticket name passes from payment
   ticketName: 'someone',
+  //
+  userFullName: null,
+  gotContext: false,
 };
 
 const formatTime = (date) => {
@@ -43,11 +46,21 @@ export class TripGeneration extends Component {
   constructor(props) {
     super(props);
     if (typeof this.props.location.state !== 'undefined') {
-      console.log('hope: ', this.props.location.state);
       this.state = {...this.props.location.state};
     }
     else {
       this.state = { ...INITIAL_STATE };
+    }
+  }
+
+  componentDidUpdate() {
+    console.log('got context');
+    if (typeof this.context.user !== 'undefined' && this.context.user !== null && !this.state.gotContext) {
+      console.log('got context');
+      this.setState({
+        gotContext: true,
+        userFullName: this.context.user.firstname + ' ' + this.context.user.lastname,
+      });
     }
   }
   
@@ -183,7 +196,7 @@ export class TripGeneration extends Component {
         );
       case 3:
         return (
-          <Payment nextStep={this.nextStep} setTicketName={this.setTicketName}/>
+          <Payment nextStep={this.nextStep} setTicketName={this.setTicketName} values={values}/>
         );
       case 4:
         console.log(this.state.bookTrip);
@@ -195,7 +208,7 @@ export class TripGeneration extends Component {
 
         return (
           <TripBooked 
-            name={this.state.ticketName}
+            name={this.state.userFullName === null ? this.state.ticketName : this.state.userFullName}
             destination={this.state.bookTrip.departureFlight.destinationCity}
             date={formattedDate}
             time={formattedTime}
@@ -209,4 +222,6 @@ export class TripGeneration extends Component {
   }
 }
   
+TripGeneration.contextType = AuthUserContext;
+
 export default TripGeneration;

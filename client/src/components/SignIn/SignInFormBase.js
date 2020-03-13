@@ -45,10 +45,10 @@ const styles = (theme) => ({
 });
 
 const INITIAL_STATE = {
-    email: '',
-    password: '',
-    error: null,
-  };
+  email: '',
+  password: '',
+  error: null,
+};
   
 class SignInFormBase extends Component {
   constructor(props) {

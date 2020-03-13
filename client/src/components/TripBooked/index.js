@@ -1,10 +1,11 @@
 import React, { Component } from 'react';
+import CTAButton from '../CTAButton/CTAButton';
+import * as ROUTES from '../../constants/routes';
 import { Typography } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
-import CTAButton from '../CTAButton/CTAButton';
-import './TripBooked.css';
-import * as ROUTES from '../../constants/routes';
 import { withRouter } from 'react-router-dom';
+
+import './TripBooked.css';
 
 const styles = () => ({
   congratsPretext: {
@@ -58,6 +59,7 @@ const styles = () => ({
 });
 
 class TripBooked extends Component {
+  
   viewItinerary = e => {
     e.preventDefault();
     this.props.history.push(ROUTES.MY_TRIPS);
