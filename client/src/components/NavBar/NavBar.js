@@ -41,7 +41,7 @@ const NavBar = ({ classes }) => (
         <div className={classes.root}>
           <AppBar position="static" className={classes.bar}>
             <Toolbar>
-              <Link to={ROUTES.LANDING}>
+              <Link to={ROUTES.MY_TRIPS}>
                 <Image src={logo} className={classes.logo} />
               </Link>
 
