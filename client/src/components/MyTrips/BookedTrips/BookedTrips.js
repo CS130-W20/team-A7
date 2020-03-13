@@ -32,7 +32,6 @@ class BookedTripsBase extends Component {
       this.hello = this.context;
       this.setState({ gotContext: true });
       this.refreshBookedTrips(this.hello.authUser);
-      console.log('yeet: ', this.context);
     }
   }
 

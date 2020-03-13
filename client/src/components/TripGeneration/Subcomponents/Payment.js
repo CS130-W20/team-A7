@@ -62,7 +62,6 @@ class Payment extends Component {
         gotContext: true,
         authUser: this.context.authUser,
       });
-      // console.log('yeet: ', this.context);
     }
   }
 
@@ -148,8 +147,8 @@ class Payment extends Component {
   
   onSubmit = e => {
     e.preventDefault();
-    const { values, nextStep } = this.props;
-    const { authUser } = this.state;
+    const { values, nextStep, setTicketName } = this.props;
+    const { authUser, cardName } = this.state;
 
     if (authUser !== null) {
       if (typeof authUser.uid !== 'undefined' && authUser.uid !== null) {
@@ -165,6 +164,7 @@ class Payment extends Component {
       }
     }
     
+    setTicketName(cardName);
     nextStep();
   }
 
@@ -277,46 +277,3 @@ const PaymentComposed = compose(
 )(Payment);
 
 export default PaymentComposed;
-
-// export default withStyles(styles)(function Payment(props) {
-//   const { nextStep, classes } = props;
-
-//   return (
-//     <div id="centered-fixed-masthead">
-//       <Card className={classes.card}>
-//         <Typography variant="h6" gutterBottom>
-//           Payment method
-//         </Typography>
-//         <Grid container spacing={3}>
-//           <Grid item xs={12} md={6}>
-//             <TextField required id="cardName" label="Name on card" fullWidth />
-//           </Grid>
-//           <Grid item xs={12} md={6}>
-//             <TextField required id="cardNumber" label="Card number" fullWidth />
-//           </Grid>
-//           <Grid item xs={12} md={6}>
-//             <TextField required id="expDate" label="Expiry date" fullWidth />
-//           </Grid>
-//           <Grid item xs={12} md={6}>
-//             <TextField
-//               required
-//               id="cvv"
-//               label="CVV"
-//               helperText="Last three digits on signature strip"
-//               fullWidth
-//             />
-//           </Grid>
-//           <Grid item xs={12}>
-//             <FormControlLabel
-//               control={<Checkbox color="secondary" name="saveCard" value="yes" />}
-//               label="Remember credit card details for next time"
-//             />
-//           </Grid>
-//         </Grid>
-//         <div className={classes.buttonContainer}>
-//           <CTAButton onClick={nextStep}>SUBMIT</CTAButton>
-//         </div>
-//       </Card>
-//     </div>
-//   );
-// });
