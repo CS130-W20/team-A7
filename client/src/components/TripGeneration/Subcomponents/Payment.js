@@ -57,6 +57,10 @@ class Payment extends Component {
   }
 
   componentDidUpdate() {
+    this.setAuthUser();
+  }
+  
+  setAuthUser() {
     if (typeof this.context.authUser !== 'undefined' && this.context.authUser !== null && !this.state.gotContext) {
       this.setState({
         gotContext: true,
@@ -276,4 +280,5 @@ const PaymentComposed = compose(
   withStyles(styles),
 )(Payment);
 
+export { Payment, styles };
 export default PaymentComposed;
