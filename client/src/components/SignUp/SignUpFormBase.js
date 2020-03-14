@@ -207,7 +207,7 @@ class SignUpFormBase extends Component {
                     data-testid='submit'
                     disabled={isInvalid}
                     onClick={this.onSubmit}
-                    variant='primary'
+                    variant='contained'
                     type="submit"
                     fullWidth
                     color="primary"
