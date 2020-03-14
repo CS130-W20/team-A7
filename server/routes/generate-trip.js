@@ -1,8 +1,28 @@
+/**
+ * express module
+ * @const
+ */
 const express = require("express");
+
+/**
+ * fetch module for API requests
+ * @const
+ */
 const fetch = require("node-fetch");
+
+/**
+ * Express router to mount subpath routes on.
+ * @type {Object}
+ * @const
+ */
 const router = express.Router();
 
 const MAX_TRIES = 5;
+
+/**
+ * "Enum"-like constant object defining the possible TripAdvisor routes.
+ * @const
+ */
 const tripAdvisorRoutes = {
   PLACE: "/locations/search",
   HOTEL: "/hotels/list"
@@ -47,8 +67,9 @@ function makeSkyScannerRequest(departureCode, destination, departureDate) {
  * Constructs a request to the TripAdvisor API to either get the ID of a location or find
  * nearby hotels.
  * 
- * @param {string} route 
- * @param {Object} optionBag 
+ * @param {string} route The API route to request.
+ * @param {Object} optionBag An object containing different data values that are necessary
+ *                           depending on the route.
  */
 function makeTripAdvisorRequest(route, optionBag) {
   const url = "https://tripadvisor1.p.rapidapi.com" + route;
@@ -97,6 +118,14 @@ function makeTripAdvisorRequest(route, optionBag) {
   return fetch(url + "?" + queryParams, { headers });
 }
 
+/**
+ * Helper function that creates the outbound flight of the trip.
+ * 
+ * @param {Object} tripData User-input data defining the parameters of the trip.
+ * @param {number} retryIndex The index indicating the number of attempts that have been made so far.
+ * @return {Promise} A promise that resolves to an object containing the outbound flight object 
+ *                   and the amount of money the user has left to spend.
+ */
 async function startOutFlight(tripData, retryIndex) {
   const { departureAirport, departDate, destination, price, budget } = tripData;
   let budgetLeft = (budget + 25) * 10;
@@ -177,6 +206,16 @@ async function startOutFlight(tripData, retryIndex) {
   }
 }
 
+/**
+ * Helper function that creates the inbound flight of the trip.
+ * 
+ * @param {Object} tripData User-input data defining the parameters of the trip.
+ * @param {Object} outFlight The outbound flight object.
+ * @param {number} budgetLeft The amount of budget left after booking the outbound flight.
+ * @return {Promise} A promise that resolves to an object that contains the inbound flight object,
+ *                   a list of airline carriers for that flight, and the amount of money the user
+ *                   has left to spend.
+ */
 async function startInFlight(tripData, outFlight, budgetLeft) {
   const { departureAirport, destination, price, returnDate } = tripData;
   const { airport } = outFlight;
@@ -230,6 +269,12 @@ async function startInFlight(tripData, outFlight, budgetLeft) {
   }
 }
 
+/**
+ * Helper function that gets the TripAdvisor ID of the trip destination.
+ * 
+ * @param {Object} outFlight The outbound flight object.
+ * @return {Promise} A promise that resolves to the ID of the trip destination.
+ */
 async function startPlace(outFlight) {
   try {
     const res = await makeTripAdvisorRequest(tripAdvisorRoutes.PLACE, { outFlight });
@@ -241,6 +286,15 @@ async function startPlace(outFlight) {
   }
 }
 
+/**
+ * Helper function that creates the hotel the user will stay at for the duration of the trip.
+ * 
+ * @param {Object} tripData User-input data defining the parameters of the trip.
+ * @param {Object} outFlight The outbound flight object.
+ * @param {Object} inFlight The inbound flight object.
+ * @param {*} placeId The TripAdvisor ID of the destination.
+ * @param {*} budgetLeft The amount of money the user has left to spend.
+ */
 async function startHotel(tripData, outFlight, inFlight, placeId, budgetLeft) {
   const price = { tripData };
   const departDate = dateReviver(outFlight.OutboundLeg.DepartureDate);
@@ -296,6 +350,12 @@ async function startHotel(tripData, outFlight, inFlight, placeId, budgetLeft) {
   }
 }
 
+/**
+ * Route serving the trip generation service.
+ * 
+ * @param {string} path Express path
+ * @param {callback} middleware Express middleware.
+ */
 router.post("/", async (req, res) => {
   const { values } = req.body;
   
