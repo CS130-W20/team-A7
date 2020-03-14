@@ -37,5 +37,5 @@ Tests can be found within folders for each component that is tested. Please see 
 
 # Documentation
 
-The following folders contain our documentation in the form of .html files: /client/out and /server/out
+The following folders contain our documentation in the form of .html files: /client/src/out and /server/out
 
