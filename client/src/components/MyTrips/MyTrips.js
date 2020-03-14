@@ -28,7 +28,7 @@ class MyTrips extends Component {
       });
       if (typeof this.context.authUser !== 'undefined') {
         this.setState({ 
-          gotContext: true,
+          authUser: this.context.authUser,
         });
       }
     }
