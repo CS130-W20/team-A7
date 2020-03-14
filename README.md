@@ -19,6 +19,7 @@ Once in the repo, to start the server in a single shell instance run:
 
 ```
 cd server
+npm install
 node .
 ```
 
@@ -26,6 +27,7 @@ In a separate shell instance, to run the client:
 
 ```
 cd client
+npm install
 npm start
 ```
 
@@ -38,26 +40,34 @@ npm start
       ----assets  
         ------[..assets..]  
       ----components  
-        ------About  
-        ------Account  
-        ------Admin  
+        ------About 
         ------App  
         ------CTAButton  
         ------Firebase  
-        ------Home  
         ------Landing  
         ------MyTrips  
         ------NavBar  
         ------PasswordChange  
-        ------PasswordForget  
+        ------PasswordForget
+        ------Places 
         ------Session  
         ------SignIn  
         ------SignOut  
         ------SignUp  
         ------TripGeneration  
-      ----constants  
+      ----constants
+      ----models
+  server
+    --out
+    --routes
+    index.js
+    server.js
 
 # Testing
 
-Tests can be found under client/src/components/App/README.md, since App constitutes the main React functionality.
+Tests can be found within folders for each component that is tested. Please see our report for more information.
+
+# Documentation
+
+The following folders contain our documentation in the form of .html files: /client/out and /server/out
 
