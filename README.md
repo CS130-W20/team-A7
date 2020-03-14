@@ -30,7 +30,7 @@ cd client
 npm install
 npm start
 ```
-
+Note: If you encounter any errors about dependencies not being found, run the command "npm install [name_of_thing] and try again
 # Testing
 
 Tests can be found within folders for each component that is tested. Please see our report for more information.
