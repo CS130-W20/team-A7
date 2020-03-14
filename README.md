@@ -8,19 +8,31 @@ Acquire the .env file which contains our API keys and place it in /client
 
 For grader: Look for an email with the subject line: 'Team-A7 API Keys'
 
-Run the following commands:
+To download the repo:
 
 ```
 git clone git@github.com:CS130-W20/team-A7.git
 cd team-A7
+```
+
+Once in the repo, to start the server in a single shell instance run:
+
+```
+cd server
+node .
+```
+
+In a separate shell instance, to run the client:
+
+```
 cd client
-npm install
 npm start
 ```
 
 # Code Structure
+
   Since we decided to build a React application, we utilize a standard structure for React apps in which we store all components inside client/src/components. Within this folder, we keep each component in a seperate file. This is the main structure of our critical components:
-  
+
   client  
     --src  
       ----assets  
