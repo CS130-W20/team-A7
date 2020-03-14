@@ -12,12 +12,25 @@ const INITIAL_STATE = {
   authUser: null,
 };
 
+/** @class MyTrips handles the rendering of the My Trips page*/
 class MyTrips extends Component {
+  /**
+  * Creates an instance of MyTrips.
+  *
+  * @constructor
+  * @param props {props} React Component properties
+  */
   constructor(props) {
     super(props);
     this.state = { ...INITIAL_STATE };
   }
 
+  /**
+  * Sets the Context of a logged in user
+  *
+  * @param none
+  * @return none
+  */
   setContext() {
     console.log('checking...');
 
@@ -34,18 +47,42 @@ class MyTrips extends Component {
     }
   }
 
+  /**
+  * Sets the state of the object's rendered variables.
+  *
+  * @param none
+  * @return none
+  */
   componentDidMount() {
     this.setContext();
   }
 
+  /**
+  * Sets the state of the object's rendered variables.
+  *
+  * @param none
+  * @return none
+  */
   componentWillMount() {
     this.setContext();
   }
 
+  /**
+  * Sets the state of the object's rendered variables.
+  *
+  * @param none
+  * @return none
+  */
   componentDidUpdate() {
     this.setContext();
   }
 
+  /**
+  * Renders the component
+  *
+  * @param none
+  * @return HTML {HTML} The HTML of the rendered component
+  */
   render() {
     if (!this.state.gotContext) {
       console.log('have not gotten context');

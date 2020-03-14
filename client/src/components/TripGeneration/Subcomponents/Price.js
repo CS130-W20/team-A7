@@ -11,7 +11,14 @@ import { withRouter } from 'react-router-dom';
 
 const MAX_TRIES = 5;
 
+/** @class Price handles trip generation */
 class Price extends Component {
+  /**
+  * Creates an instance of Price.
+  *
+  * @constructor
+  * @param props {props} The React Component properties.
+  */
   constructor(props) {
     super(props);
     this.state = {
@@ -27,6 +34,12 @@ class Price extends Component {
     this.props.nextStep();
   };
   
+  /**
+    * Sets the state of the object's rendered variables.
+    *
+    * @param none
+    * @return none
+  */
   componentDidMount() {
     const { values, setTripData, setApiErr } = this.props;
 
@@ -53,6 +66,12 @@ class Price extends Component {
     generateTrip(values, tripData, onSuccess, onError);
   }
 
+  /**
+  * Sets the state of the object's rendered variables.
+  *
+  * @param none
+  * @return none
+  */
   componentDidUpdate() {
     if (typeof this.context.authUser !== 'undefined' && this.context.authUser !== null && !this.state.gotContext) {
       this.setState({
@@ -62,6 +81,12 @@ class Price extends Component {
     }
   }
 
+  /**
+  * Renders the component
+  *
+  * @param none
+  * @return HTML {HTML} The HTML representation of the component.
+  */
   render() {
     const { values, goBack, nextStep, setApiErr, setTotalPrice } = this.props;
     let componentToRender;

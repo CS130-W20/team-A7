@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: TripGeneration/Subcomponents/Payment.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: TripGeneration/Subcomponents/Payment.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import React, { Component } from 'react';
+import Typography from '@material-ui/core/Typography';
+import Grid from '@material-ui/core/Grid';
+import TextField from '@material-ui/core/TextField';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
+import Card from '@material-ui/core/Card';
+import Checkbox from '@material-ui/core/Checkbox';
+import { Button } from '@material-ui/core';
+import { withStyles } from '@material-ui/core/styles';
+import { withFirebase } from '../../Firebase';
+import { AuthUserContext } from '../../Session';
+import { compose } from 'recompose';
+
+var cardValidator = require('card-validator');
+
+const styles = (theme) => ({
+  card: {
+    marginTop: 50,
+    width: "60vw",
+    minHeight: 250,
+    margin: "auto",
+    padding: 30,
+    transition: "0.3s",
+    boxShadow: "0 8px 40px -12px rgba(0,0,0,0.3)",
+    "&amp;:hover": {
+      boxShadow: "0 16px 70px -12.125px rgba(0,0,0,0.3)"
+    }
+  },
+  buttonContainer: {
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    marginTop: 50
+  },
+  error: {
+    color: 'red',
+    fontSize: 'small',
+    margin: theme.spacing(3, 0, 2),
+  }
+});
+
+const INITIAL_STATE = {
+  cardName: '',
+  cardNumber: '',
+  expDate: '',
+  cvv: '',
+  cardIssuer: '',
+  gotContext: false,
+  authUser: null,
+  error: null,
+};
+
+/** @class Payment renders the Payment screen after booking a Trip */
+class Payment extends Component {
+  /**
+  * Creates an instance of TripGeneration.
+  *
+  * @constructor
+  * @param props {props} The React Component properties.
+  */
+  constructor(props) {
+    super(props);
+    this.state = { ...INITIAL_STATE };
+  }
+
+  /**
+  * Sets the state of the object's rendered variables.
+  *
+  * @param none
+  * @return none
+  */
+  componentDidUpdate() {
+    if (typeof this.context.authUser !== 'undefined' &amp;&amp; this.context.authUser !== null &amp;&amp; !this.state.gotContext) {
+      this.setState({
+        gotContext: true,
+        authUser: this.context.authUser,
+      });
+    }
+  }
+
+  /**
+  * Checks if credit card number is a valid number
+  *
+  * @param cardNumber {Int} Credit card number
+  * @return isPotentiallyValid {Bool} Flag that tells if number could be valid
+  */
+  isValidCardNumber(cardNumber) {
+    const numberValidation = cardValidator.number(cardNumber);
+    if (!numberValidation.isValid) {
+      this.setState({
+        cardIssuer: '',
+        error: new Error('Please enter a valid credit card number'),
+      })
+    }
+    else {
+      // Reset the error message
+      console.log(numberValidation.card.type);
+      this.setState({
+        cardIssuer: numberValidation.card.type,
+        error: null,
+      })
+    }
+    return numberValidation.isPotentiallyValid;
+  }
+
+  /**
+  * Replaces a number in a string with empty space
+  *
+  * @param value {String} Credit card number
+  * @return value.replace {String} Creditcard with number cleared
+  */
+  clearNumber(value = "") {
+    return value.replace(/\D+/g, "");
+  }
+
+  /**
+  * Formats a credit card number
+  *
+  * @param value {String} Credit card number
+  * @return value.trim {String} Creditcard number trimmed
+  */
+  formatCreditCardNumber(value) {
+    if (!value) {
+      return value;
+    }
+
+    const clearValue = this.clearNumber(value);
+    let nextValue;
+
+    switch (this.state.cardIssuer) {
+      case 'american-express':
+        nextValue = `${clearValue.slice(0, 4)} ${clearValue.slice(
+          4,
+          10,
+        )} ${clearValue.slice(10, 15)}`;
+        break;
+      default:
+        nextValue = `${clearValue.slice(0, 4)} ${clearValue.slice(
+          4,
+          8,
+        )} ${clearValue.slice(8, 12)} ${clearValue.slice(12, 19)}`;
+        break;
+    }
+  
+    return nextValue.trim();
+  }
+
+  /**
+  * Fromats a CVV value
+  *
+  * @param value {String} CVV num
+  * @return value.replace {String} Creditcard with number cleared
+  */
+  formatCVV(value) {
+    const clearValue = this.clearNumber(value);
+    const maxLength = ((this.state.cardIssuer === 'american-express') ? 4 : 3);
+    return clearValue.slice(0, maxLength);
+  }
+
+  /**
+  * Formats an expiration date
+  *
+  * @param value {String} Expiration date
+  * @return clearValue {String} Formatted expiration date
+  */
+  formatExpirationDate(value) {
+    const clearValue = this.clearNumber(value);
+    if (clearValue.length >= 3) {
+      return `${clearValue.slice(0, 2)}/${clearValue.slice(2, 4)}`;
+    }
+    return clearValue;
+  }
+
+  /**
+  * Writes to booked trips portion of firebase
+  *
+  * @param userId {String} Firebase ID of the user
+  * @return newTrip {Trip} Trip generated by user
+  */
+  writeToBookedTrips(userId, newTrip) {
+    const tripsRef = this.props.firebase.bookedTrips();
+    const newTripRef = tripsRef.push();
+    newTripRef.set(newTrip, function(error) {
+      if (error) {
+        console.log('Error: Failed to write trip to user ', userId, ': ', error);
+      }
+    });
+    return newTripRef.key;
+  }
+
+  /**
+  * Writes to booked trips portion of firebase
+  *
+  * @param userId {String} Firebase ID of the user
+  * @return tripId {String} Firebase ID of the trip
+  */
+  writeToUserBookedTrips(userId, tripId) {
+    const currentUserTripsRef = this.props.firebase.singleUserBookedTrips(userId);
+    const newIndex = currentUserTripsRef.push();
+    newIndex.set(tripId);
+  }
+  
+  /**
+  * Overrides onSubmit functionality for button
+  * @override
+  * @param e {event} onSubmit event.
+  * @return none
+  */
+  onSubmit = e => {
+    e.preventDefault();
+    const { values, nextStep, setTicketName } = this.props;
+    const { authUser, cardName } = this.state;
+
+    if (authUser !== null) {
+      if (typeof authUser.uid !== 'undefined' &amp;&amp; authUser.uid !== null) {
+        const userId = authUser.uid;
+        // Writing to firebase
+        const newTripKey = this.writeToBookedTrips(userId, values.bookTrip);
+        if (typeof newTripKey !== 'undefined') {
+          this.writeToUserBookedTrips(userId, newTripKey);
+        }
+        else {
+          console.log('Error: ', 'Did not write to user trips, new trip key was undefined');
+        }
+      }
+    }
+    
+    setTicketName(cardName);
+    nextStep();
+  }
+
+  /**
+  * Overrides onChange functionality for button
+  * @override
+  * @param event {event} onChange event.
+  * @return none
+  */
+  onChange = event => {
+    var value = event.target.value;
+    if (event.target.name === 'cardNumber') {
+      this.isValidCardNumber(value);
+      value = this.formatCreditCardNumber(value);
+    }
+    else if (event.target.name === 'expDate') {
+      value = this.formatExpirationDate(value);
+    }
+    else if (event.target.name === 'cvv') {
+      value = this.formatCVV(value);
+    }
+    this.setState({ [event.target.name]: value });
+  };
+  
+  /**
+  * Renders the component
+  *
+  * @param none
+  * @return HTML {HTML} The HTML representation of the component.
+  */
+  render() {
+    const { classes } = this.props;
+  
+    const {
+      cardName,
+      cardNumber,
+      cardIssuer,
+      expDate,
+      cvv,
+      error,
+    } = this.state;
+
+    const isInvalid =
+      cardName === '' ||
+      cardNumber === '' ||
+      expDate === '' ||
+      cvv === '' ||
+      error !== null;
+    
+    return(
+      &lt;div id="centered-fixed-masthead">
+        &lt;Card className={classes.card}>
+          &lt;Typography variant="h6" gutterBottom>
+            Payment method
+          &lt;/Typography>
+          &lt;Grid container spacing={3}>
+            &lt;Grid item xs={12} md={6}>
+              &lt;TextField
+                name="cardName"
+                value={cardName}
+                onChange={this.onChange}
+                id="cardName"
+                label="Name on card"
+                fullWidth />
+            &lt;/Grid>
+            &lt;Grid item xs={12} md={6}>
+              &lt;TextField
+                name="cardNumber"
+                value={cardNumber}
+                onChange={this.onChange}
+                error={cardNumber !== '' &amp;&amp; cardIssuer === ''}
+                id="cardNumber"
+                label="Card number"
+                fullWidth />
+            &lt;/Grid>
+            &lt;Grid item xs={12} md={6}>
+              &lt;TextField
+                name="expDate"
+                value={expDate}
+                onChange={this.onChange}
+                error={expDate.length > 0 &amp;&amp; expDate.length &lt; 4}
+                pattern="\d\d/\d\d"
+                id="expDate"
+                label="Expiry date"
+                fullWidth />
+            &lt;/Grid>
+            &lt;Grid item xs={12} md={6}>
+              &lt;TextField
+                name="cvv"
+                value={cvv}
+                onChange={this.onChange}
+                error={cvv.length > 0 &amp;&amp; cvv.length &lt; 3}
+                pattern="\d{3,4}"
+                id="cvv"
+                label="CVV"
+                helperText={"Last " + (cardIssuer === 'american-express' ? "4" : "3") + " digits on signature strip"}
+                fullWidth />
+            &lt;/Grid>
+            &lt;Grid item xs={12}>
+              &lt;FormControlLabel
+                control={&lt;Checkbox color="secondary" name="saveCard" value="yes" />}
+                label="Remember credit card details for next time"
+              />
+            &lt;/Grid>
+          &lt;/Grid>
+          &lt;div className={classes.buttonContainer}>
+            &lt;Button disabled={isInvalid} onClick={this.onSubmit}> SUBMIT &lt;/Button>
+          &lt;/div>
+
+          {error &amp;&amp; &lt;Typography className={classes.error}>{error.message}&lt;/Typography>}
+        &lt;/Card>
+      &lt;/div>
+    );
+  }
+}
+
+Payment.contextType = AuthUserContext;
+
+const PaymentComposed = compose(
+  withFirebase,
+  withStyles(styles),
+)(Payment);
+
+export default PaymentComposed;</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="BookedTrip.html">BookedTrip</a></li><li><a href="BookedTripCard.html">BookedTripCard</a></li><li><a href="BookedTripsBase.html">BookedTripsBase</a></li><li><a href="BookedTripsItem.html">BookedTripsItem</a></li><li><a href="ErrorCard.html">ErrorCard</a></li><li><a href="Flight.html">Flight</a></li><li><a href="GeneratedCard.html">GeneratedCard</a></li><li><a href="GeneratingCard.html">GeneratingCard</a></li><li><a href="HotelStay.html">HotelStay</a></li><li><a href="MyTrips.html">MyTrips</a></li><li><a href="PasswordChange.html">PasswordChange</a></li><li><a href="PasswordForget.html">PasswordForget</a></li><li><a href="Payment.html">Payment</a></li><li><a href="Price.html">Price</a></li><li><a href="Quiz.html">Quiz</a></li><li><a href="SavedTrip.html">SavedTrip</a></li><li><a href="SavedTripCard.html">SavedTripCard</a></li><li><a href="SavedTripsBase.html">SavedTripsBase</a></li><li><a href="SavedTripsItem.html">SavedTripsItem</a></li><li><a href="SignInFormBase.html">SignInFormBase</a></li><li><a href="SignOutButton.html">SignOutButton</a></li><li><a href="SignUpFormBase.html">SignUpFormBase</a></li><li><a href="TripBooked.html">TripBooked</a></li><li><a href="TripGeneration.html">TripGeneration</a></li><li><a href="WithAuthentication.html">WithAuthentication</a></li></ul><h3>Global</h3><ul><li><a href="global.html#FlightRoute">FlightRoute</a></li><li><a href="global.html#formatTime">formatTime</a></li><li><a href="global.html#getAttractions">getAttractions</a></li><li><a href="global.html#getCityImage">getCityImage</a></li><li><a href="global.html#getCityWebsite">getCityWebsite</a></li><li><a href="global.html#getFormattedAddress">getFormattedAddress</a></li><li><a href="global.html#SimpleDialog">SimpleDialog</a></li><li><a href="global.html#TabPanel">TabPanel</a></li><li><a href="global.html#TripTabs">TripTabs</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.3</a> on Fri Mar 13 2020 23:33:24 GMT-0700 (Pacific Daylight Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

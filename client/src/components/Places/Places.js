@@ -1,5 +1,10 @@
 
-// Returns a list of attractions data based on the city name
+/**
+  * gets the attractions for a given city.
+  * 
+  * @param cityName {String} Name of the city to be queried.
+  * @return Promise {Promise} Promise that eventually returns the attractions for a city.
+  */
 export const getAttractions = async (cityName) => {
   var proxyurl = "https://salty-gorge-09496.herokuapp.com/";
   var apiKey = process.env.REACT_APP_PLACES_API_KEY;
@@ -31,7 +36,12 @@ export const getAttractions = async (cityName) => {
   });
 };
 
-// Returns a city image given the city name
+/**
+  * gets the image for a given city.
+  * 
+  * @param cityName {String} Name of the city to be queried.
+  * @return Promise {Promise} Promise that eventually returns the image for a city.
+  */
 export const getCityImage = async (cityName) => {
     var proxyurl = "https://salty-gorge-09496.herokuapp.com/";
     var apiKey = process.env.REACT_APP_PLACES_API_KEY;
@@ -59,6 +69,12 @@ export const getCityImage = async (cityName) => {
     //
 };
 
+/**
+  * gets the formatted city name. City, State, Country.
+  * 
+  * @param cityName {String} Name of the city to be queried.
+  * @return Promise {Promise} Promise that eventually returns the formatted city name.
+  */
 export const getFormattedAddress = async (cityName) => {
   var proxyurl = "https://salty-gorge-09496.herokuapp.com/";
   var apiKey = process.env.REACT_APP_PLACES_API_KEY;
@@ -83,6 +99,12 @@ export const getFormattedAddress = async (cityName) => {
   });
 };
 
+/**
+  * gets the city's website url.
+  * 
+  * @param cityName {String} Name of the city to be queried.
+  * @return Promise {Promise} Promise that eventually returns the city website url.
+  */
 export const getCityWebsite = async (cityName) => {
   var proxyurl = "https://salty-gorge-09496.herokuapp.com/";
   var apiKey = process.env.REACT_APP_PLACES_API_KEY;

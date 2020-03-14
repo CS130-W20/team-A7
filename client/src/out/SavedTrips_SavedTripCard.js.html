@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: SavedTrips/SavedTripCard.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: SavedTrips/SavedTripCard.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import React, { Component } from 'react';
+
+import { withStyles } from "@material-ui/core";
+import Card from "@material-ui/core/Card";
+import CardContent from "@material-ui/core/CardContent";
+import Typography from "@material-ui/core/Typography";
+import ButtonBase from '@material-ui/core/ButtonBase';
+
+import { withRouter } from 'react-router-dom';
+
+const styles = theme => ({
+  button: {
+    textAlign: "left",
+    margin: "auto",
+    width: "100%",
+  },
+  root: {
+    margin: "auto",
+    width: "85%",
+    height: 300,
+    overflow: "initial",
+    borderRadius: theme.spacing(2), // 16px
+    boxShadow: "0px 14px 80px rgba(34, 35, 58, 0.2)",
+    position: "relative",
+    marginLeft: "auto",
+    background: "#ffffff",
+    display: "flex",
+    paddingTop: theme.spacing(2),
+    paddingBottom: theme.spacing(2)
+  },
+  media: {
+    height: 300,
+    width: 300,
+    marginLeft: theme.spacing(-2),
+    marginRight: theme.spacing(1),
+    borderRadius: theme.spacing(2),
+    backgroundColor: "#fff",
+    paddingRight: "10%"
+  },
+  tripInfo: {
+    display: "flex",
+    flexDirection: "column"
+  },
+  details: {
+    marginLeft: theme.spacing(1),
+  },
+});
+
+/** @class SavedTripCard representing a saved trip Card */
+class SavedTripCard extends Component {
+  
+  /**
+  * Gets the quiz parameter for a destination.
+  *
+  * @param {destinationOpt} The option chosen by the user.
+  * @return {String} The quiz's representation of the object
+  */
+  destinationText(destinationOpt) {
+    if (destinationOpt === 'anyDest') {
+      return 'Surprise me!';
+    }
+    else if (destinationOpt === 'international') {
+      return 'International';
+    }
+    else if (destinationOpt === 'withinUS') {
+      return 'Within the U.S.';
+    }
+    else {
+      return '';
+    }
+  }
+
+  /**
+  * Gets the quiz parameter for a price.
+  *
+  * @param {priceOpt} The option chosen by the user.
+  * @return {String} The quiz's representation of the object
+  */
+  priceText(priceOpt) {
+    if (priceOpt === 'anyPrice') {
+      return "Cost isn't a factor";
+    }
+    else if (priceOpt === 'cheapest') {
+      return 'Cheapest';
+    }
+    else if (priceOpt === 'underBudget') {
+      return 'Under Budget';
+    }
+    else {
+      return '';
+    }
+  }
+
+  /**
+  * Handles clicking on a SavedTripCard
+  *
+  * @param none
+  * @return none
+  */
+  handleClickOpen = () => {
+    this.props.history.push({
+      pathname: '/quiz',
+      state: { 
+        step: 2,
+        // Criteria (set by Quiz)
+        departureAirport: this.props.trip.criteria.departureAirport,
+        departureDate: new Date(this.props.trip.criteria.departureDate),
+        returnDate: new Date(this.props.trip.criteria.returnDate),
+        destination: this.props.trip.criteria.destination,
+        price: this.props.trip.criteria.price,
+        budget: this.props.trip.criteria.budget,
+        // Trip info (set by Price)
+        totalPrice: null,
+        bookTrip: null,
+        saveTrip: null,
+        hotel: null,
+        apiErr: null
+      },
+    })
+  };
+
+  /**
+  * Renders the component
+  *
+  * @param none
+  * @return none
+  */
+  render() {
+    const { classes } = this.props;
+    return (
+      &lt;div>
+      &lt;ButtonBase className={classes.button} onClick={this.handleClickOpen}>
+        &lt;Card className={classes.root}>
+          &lt;div className={classes.tripInfo}>
+            &lt;CardContent>
+              &lt;Typography gutterBottom variant="h3">
+                {"Latest Price: $" + this.props.trip.price.toFixed(2)}
+              &lt;/Typography>
+              &lt;div className={classes.details}>
+                &lt;Typography variant="body1" gutterBottom>
+                  Departing from: {this.props.trip.criteria.departureAirport.city}
+                &lt;/Typography>
+                &lt;Typography variant="body1" color="textSecondary">
+                  &lt;i> {this.props.trip.criteria.departureDate} to {this.props.trip.criteria.returnDate} &lt;/i>
+                &lt;/Typography>
+                &lt;Typography variant="body1" color="textSecondary">
+                  &lt;i> {this.destinationText(this.props.trip.criteria.destination)} &lt;/i>
+                &lt;/Typography>
+                &lt;Typography variant="body1" color="textSecondary">
+                  &lt;i> {this.priceText(this.props.trip.criteria.price)} &lt;/i>
+                &lt;/Typography>
+              &lt;/div>
+            &lt;/CardContent>
+          &lt;/div>
+        &lt;/Card>
+      &lt;/ButtonBase>
+      &lt;/div>
+    );
+  }
+}
+
+export default withRouter(withStyles(styles)(SavedTripCard));</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="BookedTrip.html">BookedTrip</a></li><li><a href="BookedTripCard.html">BookedTripCard</a></li><li><a href="BookedTripsBase.html">BookedTripsBase</a></li><li><a href="BookedTripsItem.html">BookedTripsItem</a></li><li><a href="Flight.html">Flight</a></li><li><a href="HotelStay.html">HotelStay</a></li><li><a href="MyTrips.html">MyTrips</a></li><li><a href="SavedTrip.html">SavedTrip</a></li><li><a href="SavedTripCard.html">SavedTripCard</a></li><li><a href="SavedTripsBase.html">SavedTripsBase</a></li><li><a href="SavedTripsItem.html">SavedTripsItem</a></li></ul><h3>Global</h3><ul><li><a href="global.html#TabPanel">TabPanel</a></li><li><a href="global.html#TripTabs">TripTabs</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.3</a> on Fri Mar 13 2020 21:53:25 GMT-0700 (Pacific Daylight Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

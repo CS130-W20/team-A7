@@ -71,8 +71,15 @@ const styles = (theme) => ({
   }
 });
 
+/** @class ErrorCard renders an error in a pretty way. */
 class ErrorCard extends Component {
   
+  /**
+  * Sets button behavior to go back to Quiz page
+  *
+  * @param e {event} Button event
+  * @return none
+  */
   onClickRetakeQuiz = e => {
     const { setTotalPrice , setApiErr, goBack } = this.props;
     setTotalPrice(null);
@@ -81,6 +88,12 @@ class ErrorCard extends Component {
     goBack();
   }
   
+  /**
+  * Renders the component
+  *
+  * @param none
+  * @return {HTML} The HTML of the rendered component
+  */
   render() {
     const { classes } = this.props;
  

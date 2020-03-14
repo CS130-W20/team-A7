@@ -51,17 +51,36 @@ const INITIAL_STATE = {
   passwordTwo: '',
   error: null,
 };
-  
+
+/** @class SignInFormBase handles rendering the Sign Up page. */
 class SignUpFormBase extends Component {
+  /**
+  * Creates an instance of SignUpFormBase.
+  *
+  * @constructor
+  * @param {props} The React Component properties.
+  */
   constructor(props) {
     super(props);
     this.state = { ...INITIAL_STATE };
   }
   
+  /**
+  * Overrides onChange functionality for button
+  * @override
+  * @param event {event} onChange event.
+  * @return none
+  */
   onChange = event => {
     this.setState({ [event.target.name]: event.target.value });
   };
-    
+
+  /**
+  * Overrides onSubmit functionality for button
+  * @override
+  * @param event {event} onSubmit event.
+  * @return none
+  */
   onSubmit = event => {
     event.preventDefault();
     const { firstname, lastname, email, passwordOne } = this.state;
@@ -88,6 +107,12 @@ class SignUpFormBase extends Component {
     });
   };
   
+  /**
+  * Renders the component
+  *
+  * @param none
+  * @return HTML {HTML} The HTML representation of the component.
+  */
   render() {
     const { classes } = this.props;
   

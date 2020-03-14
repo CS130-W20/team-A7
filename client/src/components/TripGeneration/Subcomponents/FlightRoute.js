@@ -30,6 +30,12 @@ const styles = () => ({
   }
 });
 
+/**
+  * Renders the component
+  *
+  * @param none
+  * @return {HTML} The HTML of the rendered component
+  */
 function FlightRoute(props) {
   const {
     departureAirport,

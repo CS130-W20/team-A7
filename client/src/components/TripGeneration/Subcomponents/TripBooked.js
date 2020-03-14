@@ -58,13 +58,26 @@ const styles = () => ({
   }
 });
 
+/** @class TripBooked handles trip generation */
 class TripBooked extends Component {
   
+  /**
+  * Overrides onSubmit functionality for button
+  * @override
+  * @param e {event} onSubmit event.
+  * @return none
+  */
   viewItinerary = e => {
     e.preventDefault();
     this.props.history.push(ROUTES.MY_TRIPS);
   }    
 
+  /**
+  * Renders the component
+  *
+  * @param none
+  * @return HTML {HTML} The HTML representation of the component.
+  */
   render() {
     const { classes, name, destination, date, time } = this.props;
 

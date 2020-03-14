@@ -134,7 +134,14 @@ const marks = [
   },
 ];
 
+/** @class Price handles quiz processing */
 class Quiz extends Component {
+  /**
+  * Creates an instance of Quiz.
+  *
+  * @constructor
+  * @param props {props} The React Component properties.
+  */
   constructor(props) {
     super(props);
     this.slider_value = 0;
@@ -145,6 +152,12 @@ class Quiz extends Component {
     this.props.nextStep();
   };
 
+  /**
+  * Renders the component
+  *
+  * @param none
+  * @return HTML {HTML} The HTML representation of the component.
+  */
   render() {
     const { values, handleChange, handleSliderChange, classes } = this.props; 
 

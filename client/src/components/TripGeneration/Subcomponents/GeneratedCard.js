@@ -94,8 +94,16 @@ const styles = (theme) => ({
   }
 });
 
+/** @class GeneratedCard renders and saves a trip in a pretty way */
 class GeneratedCard extends Component {
 
+  /**
+  * writes a SavedTrip to firebase
+  *
+  * @param userId {String} Firebase ID of the user
+  * @param newTrip {SavedTrip} Trip to be written
+  * @return key {String} Firebase key returned after writing
+  */
   writeToSavedTrips(userId, newTrip) {
     const tripsRef = this.props.firebase.savedTrips();
     const newTripRef = tripsRef.push();
@@ -106,13 +114,27 @@ class GeneratedCard extends Component {
     });
     return newTripRef.key;
   }
-
+  
+  /**
+  * writes a SavedTrip to firebase
+  *
+  * @param userId {String} Firebase ID of the user
+  * @param tripId {SavedTrip} Trip to be written
+  * @return key {String} Firebase key returned after writing
+  */
   writeToUserSavedTrips(userId, tripId) {
     const currentUserTripsRef = this.props.firebase.singleUserSavedTrips(userId);
     const newIndex = currentUserTripsRef.push();
     newIndex.set(tripId);
   }
 
+  /**
+  * Sets a button functionality to save a trip to firebase
+  *
+  * @override
+  * @param event {event} Button event
+  * @return none
+  */
   saveTrip = e => {
     e.preventDefault();
     const { values, authUser } = this.props;
@@ -132,12 +154,26 @@ class GeneratedCard extends Component {
     this.props.history.push(ROUTES.MY_TRIPS);
   }
   
+  /**
+  * Sets a button functionality to swap out next TripGeneration subcomponent
+  *
+  * @override
+  * @param event {event} Button event
+  * @return none
+  */
   bookTrip = e => {
     e.preventDefault();
 
     this.props.nextStep();
   }
 
+  /**
+  * Sets a button functionality to go back to Quiz
+  *
+  * @override
+  * @param event {event} Button event
+  * @return none
+  */
   onClickRetakeQuiz = e => {
     const { setTotalPrice , setApiErr } = this.props;
     setTotalPrice(null);
@@ -146,6 +182,12 @@ class GeneratedCard extends Component {
     this.props.goBack();
   }
 
+  /**
+  * Renders the component
+  *
+  * @param none
+  * @return HTML {HTML} The HTML representation of the component.
+  */
   render() {
     const { classes, values } = this.props;
 

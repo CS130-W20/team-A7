@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: MyTrips/MyTrips.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: MyTrips/MyTrips.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import React, { Component } from 'react';
+import { AuthUserContext } from '../Session';
+
+import TripTabs from './TripTabs';
+import { Redirect } from 'react-router-dom';
+import * as ROUTES from '../../constants/routes';
+
+const INITIAL_STATE = {
+  trips: [],
+  error: null,
+  gotContext: false,
+  authUser: null,
+};
+
+/** @class MyTrips handles the rendering of the My Trips page*/
+class MyTrips extends Component {
+  /**
+  * Creates an instance of MyTrips.
+  *
+  * @constructor
+  * @param props {props} React Component properties
+  */
+  constructor(props) {
+    super(props);
+    this.state = { ...INITIAL_STATE };
+  }
+
+  /**
+  * Sets the Context of a logged in user
+  *
+  * @param none
+  * @return none
+  */
+  setContext() {
+    console.log('checking...');
+
+    if (typeof this.context !== 'undefined' &amp;&amp; this.context !== null &amp; !this.state.gotContext) {
+      console.log('got context');
+      this.setState({ 
+        gotContext: true,
+      });
+      if (typeof this.context.authUser !== 'undefined') {
+        this.setState({ 
+          authUser: this.context.authUser,
+        });
+      }
+    }
+  }
+
+  /**
+  * Sets the state of the object's rendered variables.
+  *
+  * @param none
+  * @return none
+  */
+  componentDidMount() {
+    this.setContext();
+  }
+
+  /**
+  * Sets the state of the object's rendered variables.
+  *
+  * @param none
+  * @return none
+  */
+  componentWillMount() {
+    this.setContext();
+  }
+
+  /**
+  * Sets the state of the object's rendered variables.
+  *
+  * @param none
+  * @return none
+  */
+  componentDidUpdate() {
+    this.setContext();
+  }
+
+  /**
+  * Renders the component
+  *
+  * @param none
+  * @return HTML {HTML} The HTML of the rendered component
+  */
+  render() {
+    if (!this.state.gotContext) {
+      console.log('have not gotten context');
+      this.setContext();
+      return (
+        &lt;div> &lt;/div>
+      )
+    }
+    else if (this.state.gotContext &amp;&amp; this.state.authUser === null) {
+      return (
+        &lt;Redirect to = {ROUTES.LANDING}/>
+      )
+    }
+    else {
+      return(
+        &lt;div id="centered-flex-masthead">
+          &lt;TripTabs/>
+        &lt;/div>
+      );
+    }
+  }
+}
+
+MyTrips.contextType = AuthUserContext;
+
+export default MyTrips;</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="BookedTrip.html">BookedTrip</a></li><li><a href="BookedTripCard.html">BookedTripCard</a></li><li><a href="BookedTripsBase.html">BookedTripsBase</a></li><li><a href="BookedTripsItem.html">BookedTripsItem</a></li><li><a href="ErrorCard.html">ErrorCard</a></li><li><a href="Flight.html">Flight</a></li><li><a href="GeneratedCard.html">GeneratedCard</a></li><li><a href="GeneratingCard.html">GeneratingCard</a></li><li><a href="HotelStay.html">HotelStay</a></li><li><a href="MyTrips.html">MyTrips</a></li><li><a href="PasswordChange.html">PasswordChange</a></li><li><a href="PasswordForget.html">PasswordForget</a></li><li><a href="Payment.html">Payment</a></li><li><a href="Price.html">Price</a></li><li><a href="Quiz.html">Quiz</a></li><li><a href="SavedTrip.html">SavedTrip</a></li><li><a href="SavedTripCard.html">SavedTripCard</a></li><li><a href="SavedTripsBase.html">SavedTripsBase</a></li><li><a href="SavedTripsItem.html">SavedTripsItem</a></li><li><a href="SignInFormBase.html">SignInFormBase</a></li><li><a href="SignOutButton.html">SignOutButton</a></li><li><a href="SignUpFormBase.html">SignUpFormBase</a></li><li><a href="TripBooked.html">TripBooked</a></li><li><a href="TripGeneration.html">TripGeneration</a></li><li><a href="WithAuthentication.html">WithAuthentication</a></li></ul><h3>Global</h3><ul><li><a href="global.html#FlightRoute">FlightRoute</a></li><li><a href="global.html#formatTime">formatTime</a></li><li><a href="global.html#getAttractions">getAttractions</a></li><li><a href="global.html#getCityImage">getCityImage</a></li><li><a href="global.html#getCityWebsite">getCityWebsite</a></li><li><a href="global.html#getFormattedAddress">getFormattedAddress</a></li><li><a href="global.html#SimpleDialog">SimpleDialog</a></li><li><a href="global.html#TabPanel">TabPanel</a></li><li><a href="global.html#TripTabs">TripTabs</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.3</a> on Fri Mar 13 2020 23:33:24 GMT-0700 (Pacific Daylight Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

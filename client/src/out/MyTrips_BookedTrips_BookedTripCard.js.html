@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: MyTrips/BookedTrips/BookedTripCard.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: MyTrips/BookedTrips/BookedTripCard.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import React, { Component } from 'react';
+import PropTypes from 'prop-types';
+import ListItemText from '@material-ui/core/ListItemText';
+import DialogTitle from '@material-ui/core/DialogTitle';
+import Dialog from '@material-ui/core/Dialog';
+import List from '@material-ui/core/List';
+import ListItem from '@material-ui/core/ListItem';
+import { withStyles } from "@material-ui/core";
+import Card from "@material-ui/core/Card";
+import CardMedia from "@material-ui/core/CardMedia";
+import CardContent from "@material-ui/core/CardContent";
+import Typography from "@material-ui/core/Typography";
+import ButtonBase from '@material-ui/core/ButtonBase';
+import FlightTakeoffIcon from '@material-ui/icons/FlightTakeoff';
+import FlightLandIcon from '@material-ui/icons/FlightLand';
+import HotelIcon from '@material-ui/icons/Hotel';
+import LocalActivityIcon from '@material-ui/icons/LocalActivity';
+import { getCityImage, getFormattedAddress, getCityWebsite, getAttractions } from '../../Places/Places.js'
+
+const styles = theme => ({
+  button: {
+    textAlign: "left",
+    margin: "auto",
+    width: "100%",
+  },
+  root: {
+    margin: "auto",
+    marginTop: 10,
+    width: "85%",
+    height: 300,
+    overflow: "initial",
+    borderRadius: theme.spacing(2), // 16px
+    boxShadow: "0px 14px 80px rgba(34, 35, 58, 0.2)",
+    position: "relative",
+    marginLeft: "auto",
+    background: "#ffffff",
+    display: "flex",
+    paddingTop: theme.spacing(2),
+    paddingBottom: theme.spacing(2)
+  },
+  media: {
+    height: 275,
+    width: 275,
+    marginLeft: theme.spacing(2),
+    marginRight: theme.spacing(1),
+    borderRadius: theme.spacing(2),
+    backgroundColor: "#fff",
+    paddingRight: "10%"
+  },
+  tripInfo: {
+    display: "flex",
+    flexDirection: "column"
+  },
+  details: {
+    marginLeft: theme.spacing(1),
+  },
+  icon: {
+    marginRight: 20,
+  }
+});
+
+/**
+  * Renders the three slots for Google Places Attractions
+  *
+  * @param props {props} React Component props
+  * @return HTML {HTML} HTML representation of object.
+  */
+function SimpleDialog(props) {
+  
+  const { onClose,  open , details, classes, destinationAddress, attractions, price} = props;
+
+  var apiKey = process.env.REACT_APP_PLACES_API_KEY;
+
+  const handleClose = () => {
+    onClose();
+  };
+
+  return (
+    &lt;Dialog onClose={handleClose} aria-labelledby="simple-dialog-title" open={open} maxWidth="md" fullWidth={true}>
+      &lt;DialogTitle id="simple-dialog-title">Trip Details - {destinationAddress} (${price})&lt;/DialogTitle>
+      &lt;List>
+          &lt;ListItem >
+          &lt;FlightTakeoffIcon className={classes.icon} /> &lt;ListItemText  primary={"Outbound Flight: "} secondary={details.departureFlight.departureCity + " (" + details.departureFlight.departureAirport.code + ") to " + details.departureFlight.destinationCity + " (" + details.departureFlight.destinationAirport.code + ")   -   " + details.departureFlight.departureDate} />
+          &lt;/ListItem>
+          &lt;ListItem>
+          &lt;FlightLandIcon className={classes.icon} /> &lt;ListItemText primary="Return Flight: " secondary={details.returnFlight.departureCity + " (" + details.returnFlight.departureAirport.code + ") to " + details.returnFlight.destinationCity + " (" + details.returnFlight.destinationAirport.code + ")   -   " + details.returnFlight.departureDate} />
+          &lt;/ListItem>
+          &lt;ListItem>
+          &lt;HotelIcon className={classes.icon} /> &lt;ListItemText primary="Hotel: " secondary = {details.hotelStay.hotelResult.name +"  -  "+ details.hotelStay.hotelResult.rating +" star hotel"}   />
+          &lt;/ListItem>
+          &lt;ListItem>
+          &lt;LocalActivityIcon className={classes.icon} /> &lt;ListItemText primary={"Things to do in " +  details.departureFlight.destinationCity + ": "} />
+          &lt;/ListItem>
+      &lt;/List>
+      &lt;Card className={classes.root} >
+        &lt;CardMedia
+          className={classes.media}
+          image={
+            'https://maps.googleapis.com/maps/api/place/photo?photoreference=' + attractions[0].photos[0].photo_reference + '&amp;key=' + apiKey + '&amp;maxheight=250'
+          }  
+        />
+        &lt;div className={classes.tripInfo} >
+          &lt;CardContent>
+            &lt;Typography gutterBottom variant="h4">
+              {attractions[0].name}
+            &lt;/Typography>
+            &lt;div className={classes.details}>
+              &lt;Typography variant="body1" gutterBottom>
+                {attractions[0].vicinity}
+              &lt;/Typography>
+              &lt;Typography variant="body1" gutterBottom>
+                {attractions[0].rating} stars ({attractions[0].user_ratings_total} reviews)
+              &lt;/Typography>
+              &lt;Typography variant="body1" color="textSecondary">
+                &lt;i> &lt;a rel="noopener noreferrer" href={'http://www.google.com/search?q=' + attractions[0].name} target="_blank">More Information&lt;/a> &lt;/i>  
+              &lt;/Typography>
+            &lt;/div>
+          &lt;/CardContent>
+        &lt;/div>
+
+      &lt;/Card>
+      &lt;Card className={classes.root}>
+        &lt;CardMedia
+          className={classes.media}
+          image={
+            'https://maps.googleapis.com/maps/api/place/photo?photoreference=' + attractions[1].photos[0].photo_reference + '&amp;key=' + apiKey + '&amp;maxheight=250'
+          }
+        />
+        &lt;div className={classes.tripInfo}>
+          &lt;CardContent>
+            &lt;Typography gutterBottom variant="h4">
+              {attractions[1].name}
+            &lt;/Typography>
+            &lt;div className={classes.details}>
+              &lt;Typography variant="body1" gutterBottom>
+                {attractions[1].vicinity}
+              &lt;/Typography>
+              &lt;Typography variant="body1" gutterBottom>
+                {attractions[1].rating} stars ({attractions[1].user_ratings_total} reviews)
+              &lt;/Typography>
+              &lt;Typography variant="body1" color="textSecondary">
+                &lt;i> &lt;a rel="noopener noreferrer" href={'http://www.google.com/search?q=' + attractions[1].name} target="_blank">More Information&lt;/a> &lt;/i>
+              &lt;/Typography>
+            &lt;/div>
+          &lt;/CardContent>
+        &lt;/div>
+        
+      &lt;/Card>
+      &lt;Card className={classes.root}>
+        &lt;CardMedia
+          className={classes.media}
+          image={
+            'https://maps.googleapis.com/maps/api/place/photo?photoreference=' + attractions[2].photos[0].photo_reference + '&amp;key=' + apiKey + '&amp;maxheight=250'
+          }
+        />
+        &lt;div className={classes.tripInfo}>
+          &lt;CardContent>
+            &lt;Typography gutterBottom variant="h4">
+              {attractions[2].name}
+            &lt;/Typography>
+            &lt;div className={classes.details}>
+              &lt;Typography variant="body1" gutterBottom>
+                {attractions[2].vicinity}
+              &lt;/Typography>
+              &lt;Typography variant="body1" gutterBottom>
+                {attractions[2].rating} stars ({attractions[2].user_ratings_total} reviews)
+              &lt;/Typography>
+              &lt;Typography variant="body1" color="textSecondary">
+              &lt;i> &lt;a rel="noopener noreferrer" href={'http://www.google.com/search?q=' + attractions[2].name} target="_blank">More Information&lt;/a> &lt;/i>
+              &lt;/Typography>
+            &lt;/div>
+          &lt;/CardContent>
+        &lt;/div>
+        
+      &lt;/Card>
+    &lt;/Dialog>
+  );
+}
+
+SimpleDialog.propTypes = {
+  onClose: PropTypes.func.isRequired,
+  open: PropTypes.bool.isRequired,
+};
+
+/** @class BookedTripCard displays a Trip that a user has booked. */
+class BookedTripCard extends Component {
+  /**
+   * Creates an instance of BookedTripCard
+   *
+   * @constructor
+   */
+  constructor(props) {
+    super(props);
+    /** @private */ this.state = {
+      open: false,
+      sourceAddress: '',
+      destinationAddress: '',
+      destinationImage: null,
+      destinationWebsite: '',
+      attractions: null,
+      srcAddDone: false,
+      desAddDone: false,
+      destImgDone: false,
+      destWbstDone: false,
+      attractionsDone: false
+    };
+  }
+
+  /**
+    * Updates state to contain source address
+    *
+    * @param addy {String} The address to be set.
+    * @return none
+    */
+  setSourceAddress(addy) {
+    if (typeof addy !== 'undefined' &amp;&amp; addy !== '') {
+      this.setState({
+        sourceAddress: addy,
+      });
+    }
+  }
+
+  /**
+    * Updates state to contain destination address
+    *
+    * @param addy {String} The address to be set.
+    * @return none
+    */
+  setDestinationAddress(addy) {
+    if (typeof addy !== 'undefined' &amp;&amp; addy !== '') {
+      this.setState({
+        destinationAddress: addy,
+      });
+    }
+  }
+
+  /**
+    * Updates state to contain the destination image's url
+    *
+    * @param url {String} The url to be set.
+    * @return none
+    */
+  setDestinationImage(url) {
+    if (typeof url !== 'undefined' &amp;&amp; url !== null) {
+      this.setState({
+        destinationImage: url,
+      });
+    }
+  }
+
+  /**
+    * Updates state to contain destination website's url.
+    *
+    * @param url {String} The url to be set.
+    * @return none
+    */
+  setDestinationWebsite(url) {
+    if (typeof url !== 'undefined' &amp;&amp; url !== null) {
+      this.setState({
+        destinationWebsite: url,
+      });
+    }
+  }
+
+  /**
+    * Updates state to contain Google Places Attractions
+    *
+    * @param attractions {Array&lt;JSON>} The attractions returned by Google Places API.
+    * @return none
+    */
+  setAttractions(attractions) {
+    if (typeof attractions !== 'undefined' &amp;&amp; attractions !== null) {
+      this.setState({
+        attractions: attractions,
+      });
+    }
+  }
+  
+  /**
+    * Updates state to indicate source address API call completed.
+    *
+    * @param none
+    * @return none
+    */
+  srcAddIsDone() {
+    this.setState({
+      srcAddDone : true
+    });
+  }
+  
+  /**
+    * Updates state to indicate destination address API call completed.
+    *
+    * @param none
+    * @return none
+    */
+  desAddIsDone() {
+    this.setState({
+      desAddDone : true
+    });
+  }
+  
+  /**
+    * Updates state to indicate destination image API call completed.
+    *
+    * @param none
+    * @return none
+    */
+  destImgIsDone() {
+    this.setState({
+      destImgDone : true
+    });
+  }
+  
+  /**
+    * Updates state to indicate destination website url API call completed.
+    *
+    * @param none
+    * @return none
+    */
+  destWbstIsDone() {
+    this.setState({
+      destWbstDone : true
+    });
+  }
+
+  /**
+    * Updates state to indicate Google Places API call completed.
+    *
+    * @param none
+    * @return none
+    */
+  attractionsIsDone() {
+    this.setState({
+      attractionsDone : true
+    });
+  }
+
+  /**
+    * Updates object by making API calls.
+    *
+    * @param none
+    * @return none
+    */
+  componentDidMount() {
+    const setSourceAddress_c = ((addy) => this.setSourceAddress(addy));
+    const setDestinationAddress_c = ((addy) => this.setDestinationAddress(addy));
+    const setDestinationImage_c = ((url) => this.setDestinationImage(url));
+    const setDestinationWebsite_c = ((url) => this.setDestinationWebsite(url));
+    const setAttractions_c = ((attractions) => this.setAttractions(attractions));
+    const srcAddIsDone_c = (() => this.srcAddIsDone());
+    const desAddIsDone_c = (() => this.desAddIsDone());
+    const destImgIsDone_c = (() => this.destImgIsDone());
+    const destWbstIsDone_c = (() => this.destWbstIsDone());
+    const attractionsIsDone_c = (() => this.attractionsIsDone());
+
+    if (!this.state.srcAddDone) {
+      getFormattedAddress(this.props.trip.departureFlight.departureCity).then(function (addy) {
+        setSourceAddress_c(addy);
+        srcAddIsDone_c();
+      });
+    }
+    
+    if (!this.state.destImgDone) {
+      getCityImage(this.props.trip.departureFlight.destinationCity).then(function (url) {
+        setDestinationImage_c(url);
+        destImgIsDone_c();
+      });
+    }
+    
+    if (!this.state.destWbstDone) {
+      getCityWebsite(this.props.trip.departureFlight.destinationCity).then(function (url) {
+        setDestinationWebsite_c(url);
+        destWbstIsDone_c();
+      });
+    }
+    
+    if (!this.state.attractionsIsDone) {
+      getAttractions(this.props.trip.departureFlight.destinationCity).then(function (attractions) {
+        setAttractions_c(attractions);
+        attractionsIsDone_c();
+      });
+    }
+    
+    if (!this.state.desAddDone) {
+      getFormattedAddress(this.props.trip.departureFlight.destinationCity).then(function (addy) {
+        setDestinationAddress_c(addy);
+        desAddIsDone_c();
+      });
+    }
+  }
+
+  /**
+    * Renders the component
+    *
+    * @param none
+    * @return the generated HTML
+  */
+  render() {
+    
+    // Hacky method of fixing attractions sometimes being null
+    if (this.state.attractions === null) {
+      return (&lt;div> &lt;/div>);
+    }
+    
+    const { classes, trip } = this.props;
+
+    const handleClickOpen = () => {
+      this.setState({
+        open: true
+      });
+    };
+    const handleClose = () => {
+      this.setState({
+        open: false
+      });
+    };
+
+    return (
+      &lt;div>
+      &lt;SimpleDialog  open={this.state.open} onClose={handleClose} details={trip} classes={classes} destinationAddress={this.state.destinationAddress} attractions={this.state.attractions} price={this.props.trip.price}/>
+      
+      &lt;ButtonBase className={classes.button} onClick={handleClickOpen}>
+        &lt;Card className={classes.root} >
+            &lt;CardMedia
+              className={classes.media}
+              image={this.state.destinationImage}
+            />
+            &lt;div>
+              &lt;CardContent>
+                &lt;div className={classes.details}>
+                  &lt;Typography style={{marginBottom: 10, marginTop: 20}} variant="h4">
+                    {this.state.sourceAddress} to {this.state.destinationAddress} (${this.props.trip.price})
+                  &lt;/Typography>
+                  &lt;Typography variant="body1" color="textSecondary">
+                    &lt;i> {this.props.trip.departureFlight.departureDate} to {this.props.trip.returnFlight.departureDate} &lt;/i>
+                  &lt;/Typography>
+                  &lt;Typography variant="body1" color="textSecondary">
+                    &lt;a rel="noopener noreferrer" href={this.state.destinationWebsite} target="_blank">More Information&lt;/a>
+                  &lt;/Typography>
+                &lt;/div>
+              &lt;/CardContent>
+            &lt;/div>
+        &lt;/Card>
+      &lt;/ButtonBase>
+      &lt;/div>
+    );
+  }
+}
+
+export default withStyles(styles)(BookedTripCard);</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="BookedTrip.html">BookedTrip</a></li><li><a href="BookedTripCard.html">BookedTripCard</a></li><li><a href="BookedTripsBase.html">BookedTripsBase</a></li><li><a href="BookedTripsItem.html">BookedTripsItem</a></li><li><a href="ErrorCard.html">ErrorCard</a></li><li><a href="Flight.html">Flight</a></li><li><a href="GeneratedCard.html">GeneratedCard</a></li><li><a href="GeneratingCard.html">GeneratingCard</a></li><li><a href="HotelStay.html">HotelStay</a></li><li><a href="MyTrips.html">MyTrips</a></li><li><a href="PasswordChange.html">PasswordChange</a></li><li><a href="PasswordForget.html">PasswordForget</a></li><li><a href="Payment.html">Payment</a></li><li><a href="Price.html">Price</a></li><li><a href="Quiz.html">Quiz</a></li><li><a href="SavedTrip.html">SavedTrip</a></li><li><a href="SavedTripCard.html">SavedTripCard</a></li><li><a href="SavedTripsBase.html">SavedTripsBase</a></li><li><a href="SavedTripsItem.html">SavedTripsItem</a></li><li><a href="SignInFormBase.html">SignInFormBase</a></li><li><a href="SignOutButton.html">SignOutButton</a></li><li><a href="SignUpFormBase.html">SignUpFormBase</a></li><li><a href="TripBooked.html">TripBooked</a></li><li><a href="TripGeneration.html">TripGeneration</a></li><li><a href="WithAuthentication.html">WithAuthentication</a></li></ul><h3>Global</h3><ul><li><a href="global.html#FlightRoute">FlightRoute</a></li><li><a href="global.html#formatTime">formatTime</a></li><li><a href="global.html#getAttractions">getAttractions</a></li><li><a href="global.html#getCityImage">getCityImage</a></li><li><a href="global.html#getCityWebsite">getCityWebsite</a></li><li><a href="global.html#getFormattedAddress">getFormattedAddress</a></li><li><a href="global.html#SimpleDialog">SimpleDialog</a></li><li><a href="global.html#TabPanel">TabPanel</a></li><li><a href="global.html#TripTabs">TripTabs</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.3</a> on Fri Mar 13 2020 23:33:24 GMT-0700 (Pacific Daylight Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

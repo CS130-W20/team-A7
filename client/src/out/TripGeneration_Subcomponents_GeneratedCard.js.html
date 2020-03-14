@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: TripGeneration/Subcomponents/GeneratedCard.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: TripGeneration/Subcomponents/GeneratedCard.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import React, { Component } from 'react';
+import { withStyles } from '@material-ui/core/styles';
+import Card from '@material-ui/core/Card';
+import Typography from '@material-ui/core/Typography';
+import Button from '@material-ui/core/Button';
+import CTAButton from '../../CTAButton/CTAButton';
+import FlightRoute from './FlightRoute';
+import * as ROUTES from '../../../constants/routes';
+
+const ColoredLine = ({ color }) => (
+  &lt;hr
+    style={{
+      color: color,
+      backgroundColor: color,
+      height: 1
+    }}
+  />
+);
+
+const getTime = (date) => {
+  return `${date.getHours()}`.padStart(2, '0') + ':' + `${date.getMinutes()}`.padStart(2,'0');
+}
+
+const styles = (theme) => ({
+  card: {
+    marginTop: 50,
+    width: '70vw',
+    minHeight: 250,
+    margin: 'auto',
+    transition: '0.3s',
+    boxShadow: '0 8px 40px -12px rgba(0,0,0,0.3)',
+    '&amp;:hover': {
+      boxShadow: '0 16px 70px -12.125px rgba(0,0,0,0.3)'
+    }
+  },
+  item: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  paper: {
+    marginTop: theme.spacing(8),
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+  },
+  title: {
+    fontFamily: 'Indie Flower',
+    fontSize: 48,
+    color: 'black',
+    textAlign: 'center',
+    fontWeight: 'bold',
+    margin: 20,
+  },
+  subtitle: {
+    fontSize: 20,
+    textAlign: 'center',
+    marginBottom: 20
+  },
+  heading: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    margin: 40
+  },
+  flightRouteContainer: {
+    display: 'flex',
+    justifyContent: 'center',
+    marginBottom: 40
+  },
+  buttonsContainer: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    paddingLeft: 30,
+    paddingRight: 30
+  },
+  bottomContainer: {
+    padding: 40
+  },
+  grandTotalContainer: {
+    display: 'flex',
+    justifyContent: 'flex-end',
+    alignItems: 'baseline',
+    marginBottom: 20
+  },
+  grandTotal: {
+    fontSize: 28,
+    fontWeight: 'bold',
+    marginRight: 6
+  },
+  price: {
+    fontSize: 34,
+    fontFamily: 'Arial',
+    fontWeight: 'bold'
+  }
+});
+
+/** @class GeneratedCard renders and saves a trip in a pretty way */
+class GeneratedCard extends Component {
+
+  /**
+  * writes a SavedTrip to firebase
+  *
+  * @param userId {String} Firebase ID of the user
+  * @param newTrip {SavedTrip} Trip to be written
+  * @return key {String} Firebase key returned after writing
+  */
+  writeToSavedTrips(userId, newTrip) {
+    const tripsRef = this.props.firebase.savedTrips();
+    const newTripRef = tripsRef.push();
+    newTripRef.set(newTrip, function(error) {
+      if (error) {
+        console.log('Error: Failed to write trip to user ', userId, ': ', error);
+      }
+    });
+    return newTripRef.key;
+  }
+  
+  /**
+  * writes a SavedTrip to firebase
+  *
+  * @param userId {String} Firebase ID of the user
+  * @param tripId {SavedTrip} Trip to be written
+  * @return key {String} Firebase key returned after writing
+  */
+  writeToUserSavedTrips(userId, tripId) {
+    const currentUserTripsRef = this.props.firebase.singleUserSavedTrips(userId);
+    const newIndex = currentUserTripsRef.push();
+    newIndex.set(tripId);
+  }
+
+  /**
+  * Sets a button functionality to save a trip to firebase
+  *
+  * @override
+  * @param event {event} Button event
+  * @return none
+  */
+  saveTrip = e => {
+    e.preventDefault();
+    const { values, authUser } = this.props;
+    if (authUser !== null) {
+      if (typeof authUser.uid !== 'undefined' &amp;&amp; authUser.uid !== null) {
+        const userId = authUser.uid;
+        // Writing to firebase
+        const newTripKey = this.writeToSavedTrips(userId, values.saveTrip);
+        if (typeof newTripKey !== 'undefined') {
+          this.writeToUserSavedTrips(userId, newTripKey);
+        }
+        else {
+          console.log('Error: ', 'Did not write to user trips, new trip key was undefined');
+        }
+      }
+    }
+    this.props.history.push(ROUTES.MY_TRIPS);
+  }
+  
+  /**
+  * Sets a button functionality to swap out next TripGeneration subcomponent
+  *
+  * @override
+  * @param event {event} Button event
+  * @return none
+  */
+  bookTrip = e => {
+    e.preventDefault();
+
+    this.props.nextStep();
+  }
+
+  /**
+  * Sets a button functionality to go back to Quiz
+  *
+  * @override
+  * @param event {event} Button event
+  * @return none
+  */
+  onClickRetakeQuiz = e => {
+    const { setTotalPrice , setApiErr } = this.props;
+    setTotalPrice(null);
+    setApiErr(null);
+    e.preventDefault();
+    this.props.goBack();
+  }
+
+  /**
+  * Renders the component
+  *
+  * @param none
+  * @return HTML {HTML} The HTML representation of the component.
+  */
+  render() {
+    const { classes, values } = this.props;
+
+    return (
+      &lt;div id="centered-fixed-masthead">
+        &lt;Card className={classes.card}>
+          &lt;div className={classes.paper}>
+            &lt;Typography className={classes.title}>
+              Almost there!
+            &lt;/Typography>
+            &lt;Typography className={classes.subtitle}>
+              You're a few clicks away from your next adventure.
+            &lt;/Typography>
+          &lt;/div>
+          &lt;ColoredLine />
+          &lt;Typography className={classes.heading}>Your Trip&lt;/Typography>
+          &lt;div className={classes.flightRouteContainer}>
+            &lt;FlightRoute
+              departureAirport={values.departureAirport.code}
+              departureTime={getTime(values.departureDate)}
+              departureDate={values.departureDate.toDateString()}
+              destinationAirport="???"
+              destinationTime="??:??"
+              destinationDate="..."
+            />
+          &lt;/div>
+          &lt;div className={classes.flightRouteContainer}>
+            &lt;FlightRoute
+              departureAirport="???"
+              departureTime="??:??"
+              departureDate="..."
+              destinationAirport={values.departureAirport.code}
+              destinationTime={getTime(values.returnDate)}
+              destinationDate={values.returnDate.toDateString()}
+            />
+          &lt;/div>
+          &lt;div className={classes.bottomContainer}>
+            &lt;div className={classes.grandTotalContainer}>
+              &lt;Typography className={classes.grandTotal}>Grand Total: &lt;/Typography>
+              &lt;Typography className={classes.price}>${values.totalPrice}&lt;/Typography>
+            &lt;/div>
+            &lt;div className={classes.buttonsContainer}>
+              &lt;Button label="retakeQuiz"
+              type="submit"
+              onClick={this.onClickRetakeQuiz}
+              variant="contained">
+                Retake Quiz
+              &lt;/Button>
+              &lt;Button label="saveTrip"
+              disabled={this.props.authUser === null}
+              type="submit"
+              onClick={this.saveTrip}
+              variant="contained">
+                Save Trip
+              &lt;/Button>
+              &lt;CTAButton onClick={this.bookTrip}>BOOK NOW&lt;/CTAButton>
+            &lt;/div>
+          &lt;/div>
+        &lt;/Card>
+      &lt;/div>
+    );
+  }
+}
+
+export default withStyles(styles)(GeneratedCard);</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="BookedTrip.html">BookedTrip</a></li><li><a href="BookedTripCard.html">BookedTripCard</a></li><li><a href="BookedTripsBase.html">BookedTripsBase</a></li><li><a href="BookedTripsItem.html">BookedTripsItem</a></li><li><a href="ErrorCard.html">ErrorCard</a></li><li><a href="Flight.html">Flight</a></li><li><a href="GeneratedCard.html">GeneratedCard</a></li><li><a href="GeneratingCard.html">GeneratingCard</a></li><li><a href="HotelStay.html">HotelStay</a></li><li><a href="MyTrips.html">MyTrips</a></li><li><a href="PasswordChange.html">PasswordChange</a></li><li><a href="PasswordForget.html">PasswordForget</a></li><li><a href="Payment.html">Payment</a></li><li><a href="Price.html">Price</a></li><li><a href="Quiz.html">Quiz</a></li><li><a href="SavedTrip.html">SavedTrip</a></li><li><a href="SavedTripCard.html">SavedTripCard</a></li><li><a href="SavedTripsBase.html">SavedTripsBase</a></li><li><a href="SavedTripsItem.html">SavedTripsItem</a></li><li><a href="SignInFormBase.html">SignInFormBase</a></li><li><a href="SignOutButton.html">SignOutButton</a></li><li><a href="SignUpFormBase.html">SignUpFormBase</a></li><li><a href="TripBooked.html">TripBooked</a></li><li><a href="TripGeneration.html">TripGeneration</a></li><li><a href="WithAuthentication.html">WithAuthentication</a></li></ul><h3>Global</h3><ul><li><a href="global.html#FlightRoute">FlightRoute</a></li><li><a href="global.html#formatTime">formatTime</a></li><li><a href="global.html#getAttractions">getAttractions</a></li><li><a href="global.html#getCityImage">getCityImage</a></li><li><a href="global.html#getCityWebsite">getCityWebsite</a></li><li><a href="global.html#getFormattedAddress">getFormattedAddress</a></li><li><a href="global.html#SimpleDialog">SimpleDialog</a></li><li><a href="global.html#TabPanel">TabPanel</a></li><li><a href="global.html#TripTabs">TripTabs</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.3</a> on Fri Mar 13 2020 23:33:24 GMT-0700 (Pacific Daylight Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

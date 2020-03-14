@@ -14,19 +14,40 @@ const INITIAL_STATE = {
   error: null,
 };
 
+/** @class SavedTripsItem representing a saved trip */
 class SavedTripsItem {
+  /**
+  * Creates an instance of SavedTripsItem.
+  *
+  * @constructor
+  * @param trip {Trip} The trip object
+  * @param key {String} The firebase key associated with this object
+  */
   constructor(trip, key) {
     this.trip = trip;
     this.key = key;
   }
 }
 
+/** @class SavedTripsBase handling the main rendering of the Saved Trips tab on the My Trips page */
 class SavedTripsBase extends Component {
+  /**
+  * Creates an instance of SavedTripsBase.
+  *
+  * @constructor
+  * @param props {props} React properties
+  */
   constructor(props) {
     super(props);
     this.state = { ...INITIAL_STATE };
   }
 
+  /**
+  * Sets the state of the object's rendered variables.
+  *
+  * @param none
+  * @return none
+  */
   componentDidUpdate() {
     if (typeof this.context.authUser !== 'undefined' && this.context.authUser !== null && !this.state.gotContext) {
       this.hello = this.context;
@@ -36,6 +57,12 @@ class SavedTripsBase extends Component {
     }
   }
   
+  /**
+  * Gets all of the saved trips
+  *
+  * @param tripIds {Array<String>} IDs of trips to be obtained from FireBase
+  * @return Promise {Promise} A Promise that will eventually return each trip from FireBase.
+  */
   getAllSavedTrips(tripIds) {
     const tripRef = this.props.firebase.savedTrip;
     return Promise.all(
@@ -58,6 +85,12 @@ class SavedTripsBase extends Component {
     );
   }
 
+  /**
+  * Gets all of the saved trip IDs for a user
+  *
+  * @param userId {String} ID of user to be sent to FireBase
+  * @return Promise {Promise} A Promise that will eventually return each tripID from FireBase.
+  */
   getUserSavedTripIds(userId) {
     const currentUserTripsRef = this.props.firebase.singleUserSavedTrips(userId);
     return new Promise(function (resolve, reject) {
@@ -78,7 +111,12 @@ class SavedTripsBase extends Component {
     });
   }
 
-  // Query for the trip ids, then the trip objects
+  /**
+  * Gets all of the saved trips
+  *
+  * @param authUser {authUser} User object
+  * @return Promise {Promise} A Promise that will eventually return each tripID from FireBase.
+  */
   getUserSavedTrips(authUser) {
     const getAllSavedTrips = ((tripIds) => this.getAllSavedTrips(tripIds));
     const getUserSavedTripIds = ((uid) => this.getUserSavedTripIds(uid));
@@ -106,7 +144,12 @@ class SavedTripsBase extends Component {
     });
   }
 
-  // Set the trips in state
+  /**
+  * Sets all of the saved trips
+  *
+  * @param trips {Array<SavedTripsItem>} trips obtained from FireBase
+  * @return none
+  */
   setSavedTrips(trips) {
     if (typeof trips === 'undefined' || trips !== null) {
       var tripItems = [];
@@ -120,7 +163,12 @@ class SavedTripsBase extends Component {
     }
   }
 
-  // Get the full list of user trips
+  /**
+  * Gets all of the saved trips for a certain user
+  *
+  * @param authUser {authUser} Object representing a logged in user
+  * @return None
+  */
   refreshSavedTrips(authUser) {
     if (typeof authUser !== 'undefined' && authUser) {
       var setSavedTrips_c = ((trips) => this.setSavedTrips(trips));
@@ -133,6 +181,12 @@ class SavedTripsBase extends Component {
     }
   }
 
+  /**
+  * Renders the component
+  *
+  * @param none
+  * @return HTML {HTML} The HTML representation of the component
+  */
   render() {
     return(
       <div>
