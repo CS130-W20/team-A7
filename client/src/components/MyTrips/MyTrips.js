@@ -19,11 +19,18 @@ class MyTrips extends Component {
   }
 
   setContext() {
-    if (typeof this.context.authUser !== 'undefined' && this.context.authUser !== null && !this.state.gotContext) {
+    console.log('checking...');
+
+    if (typeof this.context !== 'undefined' && this.context !== null & !this.state.gotContext) {
+      console.log('got context');
       this.setState({ 
         gotContext: true,
-        authUser: this.context.authUser,
       });
+      if (typeof this.context.authUser !== 'undefined') {
+        this.setState({ 
+          gotContext: true,
+        });
+      }
     }
   }
 
@@ -41,6 +48,8 @@ class MyTrips extends Component {
 
   render() {
     if (!this.state.gotContext) {
+      console.log('have not gotten context');
+      this.setContext();
       return (
         <div> </div>
       )
