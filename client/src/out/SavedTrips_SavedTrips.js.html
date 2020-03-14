@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: SavedTrips/SavedTrips.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: SavedTrips/SavedTrips.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import React, { Component } from 'react';
+import { withRouter } from 'react-router-dom';
+import { compose } from 'recompose';
+
+import { withFirebase } from '../../Firebase';
+import { AuthUserContext } from '../../Session';
+
+import SavedTripCard from './SavedTripCard';
+
+const INITIAL_STATE = {
+  user: null,
+  trips: [],
+  gotContext: false,
+  error: null,
+};
+
+/** @class SavedTripsItem representing a saved trip */
+class SavedTripsItem {
+  /**
+  * Creates an instance of SavedTripsItem.
+  *
+  * @constructor
+  * @param {trip} The trip object
+  * @param {key} The firebase key associated with this object
+  */
+  constructor(trip, key) {
+    this.trip = trip;
+    this.key = key;
+  }
+}
+
+/** @class SavedTripsBase handling the main rendering of the Saved Trips tab on the My Trips page */
+class SavedTripsBase extends Component {
+  /**
+  * Creates an instance of SavedTripsBase.
+  *
+  * @constructor
+  * @param {props} React properties
+  */
+  constructor(props) {
+    super(props);
+    this.state = { ...INITIAL_STATE };
+  }
+
+  /**
+  * Sets the state of the object's rendered variables.
+  *
+  * @param none
+  * @return none
+  */
+  componentDidUpdate() {
+    if (typeof this.context.authUser !== 'undefined' &amp;&amp; this.context.authUser !== null &amp;&amp; !this.state.gotContext) {
+      this.hello = this.context;
+      this.setState({ gotContext: true });
+      this.refreshSavedTrips(this.hello.authUser);
+      // console.log('yeet (saved): ', this.context);
+    }
+  }
+  
+  /**
+  * Gets all of the saved trips
+  *
+  * @param {tripIds} IDs of trips to be obtained from FireBase
+  * @return {Promise} A Promise that will eventually return each trip from FireBase.
+  */
+  getAllSavedTrips(tripIds) {
+    const tripRef = this.props.firebase.savedTrip;
+    return Promise.all(
+      tripIds.map(function(tripId) {
+        return new Promise(function(resolve, reject) {
+          try {    
+            tripRef(tripId).on("value", function(snapshot, prevChildKey) {
+              if (typeof snapshot.val() === 'undefined' || snapshot.val() === null) {
+                resolve(null);
+              } else {
+                var newTrip = snapshot.val();
+                resolve(newTrip);
+              }
+            })
+          } catch (e) {
+            reject(e)
+          }
+        })
+      })
+    );
+  }
+
+  /**
+  * Gets all of the saved trip IDs for a user
+  *
+  * @param {userId} ID of user to be sent to FireBase
+  * @return {Promise} A Promise that will eventually return each tripID from FireBase.
+  */
+  getUserSavedTripIds(userId) {
+    const currentUserTripsRef = this.props.firebase.singleUserSavedTrips(userId);
+    return new Promise(function (resolve, reject) {
+      try {
+        currentUserTripsRef.on("value", function(snapshot, prevChildKey) {
+            if (typeof snapshot.val() === 'undefined') {
+              resolve(null);
+            } else {
+              var userTrips = snapshot.val();
+              resolve({
+                userTrips: userTrips,
+              });
+            }
+        })
+      } catch (e) {
+          reject(e)
+      }
+    });
+  }
+
+  /**
+  * Gets all of the saved trips
+  *
+  * @param {authUser} User object
+  * @return {Promise} A Promise that will eventually return each tripID from FireBase.
+  */
+  getUserSavedTrips(authUser) {
+    const getAllSavedTrips = ((tripIds) => this.getAllSavedTrips(tripIds));
+    const getUserSavedTripIds = ((uid) => this.getUserSavedTripIds(uid));
+    
+    return new Promise(function (resolve, reject) {
+      getUserSavedTripIds(authUser.uid).then(function (result) {
+        if (typeof result.userTrips !== 'undefined' &amp;&amp; result.userTrips !== null) {
+          let userTrips = [];
+          // userTrips is all the user's tripIds
+          for (const [key, tripId] of Object.entries(result.userTrips)) {
+            userTrips.push(tripId);
+          }
+          const tripPromises = getAllSavedTrips(userTrips);
+          tripPromises.then(function (values) {
+            resolve(values)
+          }).catch(function (error) {
+            resolve(null);
+            console.log('debug: ', error);
+          });
+        }
+      }).catch(function (error) {
+        resolve(null);
+        console.log('debug: ', error);
+      });
+    });
+  }
+
+  /**
+  * Sets all of the saved trips
+  *
+  * @param {trips} trips obtained from FireBase
+  * @return none
+  */
+  setSavedTrips(trips) {
+    if (typeof trips === 'undefined' || trips !== null) {
+      var tripItems = [];
+      for (const trip of trips) {
+        var tripItem = new SavedTripsItem(trip, tripItems.length);
+        tripItems.push(tripItem);
+      }
+      this.setState({
+        trips: tripItems,
+      });
+    }
+  }
+
+  /**
+  * Gets all of the saved trips for a certain user
+  *
+  * @param {authUser} Object representing a logged in user
+  * @return None
+  */
+  refreshSavedTrips(authUser) {
+    if (typeof authUser !== 'undefined' &amp;&amp; authUser) {
+      var setSavedTrips_c = ((trips) => this.setSavedTrips(trips));
+      this.getUserSavedTrips(authUser).then(function (result) {
+        setSavedTrips_c(result);
+      });
+    }
+    else {
+      console.log('debug: ', 'auth user still null');
+    }
+  }
+
+  /**
+  * Renders the component
+  *
+  * @param none
+  * @return none
+  */
+  render() {
+    return(
+      &lt;div>
+        {(this.state.trips || []).map(listItem => (
+          &lt;div key={listItem.key} style={{padding: 25}}>
+            &lt;SavedTripCard trip={listItem.trip}/>
+          &lt;/div>
+        ))}
+      &lt;/div>
+    );
+  }
+}
+
+SavedTripsBase.contextType = AuthUserContext;
+
+const SavedTrips = compose(
+  withRouter,
+  withFirebase,
+)(SavedTripsBase);
+
+export default SavedTrips;</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="BookedTrip.html">BookedTrip</a></li><li><a href="BookedTripCard.html">BookedTripCard</a></li><li><a href="BookedTripsBase.html">BookedTripsBase</a></li><li><a href="BookedTripsItem.html">BookedTripsItem</a></li><li><a href="Flight.html">Flight</a></li><li><a href="HotelStay.html">HotelStay</a></li><li><a href="MyTrips.html">MyTrips</a></li><li><a href="SavedTrip.html">SavedTrip</a></li><li><a href="SavedTripCard.html">SavedTripCard</a></li><li><a href="SavedTripsBase.html">SavedTripsBase</a></li><li><a href="SavedTripsItem.html">SavedTripsItem</a></li></ul><h3>Global</h3><ul><li><a href="global.html#TabPanel">TabPanel</a></li><li><a href="global.html#TripTabs">TripTabs</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.3</a> on Fri Mar 13 2020 21:53:25 GMT-0700 (Pacific Daylight Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

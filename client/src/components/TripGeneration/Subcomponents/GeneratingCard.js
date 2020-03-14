@@ -34,7 +34,14 @@ const styles = (theme) => ({
   }
 });
 
+/** @class GeneratedCard renders the "generating" screen after submitting a Quiz */
 class GeneratingCard extends Component {
+  /**
+  * Renders the component
+  *
+  * @param none
+  * @return HTML {HTML} The HTML representation of the component.
+  */
   render() {
     const { classes } = this.props;
 

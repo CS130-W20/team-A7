@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: SignUp/SignUpFormBase.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: SignUp/SignUpFormBase.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import React, { Component } from 'react';
+
+import Button from '@material-ui/core/Button';
+import CssBaseline from '@material-ui/core/CssBaseline';
+import TextField from '@material-ui/core/TextField';
+import Grid from '@material-ui/core/Grid';
+import Typography from '@material-ui/core/Typography';
+import Container from '@material-ui/core/Container';
+import Card from '@material-ui/core/Card'
+import CardContent from '@material-ui/core/CardContent'
+
+import { SignInLink } from '../SignIn/SignIn';
+import * as ROUTES from '../../constants/routes';
+
+const styles = (theme) => ({
+  card: {
+    marginTop: 50,
+    maxWidth: 500,
+    margin: "auto",
+    transition: "0.3s",
+    boxShadow: "0 8px 40px -12px rgba(0,0,0,0.3)",
+    "&amp;:hover": {
+      boxShadow: "0 16px 70px -12.125px rgba(0,0,0,0.3)"
+    }
+  },
+  paper: {
+    marginTop: theme.spacing(8),
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+  },
+  form: {
+    width: '100%', // Fix IE 11 issue.
+    marginTop: theme.spacing(3),
+  },
+  submit: {
+    margin: theme.spacing(3, 0, 2),
+  },
+  error: {
+    color: 'red',
+    fontSize: 'small',
+    margin: theme.spacing(3, 0, 2),
+  }
+});
+
+const INITIAL_STATE = {
+  firstname: '',
+  lastname: '',
+  email: '',
+  passwordOne: '',
+  passwordTwo: '',
+  error: null,
+};
+
+/** @class SignInFormBase handles rendering the Sign Up page. */
+class SignUpFormBase extends Component {
+  /**
+  * Creates an instance of SignUpFormBase.
+  *
+  * @constructor
+  * @param {props} The React Component properties.
+  */
+  constructor(props) {
+    super(props);
+    this.state = { ...INITIAL_STATE };
+  }
+  
+  /**
+  * Overrides onChange functionality for button
+  * @override
+  * @param event {event} onChange event.
+  * @return none
+  */
+  onChange = event => {
+    this.setState({ [event.target.name]: event.target.value });
+  };
+
+  /**
+  * Overrides onSubmit functionality for button
+  * @override
+  * @param event {event} onSubmit event.
+  * @return none
+  */
+  onSubmit = event => {
+    event.preventDefault();
+    const { firstname, lastname, email, passwordOne } = this.state;
+    this.props.firebase
+    .doCreateUserWithEmailAndPassword(email, passwordOne)
+    .then(authUser => {
+      const uid = authUser.uid ? authUser.user === 'undefined' : authUser.user.uid;
+      // Get user information
+      return this.props.firebase
+      .user(uid)
+      .set({
+        firstname,
+        lastname,
+        email,
+      });
+    })
+    .then(authUser => {
+      this.setState({ ...INITIAL_STATE });
+      this.props.history.push(ROUTES.LANDING);
+    })
+    .catch(error => {
+      console.log('Error: ', error.message);
+      this.setState({ error });
+    });
+  };
+  
+  /**
+  * Renders the component
+  *
+  * @param none
+  * @return HTML {HTML} The HTML representation of the component.
+  */
+  render() {
+    const { classes } = this.props;
+  
+    const {
+      firstname,
+      lastname,
+      email,
+      passwordOne,
+      passwordTwo,
+      error,
+    } = this.state;
+  
+    const isInvalid =
+      passwordOne !== passwordTwo ||
+      passwordOne === '' ||
+      email === '' ||
+      firstname === '' ||
+      lastname === '';
+  
+    return (
+      &lt;div id="centered-fixed-masthead">
+        &lt;Card className={classes.card}>
+          &lt;CardContent>
+            &lt;Container component="main" maxWidth="xs">
+              &lt;CssBaseline />
+              &lt;div className={classes.paper}>
+                &lt;Typography component="h1" variant="h5">
+                  Sign up
+                &lt;/Typography>
+                &lt;form className={classes.form} noValidate>
+                  &lt;Grid container spacing={2}>
+                    &lt;Grid item xs={12} sm={6}>
+                      &lt;TextField
+                        inputProps={{
+                          'data-testid': 'firstnameInput'
+                        }}
+                        autoComplete="fname"
+                        name="firstname"
+                        value={firstname}
+                        onChange={this.onChange}
+                        variant="outlined"
+                        required
+                        fullWidth
+                        id="firstname"
+                        label="First Name"
+                        autoFocus
+                      />
+                    &lt;/Grid>
+                    &lt;Grid item xs={12} sm={6}>
+                      &lt;TextField
+                        inputProps={{
+                          'data-testid': 'lastnameInput'
+                        }}
+                        variant="outlined"
+                        required
+                        fullWidth
+                        id="lastname"
+                        label="Last Name"
+                        name="lastname"
+                        value={lastname}
+                        onChange={this.onChange}
+                        autoComplete="lname"
+                      />
+                    &lt;/Grid>
+                    &lt;Grid item xs={12}>
+                      &lt;TextField
+                        inputProps={{
+                          'data-testid': 'emailInput'
+                        }}
+                        variant="outlined"
+                        required
+                        fullWidth
+                        id="email"
+                        label="Email Address"
+                        name="email"
+                        value={email}
+                        onChange={this.onChange}
+                        autoComplete="email"
+                      />
+                    &lt;/Grid>
+                    &lt;Grid item xs={12}>
+                      &lt;TextField
+                        inputProps={{
+                          'data-testid': 'passwordOneInput'
+                        }}
+                        variant="outlined"
+                        required
+                        fullWidth
+                        name="passwordOne"
+                        label="Password"
+                        type="password"
+                        id="password"
+                        value={passwordOne}
+                        onChange={this.onChange}
+                        autoComplete="current-password"
+                      />
+                    &lt;/Grid>
+                    &lt;Grid item xs={12}>
+                      &lt;TextField
+                        inputProps={{
+                          'data-testid': 'passwordTwoInput'
+                        }}
+                        variant="outlined"
+                        required
+                        fullWidth
+                        name="passwordTwo"
+                        label="Confirm Password"
+                        type="password"
+                        id="password"
+                        value={passwordTwo}
+                        onChange={this.onChange}
+                        autoComplete="current-password"
+                      />
+                    &lt;/Grid>
+                  &lt;/Grid>
+                  &lt;Button
+                    data-testid='submit'
+                    disabled={isInvalid}
+                    onClick={this.onSubmit}
+                    variant='contained'
+                    type="submit"
+                    fullWidth
+                    color="primary"
+                    className={classes.submit}
+                  >
+                    Sign Up
+                  &lt;/Button>
+                  
+                  {error &amp;&amp; &lt;Typography className={classes.error}>{error.message}&lt;/Typography>}
+  
+                  &lt;Grid container justify="flex-end">
+                    &lt;Grid item>
+                      &lt;SignInLink/>
+                    &lt;/Grid>
+                  &lt;/Grid>
+                &lt;/form>
+              &lt;/div>
+            &lt;/Container>
+          &lt;/CardContent>
+        &lt;/Card>
+      &lt;/div>
+    );
+  }
+}
+
+export { SignUpFormBase, styles };
+export default SignUpFormBase;</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="BookedTrip.html">BookedTrip</a></li><li><a href="BookedTripCard.html">BookedTripCard</a></li><li><a href="BookedTripsBase.html">BookedTripsBase</a></li><li><a href="BookedTripsItem.html">BookedTripsItem</a></li><li><a href="ErrorCard.html">ErrorCard</a></li><li><a href="Flight.html">Flight</a></li><li><a href="GeneratedCard.html">GeneratedCard</a></li><li><a href="GeneratingCard.html">GeneratingCard</a></li><li><a href="HotelStay.html">HotelStay</a></li><li><a href="MyTrips.html">MyTrips</a></li><li><a href="PasswordChange.html">PasswordChange</a></li><li><a href="PasswordForget.html">PasswordForget</a></li><li><a href="Payment.html">Payment</a></li><li><a href="Price.html">Price</a></li><li><a href="Quiz.html">Quiz</a></li><li><a href="SavedTrip.html">SavedTrip</a></li><li><a href="SavedTripCard.html">SavedTripCard</a></li><li><a href="SavedTripsBase.html">SavedTripsBase</a></li><li><a href="SavedTripsItem.html">SavedTripsItem</a></li><li><a href="SignInFormBase.html">SignInFormBase</a></li><li><a href="SignOutButton.html">SignOutButton</a></li><li><a href="SignUpFormBase.html">SignUpFormBase</a></li><li><a href="TripBooked.html">TripBooked</a></li><li><a href="TripGeneration.html">TripGeneration</a></li><li><a href="WithAuthentication.html">WithAuthentication</a></li></ul><h3>Global</h3><ul><li><a href="global.html#FlightRoute">FlightRoute</a></li><li><a href="global.html#formatTime">formatTime</a></li><li><a href="global.html#getAttractions">getAttractions</a></li><li><a href="global.html#getCityImage">getCityImage</a></li><li><a href="global.html#getCityWebsite">getCityWebsite</a></li><li><a href="global.html#getFormattedAddress">getFormattedAddress</a></li><li><a href="global.html#SimpleDialog">SimpleDialog</a></li><li><a href="global.html#TabPanel">TabPanel</a></li><li><a href="global.html#TripTabs">TripTabs</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.3</a> on Fri Mar 13 2020 23:33:24 GMT-0700 (Pacific Daylight Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

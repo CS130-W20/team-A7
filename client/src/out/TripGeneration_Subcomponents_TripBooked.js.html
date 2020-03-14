@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: TripGeneration/Subcomponents/TripBooked.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: TripGeneration/Subcomponents/TripBooked.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import React, { Component } from 'react';
+import CTAButton from '../../CTAButton/CTAButton';
+import * as ROUTES from '../../../constants/routes';
+import { Typography } from '@material-ui/core';
+import { withStyles } from '@material-ui/core/styles';
+import { withRouter } from 'react-router-dom';
+
+import './TripBooked.css';
+
+const styles = () => ({
+  congratsPretext: {
+    fontFamily: "Indie Flower",
+    fontSize: 60
+  },
+  congratsPosttext: {
+    fontFamily: "Indie Flower",
+    fontSize: 40
+  },
+  destinationText: {
+    fontSize: 40,
+    color: "#FFDD64"
+  },
+  ticketTitle: {
+    fontSize: 22,
+    fontWeight: "bold",
+    color: "#959595"
+  },
+  ticketNameField: {
+    fontSize: 18,
+    color: "#959595",
+    marginRight: 22
+  },
+  ticketNameValue: {
+    flex: "1 1 auto",
+    backgroundColor: "#FFEEB1",
+    fontFamily: "Indie Flower",
+    fontSize: 22,
+    padding: "2px 10px"
+  },
+  ticketField: {
+    fontSize: 18,
+    color: "#959595",
+    width: "25%"
+  },
+  ticketValue: {
+    fontFamily: "Indie Flower",
+    fontSize: 22,
+    width: "25%"
+  },
+  shareTitle: {
+    fontSize: 24,
+    fontWeight: "bold",
+    color: "#7A7A7A"
+  },
+  orTitle: {
+    fontSize: 24,
+    color: "#7A7A7A"
+  }
+});
+
+/** @class TripBooked handles trip generation */
+class TripBooked extends Component {
+  
+  /**
+  * Overrides onSubmit functionality for button
+  * @override
+  * @param e {event} onSubmit event.
+  * @return none
+  */
+  viewItinerary = e => {
+    e.preventDefault();
+    this.props.history.push(ROUTES.MY_TRIPS);
+  }    
+
+  /**
+  * Renders the component
+  *
+  * @param none
+  * @return HTML {HTML} The HTML representation of the component.
+  */
+  render() {
+    const { classes, name, destination, date, time } = this.props;
+
+    return (&lt;div id="trip-booked-container">
+      &lt;div id="trip-booked-content-container">
+        &lt;div id="congrats-title-container">
+          &lt;span className={classes.congratsPretext}>Congrats! &lt;/span>
+          &lt;span className={classes.congratsPosttext}>You're going to...&lt;/span>
+        &lt;/div>
+        &lt;div id="trip-booked-ticket-container">
+          &lt;div id="destination-container">
+            &lt;div id="destination-text-container">
+              &lt;Typography className={classes.destinationText}>&lt;b>{destination}&lt;/b>&lt;/Typography>
+            &lt;/div>
+          &lt;/div>
+          &lt;div id="ticket-divider">&lt;/div>
+          &lt;div id="ticket-info-container">
+            &lt;Typography className={classes.ticketTitle}>BOARDING PASS&lt;/Typography>
+            &lt;div id="ticket-name-field-container">
+              &lt;Typography className={classes.ticketNameField}>Name:&lt;/Typography>
+              &lt;Typography className={classes.ticketNameValue}>{name}&lt;/Typography>
+            &lt;/div>
+            &lt;div id="ticket-logistics-container">
+              &lt;div id="ticket-logistics-fields-container">
+                &lt;Typography className={classes.ticketField}>Date&lt;/Typography>
+                &lt;Typography className={classes.ticketField}>Time&lt;/Typography>
+                &lt;Typography className={classes.ticketField}>Gate&lt;/Typography>
+                &lt;Typography className={classes.ticketField}>Seat&lt;/Typography>
+              &lt;/div>
+              &lt;div id="ticket-logistics-values-container">
+                &lt;Typography className={classes.ticketValue}>{date}&lt;/Typography>
+                &lt;Typography className={classes.ticketValue}>{time}&lt;/Typography>
+                &lt;Typography className={classes.ticketValue}>TBD&lt;/Typography>
+                &lt;Typography className={classes.ticketValue}>17A&lt;/Typography>
+              &lt;/div>
+            &lt;/div>
+          &lt;/div>
+        &lt;/div>
+        &lt;div id="trip-booked-actions-container">
+          &lt;Typography className={classes.shareTitle}>SHARE&lt;/Typography>
+          &lt;Typography className={classes.orTitle}>OR&lt;/Typography>
+          &lt;CTAButton boxShadow={3} onClick={this.viewItinerary}>VIEW ITINERARY&lt;/CTAButton>
+        &lt;/div>
+      &lt;/div>
+    &lt;/div>);
+  }
+}
+
+export default withRouter(withStyles(styles)(TripBooked));</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="BookedTrip.html">BookedTrip</a></li><li><a href="BookedTripCard.html">BookedTripCard</a></li><li><a href="BookedTripsBase.html">BookedTripsBase</a></li><li><a href="BookedTripsItem.html">BookedTripsItem</a></li><li><a href="ErrorCard.html">ErrorCard</a></li><li><a href="Flight.html">Flight</a></li><li><a href="GeneratedCard.html">GeneratedCard</a></li><li><a href="GeneratingCard.html">GeneratingCard</a></li><li><a href="HotelStay.html">HotelStay</a></li><li><a href="MyTrips.html">MyTrips</a></li><li><a href="PasswordChange.html">PasswordChange</a></li><li><a href="PasswordForget.html">PasswordForget</a></li><li><a href="Payment.html">Payment</a></li><li><a href="Price.html">Price</a></li><li><a href="Quiz.html">Quiz</a></li><li><a href="SavedTrip.html">SavedTrip</a></li><li><a href="SavedTripCard.html">SavedTripCard</a></li><li><a href="SavedTripsBase.html">SavedTripsBase</a></li><li><a href="SavedTripsItem.html">SavedTripsItem</a></li><li><a href="SignInFormBase.html">SignInFormBase</a></li><li><a href="SignOutButton.html">SignOutButton</a></li><li><a href="SignUpFormBase.html">SignUpFormBase</a></li><li><a href="TripBooked.html">TripBooked</a></li><li><a href="TripGeneration.html">TripGeneration</a></li><li><a href="WithAuthentication.html">WithAuthentication</a></li></ul><h3>Global</h3><ul><li><a href="global.html#FlightRoute">FlightRoute</a></li><li><a href="global.html#formatTime">formatTime</a></li><li><a href="global.html#getAttractions">getAttractions</a></li><li><a href="global.html#getCityImage">getCityImage</a></li><li><a href="global.html#getCityWebsite">getCityWebsite</a></li><li><a href="global.html#getFormattedAddress">getFormattedAddress</a></li><li><a href="global.html#SimpleDialog">SimpleDialog</a></li><li><a href="global.html#TabPanel">TabPanel</a></li><li><a href="global.html#TripTabs">TripTabs</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.3</a> on Fri Mar 13 2020 23:33:24 GMT-0700 (Pacific Daylight Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

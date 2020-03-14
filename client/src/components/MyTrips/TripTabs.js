@@ -10,6 +10,12 @@ import Box from '@material-ui/core/Box';
 import BookedTrips from './BookedTrips/BookedTrips.js'
 import SavedTrips from './SavedTrips/SavedTrips.js'
 
+/**
+ * Renders the tab for Booked Trips and Saved Trips
+ *
+ * @param props {props} React Component props.
+ * @return HTML {HTML} Html representation of Component.
+*/
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
   return (
@@ -59,6 +65,12 @@ const StyledTab = withStyles(theme => ({
   },
 }))(props => <Tab disableRipple {...props} />);
 
+/**
+ * Renders the buttons for Booked Trips and Saved Trips
+ *
+ * @param none
+ * @return HTML {HTML} Html representation of Component.
+*/
 const TripTabs = () => {
   const classes = useStyles();
   const theme = useTheme();

@@ -4,7 +4,14 @@ import AuthUserContext from './context';
 import { withFirebase } from '../Firebase';
 
 const withAuthentication = Component => {
+  /** @class WithAuthentication Handles user authentication. */
   class WithAuthentication extends React.Component {
+    /**
+    * Creates an instance of PasswordForget
+    *
+    * @constructor
+    * @param props {props} The react Component properties.
+    */
     constructor(props) {
       super(props);
       this.state = {
@@ -37,15 +44,33 @@ const withAuthentication = Component => {
         },
       );
 
+    /**
+    * Sets the state of the object's rendered variables.
+    *
+    * @param none
+    * @return none
+    */
     componentDidMount() {
       this.listener = this.authStateChanged;
       // document.addEventListener('authState', this.authStateChanged);
     }
     
+    /**
+    * Sets the state of the object's rendered variables.
+    *
+    * @param none
+    * @return none
+    */
     componentWillUnmount() {
       this.listener();
     }
     
+    /**
+    * Renders the component
+    *
+    * @param none
+    * @return HTML {HTML} The HTML representation of the component.
+    */
     render() {
       return (
         <AuthUserContext.Provider value={{

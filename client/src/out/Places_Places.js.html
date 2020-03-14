@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: Places/Places.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: Places/Places.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>
+/**
+  * gets the attractions for a given city.
+  * 
+  * @param cityName {String} Name of the city to be queried.
+  * @return Promise {Promise} Promise that eventually returns the attractions for a city.
+  */
+export const getAttractions = async (cityName) => {
+  var proxyurl = "https://salty-gorge-09496.herokuapp.com/";
+  var apiKey = process.env.REACT_APP_PLACES_API_KEY;
+
+  return new Promise(function (resolve, reject) {
+    try {
+      fetch(proxyurl + 'https://maps.googleapis.com/maps/api/place/findplacefromtext/json?key=' + apiKey + '&amp;input=' + cityName + '&amp;inputtype=textquery').then((response) => {
+        // Finds the placeId based on the name of destination
+        return response.json()
+      }).then((response) => {
+        var placeId = response.candidates[0].place_id;
+        fetch(proxyurl + 'https://maps.googleapis.com/maps/api/place/details/json?key=' + apiKey + '&amp;place_id=' + placeId).then((response) => {
+          // Uses the placeId to get more information on place
+          return response.json();
+        }).then((response) => {
+          var latitude = response.result.geometry.location.lat
+          var longitude = response.result.geometry.location.lng
+          fetch(proxyurl + 'https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=' + latitude + ',' + longitude + '&amp;radius=7500&amp;type=tourist_attraction&amp;key=' + apiKey).then((response) => {
+            // Returns a list of attractions?
+            return response.json();
+          }).then((response) => {
+            resolve(response.results.slice(0, 3))
+          })
+        })
+      });  
+    } catch (e) {
+      reject(e)
+    }
+  });
+};
+
+/**
+  * gets the image for a given city.
+  * 
+  * @param cityName {String} Name of the city to be queried.
+  * @return Promise {Promise} Promise that eventually returns the image for a city.
+  */
+export const getCityImage = async (cityName) => {
+    var proxyurl = "https://salty-gorge-09496.herokuapp.com/";
+    var apiKey = process.env.REACT_APP_PLACES_API_KEY;
+    // Search using Google Places Search with cityName
+    return new Promise(function (resolve, reject) {
+      try {
+        fetch(proxyurl + 'https://maps.googleapis.com/maps/api/place/findplacefromtext/json?key=' + apiKey + '&amp;input=' + cityName + '&amp;inputtype=textquery').then((response) => {
+          // Finds the placeId based on the name of destination
+          return response.json()
+        }).then((response) => {
+          var placeId = response.candidates[0].place_id;
+          fetch(proxyurl + 'https://maps.googleapis.com/maps/api/place/details/json?key=' + apiKey + '&amp;place_id=' + placeId).then((response) => {
+              // Uses the placeId to get more information on place
+              return response.json();
+          }).then((response) => {
+            // Extracts the photoreference of the result and returns the url
+            var photoReference = response.result.photos[0].photo_reference;
+            resolve('https://maps.googleapis.com/maps/api/place/photo?photoreference=' + photoReference + '&amp;key=' + apiKey + '&amp;maxheight=250');
+          })
+        });  
+      } catch (e) {
+        reject(e)
+      }
+    });
+    //
+};
+
+/**
+  * gets the formatted city name. City, State, Country.
+  * 
+  * @param cityName {String} Name of the city to be queried.
+  * @return Promise {Promise} Promise that eventually returns the formatted city name.
+  */
+export const getFormattedAddress = async (cityName) => {
+  var proxyurl = "https://salty-gorge-09496.herokuapp.com/";
+  var apiKey = process.env.REACT_APP_PLACES_API_KEY;
+  // Search using Google Places Search with cityName
+  return new Promise(function (resolve, reject) {
+    try {
+      fetch(proxyurl + 'https://maps.googleapis.com/maps/api/place/findplacefromtext/json?key=' + apiKey + '&amp;input=' + cityName + '&amp;inputtype=textquery').then((response) => {
+        // Finds the placeId based on the name of destination
+        return response.json()
+      }).then((response) => {
+        var placeId = response.candidates[0].place_id;
+        fetch(proxyurl + 'https://maps.googleapis.com/maps/api/place/details/json?key=' + apiKey + '&amp;place_id=' + placeId).then((response) => {
+            // Uses the placeId to get more information on place
+            return response.json();
+        }).then((response) => {
+          resolve(response.result.formatted_address);
+        })
+      })
+    } catch (e) {
+      reject(e)
+    }
+  });
+};
+
+/**
+  * gets the city's website url.
+  * 
+  * @param cityName {String} Name of the city to be queried.
+  * @return Promise {Promise} Promise that eventually returns the city website url.
+  */
+export const getCityWebsite = async (cityName) => {
+  var proxyurl = "https://salty-gorge-09496.herokuapp.com/";
+  var apiKey = process.env.REACT_APP_PLACES_API_KEY;
+  // Search using Google Places Search with cityName
+
+  return new Promise(function (resolve, reject) {
+    try {
+      fetch(proxyurl + 'https://maps.googleapis.com/maps/api/place/findplacefromtext/json?key=' + apiKey + '&amp;input=' + cityName + '&amp;inputtype=textquery').then((response) => {
+        // Finds the placeId based on the name of destination
+        return response.json()
+      }).then((response) => {
+        var placeId = response.candidates[0].place_id;
+        fetch(proxyurl + 'https://maps.googleapis.com/maps/api/place/details/json?key=' + apiKey + '&amp;place_id=' + placeId).then((response) => {
+            // Uses the placeId to get more information on place
+            return response.json();
+        }).then((response) => {
+          resolve(response.result.website);
+        })
+      })
+    } catch (e) {
+      reject(e)
+    }
+  });
+};
+
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="BookedTrip.html">BookedTrip</a></li><li><a href="BookedTripCard.html">BookedTripCard</a></li><li><a href="BookedTripsBase.html">BookedTripsBase</a></li><li><a href="BookedTripsItem.html">BookedTripsItem</a></li><li><a href="ErrorCard.html">ErrorCard</a></li><li><a href="Flight.html">Flight</a></li><li><a href="GeneratedCard.html">GeneratedCard</a></li><li><a href="GeneratingCard.html">GeneratingCard</a></li><li><a href="HotelStay.html">HotelStay</a></li><li><a href="MyTrips.html">MyTrips</a></li><li><a href="PasswordChange.html">PasswordChange</a></li><li><a href="PasswordForget.html">PasswordForget</a></li><li><a href="Payment.html">Payment</a></li><li><a href="Price.html">Price</a></li><li><a href="Quiz.html">Quiz</a></li><li><a href="SavedTrip.html">SavedTrip</a></li><li><a href="SavedTripCard.html">SavedTripCard</a></li><li><a href="SavedTripsBase.html">SavedTripsBase</a></li><li><a href="SavedTripsItem.html">SavedTripsItem</a></li><li><a href="SignInFormBase.html">SignInFormBase</a></li><li><a href="SignOutButton.html">SignOutButton</a></li><li><a href="SignUpFormBase.html">SignUpFormBase</a></li><li><a href="TripBooked.html">TripBooked</a></li><li><a href="TripGeneration.html">TripGeneration</a></li><li><a href="WithAuthentication.html">WithAuthentication</a></li></ul><h3>Global</h3><ul><li><a href="global.html#FlightRoute">FlightRoute</a></li><li><a href="global.html#formatTime">formatTime</a></li><li><a href="global.html#getAttractions">getAttractions</a></li><li><a href="global.html#getCityImage">getCityImage</a></li><li><a href="global.html#getCityWebsite">getCityWebsite</a></li><li><a href="global.html#getFormattedAddress">getFormattedAddress</a></li><li><a href="global.html#SimpleDialog">SimpleDialog</a></li><li><a href="global.html#TabPanel">TabPanel</a></li><li><a href="global.html#TripTabs">TripTabs</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.3</a> on Fri Mar 13 2020 23:33:24 GMT-0700 (Pacific Daylight Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

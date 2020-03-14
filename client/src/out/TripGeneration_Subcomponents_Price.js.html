@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: TripGeneration/Subcomponents/Price.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: TripGeneration/Subcomponents/Price.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import React, { Component } from 'react';
+import BookedTrip, {Flight, HotelStay} from '../../MyTrips/BookedTrips/BookedTrip.js';
+import GeneratingCard from './GeneratingCard';
+import GeneratedCard from './GeneratedCard';
+import ErrorCard from './ErrorCard';
+import { compose } from 'recompose';
+import { withFirebase } from '../../Firebase';
+import { AuthUserContext } from '../../Session';
+import Criteria from '../../../models/Criteria';
+import SavedTrip from '../../MyTrips/SavedTrips/SavedTrip';
+
+import { withRouter } from 'react-router-dom';
+
+const MAX_TRIES = 5;
+
+/** @class Price handles trip generation */
+class Price extends Component {
+  /**
+  * Creates an instance of Price.
+  *
+  * @constructor
+  * @param props {props} The React Component properties.
+  */
+  constructor(props) {
+    super(props);
+    this.state = {
+      trip: null,
+      hotel : null,
+      gotContext: null,
+      authUser: null,
+    }
+  }
+  
+  continue = e => {
+    e.preventDefault();
+    this.props.nextStep();
+  };
+  
+  /**
+    * Sets the state of the object's rendered variables.
+    *
+    * @param none
+    * @return none
+  */
+  componentDidMount() {
+    const { values, setTripData, setApiErr, setTotalPrice } = this.props;
+    var tripDestination = "";
+    var departDate = values.departureDate.toISOString();
+    departDate = departDate.slice(0,10);
+    var returnDate = values.returnDate.toISOString();
+    returnDate = returnDate.slice(0, 10);
+    // Default value so the API request doesn't crash the mf webpage
+    var airportPlace = null;
+    var apiErr = null;
+    var retryIndex = 0;
+    var internationalIndex = Math.floor(Math.random() * 8);
+    const internationalLocations = ["FR", "UK", "ES", "CA", "DK", "IT", "JP", "PL"];
+    var budgetLeft = (values.budget + 25) * 10;
+    var tripSuccess = false;
+    
+    function startOutFlight() {
+      console.log("ATTEMPTING TRIP GENERATION", retryIndex);
+      return new Promise((resolve, reject) => {
+        var outDestination = ((values.destination === 'withinUS') ? "US" : ((values.destination === 'international') ? internationalLocations[internationalIndex] : "anywhere"));
+        var unirest = require("unirest");
+        var outFlightUrl = "https://skyscanner-skyscanner-flight-search-v1.p.rapidapi.com/apiservices/browsequotes/v1.0/US/USD/en-US/" + values.departureAirport.code + "-sky/" + outDestination + "/" + departDate;
+        var outFlightReq = unirest("GET", outFlightUrl);
+           
+        // Leaving this blank ensures we get a one-way flight. The API is crap and doesn't guarantee if it returns one-way or two-way flights so this is a precaution!
+        outFlightReq.query({
+          "inboundpartialdate": ""
+        });
+
+        outFlightReq.headers({
+          "x-rapidapi-host": "skyscanner-skyscanner-flight-search-v1.p.rapidapi.com",
+          "x-rapidapi-key": "c0df19373bmshbec042d361c58f1p176ba3jsnb25321ccb0ab"
+        });
+            
+        outFlightReq.end(function (res) {
+          if (res.error) throw new Error(res.error);
+          //return resolve(res);
+          var quotes = res.body.Quotes;
+          var carriers = res.body.Carriers;
+          
+          var numResults = quotes.length;
+          //We try UP TO 5 times. If there's no results then we give up.
+          if (numResults === 0 || retryIndex > numResults - 1) {
+            apiErr = "No results found. Please try new flight information."
+            resolve(undefined);
+            return;
+          }
+  
+          // Limit the possible values if there's a budget
+          if (values.price === 'underBudget') {
+            //reserve percentage of funds for outbound flight based on trip type. international more likely to be expensive.
+            const outBudget = (values.destination === 'international') ? Math.floor(budgetLeft/3) : Math.floor(budgetLeft/4);
+            var budgetQuotes = quotes.filter(q => (q.MinPrice &lt;= outBudget));
+            if (budgetQuotes.length === 0) {
+              setApiErr("Budget is too small for current trip.");
+              resolve(undefined);
+              return;
+            }
+            
+            quotes = budgetQuotes;
+            numResults = budgetQuotes.length;
+          }
+          
+          // Order the flights by price to make selection easier
+          quotes.sort((a, b) => (a.MinPrice > b.MinPrice) ? 1 : -1);
+          //Get the index of which entry we should use. 
+          //If cheapest, take first entry because it's ordered by price.
+          //If under budget, take last entry because we want the most bang for our buck of our allocated flight funds
+          //If cost isn't a consideration, we'll take most expensive (last) entry.
+          var tripIndex = ((values.price === 'cheapest') ? retryIndex : ((values.price === 'underBudget') ? numResults - 1 - retryIndex : Math.floor(Math.random() * numResults)));
+          console.log(tripIndex);
+          var chosenQuote = quotes[tripIndex];
+          chosenQuote.carriers = carriers;
+          airportPlace = res.body.Places.find(element => element.PlaceId === chosenQuote.OutboundLeg.DestinationId);
+          chosenQuote.airport = airportPlace;
+          if (values.price === 'underBudget') {
+            budgetLeft -= chosenQuote.MinPrice;
+          }
+          resolve(chosenQuote);
+        });
+      });
+    }
+    
+    function startInFlight(outFlight) {
+      return new Promise((resolve, reject) => {
+        if (typeof outFlight === 'undefined') {
+          resolve(undefined);
+          return;
+        }
+        
+        var inDeparture = airportPlace.SkyscannerCode;
+        tripDestination = airportPlace.CityName;
+        console.log(tripDestination);
+        var inFlightUrl = "https://skyscanner-skyscanner-flight-search-v1.p.rapidapi.com/apiservices/browsequotes/v1.0/US/USD/en-US/" + inDeparture + "-sky/" + values.departureAirport.code + "-sky/" + returnDate;
+        var unirest = require("unirest");
+        var inFlightReq = unirest("GET", inFlightUrl);
+        inFlightReq.query({
+          "inboundpartialdate": ""
+        });
+               
+        inFlightReq.headers({
+          "x-rapidapi-host": "skyscanner-skyscanner-flight-search-v1.p.rapidapi.com",
+          "x-rapidapi-key": "c0df19373bmshbec042d361c58f1p176ba3jsnb25321ccb0ab"
+        });
+                
+        //INBOUND FLIGHT
+        inFlightReq.end(function (inRes) {
+          if (inRes.error) throw new Error(inRes.error);
+            var inQuotes = inRes.body.Quotes;
+            var numResults = inQuotes.length;
+            if (numResults === 0) {
+              apiErr = "No returning flights found. Trying a new trip.";
+              resolve(undefined);
+              return;
+            }
+            var inCarriers = {carriers : inRes.body.Carriers};
+            //Sort by price once more
+            inQuotes.sort((a, b) => (a.MinPrice > b.MinPrice) ? 1 : -1);
+            
+            if (values.price === 'underBudget') {
+              //reserve percentage of funds for inbound flight based on trip type and amount of funds left. international more likely to be expensive.
+              // International: (2/3)/2 => 1/3 of original budget reserved for inbound flight
+              // Otherwise: (3/4)/3 => 1/4 of original budget reserved for inbound flight 
+              const inBudget = (values.destination === 'international') ? Math.floor(budgetLeft/2) : Math.floor(budgetLeft/3);
+              var budgetQuotes = inQuotes.filter(q => (q.MinPrice &lt;= inBudget));
+              if (budgetQuotes.length === 0) {
+                setApiErr("Budget is too small for current trip.");
+                resolve(undefined);
+                return;
+              }
+              inQuotes = budgetQuotes;
+              numResults = budgetQuotes.length;
+            }
+            
+            //Get the index of which entry we should use. 
+            //If cheapest, take first entry because it's ordered by price.
+            //If under budget, take last entry because we want the most bang for our buck of our allocated flight funds
+            //If cost isn't a consideration, we'll take most expensive (last) entry.
+            var tripIndex = ((values.price === 'cheapest') ? 0 : numResults - 1 );
+            var chosenInQuote = inQuotes[tripIndex];
+            if (values.price === 'underBudget') {
+              budgetLeft -= chosenInQuote.MinPrice;
+            }
+            chosenInQuote = {chosenInQuote, inCarriers};
+            resolve(chosenInQuote);
+        });
+      });
+    }
+
+    function startPlace(outFlight, inFlight) {
+      return new Promise ((resolve, reject) => {
+        if ((typeof outFlight === 'undefined') || (typeof inFlight === 'undefined')) {
+          resolve(undefined);
+          return;
+        }
+        var unirest = require("unirest");
+        var req = unirest("GET", "https://tripadvisor1.p.rapidapi.com/locations/search");
+       
+        req.query({
+          "location_id" : "1",
+          "limit": "5",
+          "sort": "relevance",
+          "offset": "0",
+          "lang": "en_US",
+          "currency": "USD",
+          "units": "mi",
+          "query": (airportPlace === null ? "Los Angeles" : airportPlace.CityName),
+        });
+
+        req.headers({
+          "x-rapidapi-host": "tripadvisor1.p.rapidapi.com",
+          "x-rapidapi-key": "c0df19373bmshbec042d361c58f1p176ba3jsnb25321ccb0ab"
+        });
+
+
+        req.end(function (res) {
+          if (res.error) throw new Error(res.error);
+          var locationId = res.body.data[0].result_object.location_id;
+          resolve(locationId);
+        });
+      });
+    }
+    
+    function startHotel(outFlight, inFlight, placeId) {
+      return new Promise ((resolve, reject) => {
+        if ((typeof placeId === 'undefined') || (typeof outFlight === 'undefined') || (typeof inFlight === 'undefined')) {
+          resolve(undefined);
+          return;
+        }
+        var unirest = require("unirest");
+        var req = unirest("GET", "https://tripadvisor1.p.rapidapi.com/hotels/list");
+        var checkInDate = outFlight.OutboundLeg.DepartureDate.slice(0,10);
+        var numNights = (values.returnDate.getTime() - values.departureDate.getTime())/(1000*3600*24);
+        req.query({
+          "offset": "0",
+          "subcategory": "hotel%2Clodge",
+          "hotel_class": "1%2C2%2C3",
+          "currency": "USD",
+          "limit": "20",
+          "checkin": checkInDate,
+          "order": "asc",
+          "lang": "en_US",
+          "sort": "price",
+          "nights": numNights.toString(),
+          "location_id": placeId.toString(),
+          "adults": "1",
+          "rooms": "1"
+        });
+
+        req.headers({
+          "x-rapidapi-host": "tripadvisor1.p.rapidapi.com",
+          "x-rapidapi-key": "c0df19373bmshbec042d361c58f1p176ba3jsnb25321ccb0ab"
+        });
+
+
+        req.end(function (res) {
+          if (res.error) throw new Error(res.error);
+
+          var hotels = res.body.data;
+          if (typeof hotels === 'undefined') {
+            resolve(undefined);
+            return;
+          }
+          hotels = hotels.filter(hotel => ((hotel.hac_offers.availability === "available" || hotel.hac_offers.availability === "pending") &amp;&amp; hotel.hasOwnProperty('price')));
+          var numResults = hotels.length;
+          if (numResults === 0) {
+            apiErr = "No available hotels in the area we searched. Trying a new trip!";
+            resolve(undefined);
+            return;
+          }
+
+          const regex = /[0-9]+/;
+          //Hotel price is represented as a range "$xx - $yy" or single "$zz", so we need to get the cheaper limit thru regex
+          hotels.forEach(function (item, index) {
+            var price = item.price.match(regex);
+            item.price = parseInt(price[0]);
+          });
+
+          hotels.sort((a, b) => (a.price > b.price) ? 1 : -1);
+          
+          if (values.price === 'underBudget') {
+            //Spend the rest of the budget on a hotel!
+            const nightlyBudget = budgetLeft / numNights;
+            var budgetHotels = hotels.filter(hotel => (hotel.price &lt;= nightlyBudget));
+            if (budgetHotels.length === 0) {
+              //We made it this far so we're giving them the cheapest hotel to try and stay near budget!
+              numResults = 1;
+            } else {
+              hotels = budgetHotels;
+              numResults = budgetHotels.length;
+            }
+          }
+          
+          //Same index selection logic as before. Give them the cheapest, otherwise the most expensive within their budget.
+          var hotelIndex = ((values.price === 'cheapest') ? 0 : numResults - 1 );
+          var hotelResult = hotels[hotelIndex];
+          hotelResult = {hotelResult, numNights};
+          resolve(hotelResult);
+        });
+      });
+    }
+    
+    //Need to package results like this because "this." pointer for Price class can't be called from anonymous functions. Frick u javascript.
+    function getAllInfo(outFlight, inFlight, placeId, hotelResult) {
+      return new Promise((resolve, reject) => {
+        resolve([outFlight, inFlight, placeId, hotelResult]);
+      });
+    }
+    
+    function generateTrip() {
+
+      return startOutFlight().then(function(outFlight) {
+        return startInFlight(outFlight).then(inFlight => [outFlight, inFlight]);
+      }).then(function([outFlight, inFlight]) {
+        return startPlace(outFlight, inFlight).then(placeId => [outFlight, inFlight, placeId]);
+      }).then(function([outFlight, inFlight, placeId]) {
+        return startHotel(outFlight, inFlight, placeId).then(hotelResult => [outFlight, inFlight, placeId, hotelResult]);
+      }).then(function([outFlight, inFlight, placeId, hotelResult]) {
+        return getAllInfo(outFlight, inFlight, placeId, hotelResult);
+      }).then(results => {
+        console.log(results);
+        if ((typeof results[0] === 'undefined') || (typeof results[1] === 'undefined') || (typeof results[3] === 'undefined')) {
+          setApiErr(apiErr);
+          return;
+        }  
+
+        // Creating the BookedTrip object
+        var departureDate = new Date(results[0].OutboundLeg.DepartureDate);
+        var departureAirline = results[0].carriers.find(carr => carr.CarrierId === results[0].OutboundLeg.CarrierIds[0]).Name;
+        var outboundDepartureAirportCode = values.departureAirport.code;
+        var outboundDepartureAirportName = values.departureAirport.name;
+        var outboundDepartureCity = values.departureAirport.city;
+        var outboundDestinationAirportCode = results[0].airport.IataCode;
+        var outboundDestinationAirportName = results[0].airport.Name;
+        var outboundDestinationCity = results[0].airport.CityName;
+        var departureFlight = new Flight(
+          outboundDepartureCity,
+          outboundDestinationCity,
+          departureDate.toDateString(),
+          departureAirline,
+          {
+            name: outboundDepartureAirportName,
+            code: outboundDepartureAirportCode,
+          },
+          {
+            name: outboundDestinationAirportName,
+            code: outboundDestinationAirportCode,
+          },
+        );
+        
+        var returnDate = new Date(results[1].chosenInQuote.OutboundLeg.DepartureDate);
+        var returnAirline = results[1].inCarriers.carriers.find(carr => carr.CarrierId === results[1].chosenInQuote.OutboundLeg.CarrierIds[0]).Name;
+        var inboundDepartureAirportName = results[0].airport.Name;
+        var inboundDepartureAirportCode = results[0].airport.IataCode;
+        var inboundDepartureCity = results[0].airport.CityName;
+        var inboundDestinationAirportCode = values.departureAirport.code;
+        var inboundDestinationAirportName = values.departureAirport.name;
+        var inboundDestinationCity = values.departureAirport.city;
+        var returnFlight = new Flight(
+          inboundDepartureCity,
+          inboundDestinationCity,
+          returnDate.toDateString(),
+          returnAirline,
+          {
+            name: inboundDepartureAirportName,
+            code: inboundDepartureAirportCode,
+          },
+          {
+            name: inboundDestinationAirportName,
+            code: inboundDestinationAirportCode,
+          },
+        );
+
+        // Calculating total price
+        var price = results[0].MinPrice + results[1].chosenInQuote.MinPrice + (results[3].hotelResult.price * results[3].numNights);
+
+        // Create trip
+        var hotelStay = new HotelStay(results[3].hotelResult, results[3].numNights);
+        var bookTrip = new BookedTrip('New', departureFlight, returnFlight, hotelStay, price);
+        console.log('debugging: ', bookTrip);
+        
+        // Creating the SavedTrip object
+        var inputCriteria = new Criteria(
+          values.departureAirport,
+          values.departureDate.toDateString(),
+          values.returnDate.toDateString(),
+          values.destination,
+          values.price,
+          values.budget
+        );
+        var saveTrip = new SavedTrip(inputCriteria, price);
+
+        // Set the new state and exit out of recursion loop
+        setTripData(bookTrip, saveTrip, hotelStay, price);
+        tripSuccess = true;
+        retryIndex = MAX_TRIES;
+      });
+    }
+    
+    function attemptTrip() {
+      return new Promise(resolve => {generateTrip().then(result => {
+        if (retryIndex &lt; MAX_TRIES) {
+          //If trip fails, scramble parameters and reset state.
+          console.log("TRIP GENERATION ATTEMPT", retryIndex, "FAILED");
+          retryIndex++;
+          budgetLeft = ((values.budget + 25) * 10);
+          internationalIndex = Math.floor(Math.random() * 8);
+          setApiErr(null);
+          resolve(attemptTrip());
+        } else {
+          console.log("TRIP GENERATION ENDING");
+          if (tripSuccess === false) {
+            setTotalPrice(0);
+            setApiErr("Please try new parameters.");
+            console.log("All trips failed");
+          }
+          resolve(0);
+        }
+      })});
+    }
+    
+    //We try to generate a trip *up to* MAX_TRIES times.
+    attemptTrip().then((values) => {
+      console.log("Finishing attempts to generate a trip.")
+    });
+  }
+
+  /**
+  * Sets the state of the object's rendered variables.
+  *
+  * @param none
+  * @return none
+  */
+  componentDidUpdate() {
+    if (typeof this.context.authUser !== 'undefined' &amp;&amp; this.context.authUser !== null &amp;&amp; !this.state.gotContext) {
+      this.setState({
+        gotContext: true,
+        authUser: this.context.authUser,
+      });
+    }
+  }
+
+  /**
+  * Renders the component
+  *
+  * @param none
+  * @return HTML {HTML} The HTML representation of the component.
+  */
+  render() {
+    const { values, goBack, nextStep, setApiErr, setTotalPrice } = this.props;
+    let componentToRender;
+    if (values.apiErr === null) {
+      componentToRender = values.totalPrice === null ? &lt;GeneratingCard /> : &lt;GeneratedCard authUser={this.state.authUser} history={this.props.history} firebase={this.props.firebase} values={values} goBack={goBack} nextStep={nextStep} setApiErr={setApiErr} setTotalPrice={setTotalPrice}/>;
+    } else {
+      componentToRender = &lt;ErrorCard goBack={goBack} setApiErr={setApiErr} setTotalPrice={setTotalPrice} />;
+    }
+    
+    return (
+      &lt;div>
+        { componentToRender }
+      &lt;/div>
+    );
+  }
+}
+
+Price.contextType = AuthUserContext;
+
+const PriceComposed = compose(
+  withFirebase,
+  withRouter,
+)(Price);
+
+export default PriceComposed;
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="BookedTrip.html">BookedTrip</a></li><li><a href="BookedTripCard.html">BookedTripCard</a></li><li><a href="BookedTripsBase.html">BookedTripsBase</a></li><li><a href="BookedTripsItem.html">BookedTripsItem</a></li><li><a href="ErrorCard.html">ErrorCard</a></li><li><a href="Flight.html">Flight</a></li><li><a href="GeneratedCard.html">GeneratedCard</a></li><li><a href="GeneratingCard.html">GeneratingCard</a></li><li><a href="HotelStay.html">HotelStay</a></li><li><a href="MyTrips.html">MyTrips</a></li><li><a href="PasswordChange.html">PasswordChange</a></li><li><a href="PasswordForget.html">PasswordForget</a></li><li><a href="Payment.html">Payment</a></li><li><a href="Price.html">Price</a></li><li><a href="Quiz.html">Quiz</a></li><li><a href="SavedTrip.html">SavedTrip</a></li><li><a href="SavedTripCard.html">SavedTripCard</a></li><li><a href="SavedTripsBase.html">SavedTripsBase</a></li><li><a href="SavedTripsItem.html">SavedTripsItem</a></li><li><a href="SignInFormBase.html">SignInFormBase</a></li><li><a href="SignOutButton.html">SignOutButton</a></li><li><a href="SignUpFormBase.html">SignUpFormBase</a></li><li><a href="TripBooked.html">TripBooked</a></li><li><a href="TripGeneration.html">TripGeneration</a></li><li><a href="WithAuthentication.html">WithAuthentication</a></li></ul><h3>Global</h3><ul><li><a href="global.html#FlightRoute">FlightRoute</a></li><li><a href="global.html#formatTime">formatTime</a></li><li><a href="global.html#getAttractions">getAttractions</a></li><li><a href="global.html#getCityImage">getCityImage</a></li><li><a href="global.html#getCityWebsite">getCityWebsite</a></li><li><a href="global.html#getFormattedAddress">getFormattedAddress</a></li><li><a href="global.html#SimpleDialog">SimpleDialog</a></li><li><a href="global.html#TabPanel">TabPanel</a></li><li><a href="global.html#TripTabs">TripTabs</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.3</a> on Fri Mar 13 2020 23:33:24 GMT-0700 (Pacific Daylight Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: TripGeneration/TripGeneration.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: TripGeneration/TripGeneration.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import React, { Component } from 'react';
+import Price from './Subcomponents/Price';
+import Quiz from './Subcomponents/Quiz';
+import Payment from './Subcomponents/Payment';
+import TripBooked from './Subcomponents/TripBooked';
+import { AuthUserContext } from '../Session';
+
+const INITIAL_STATE = {
+  step: 1,
+  // Criteria (set by Quiz)
+  departureAirport: null,
+  departureDate: null,
+  returnDate: null,
+  destination: "anyDest",
+  price: "anyPrice",
+  budget: 0,
+  // Trip info (set by Price)
+  totalPrice: null,
+  bookTrip: null,
+  saveTrip: null,
+  hotel: null,
+  apiErr: null,
+  // Ticket name passes from payment
+  ticketName: 'someone',
+  //
+  userFullName: null,
+  gotContext: false,
+};
+
+/**
+  * Formats a time string.
+  *
+  * @param date {Date} Date object
+  * @return timeString {String} The String representation of the Date, formatted.
+  */
+const formatTime = (date) => {
+  const hour = date.getHours();
+  const minutes = date.getMinutes();
+
+  let timeString;
+  if (hour === 0) {
+    timeString = '12:';
+  } else {
+    timeString = `${hour % 12}:`;
+  }
+
+  timeString += `${minutes}`.padStart(2, '0');
+  return timeString + ` ${hour &lt; 12 ? 'AM' : 'PM'}`;
+}
+
+/** @class TripGeneration manages children components, stores state data. */
+export class TripGeneration extends Component {
+  /**
+  * Creates an instance of TripGeneration.
+  *
+  * @constructor
+  * @param {props} The React Component properties.
+  */
+  constructor(props) {
+    super(props);
+    if (typeof this.props.location.state !== 'undefined') {
+      this.state = {...this.props.location.state};
+    }
+    else {
+      this.state = { ...INITIAL_STATE };
+    }
+  }
+
+   /**
+  * Sets the state of the object's rendered variables.
+  *
+  * @param none
+  * @return none
+  */
+  componentDidUpdate() {
+    console.log('got context');
+    if (typeof this.context.user !== 'undefined' &amp;&amp; this.context.user !== null &amp;&amp; !this.state.gotContext) {
+      console.log('got context');
+      this.setState({
+        gotContext: true,
+        userFullName: this.context.user.firstname + ' ' + this.context.user.lastname,
+      });
+    }
+  }
+  
+  /**
+  * Proceeds to the next step
+  *
+  * @param none
+  * @return none
+  */
+  nextStep = () => {
+    const { step } = this.state;
+    this.setState({
+      step: step + 1
+    });
+  };
+  
+  /**
+  * Reverses to the previous step
+  *
+  * @param none
+  * @return none
+  */
+  prevStep = () => {
+    const { step } = this.state;
+    this.setState({
+      step: step - 1
+    });
+  };
+
+  /**
+  * Button click goes back to Quiz page
+  *
+  * @param none
+  * @return none
+  */
+  goBackToQuiz = () => {
+    this.setState({
+      step: 1
+    });
+  }
+  
+  /**
+  * Handler for various events
+  *
+  * @param event {String} Event type
+  * @param value {Object} Variable object, value associated with each event
+  * @return none
+  */
+  handleChange = (event, value) => {
+    if (event === 'autocomplete') {
+      this.handleAutocomplete(value);
+    }
+    else if (event === 'departureDate') {
+      this.handleDepartureDate(value);
+    }
+    else if (event === 'returnDate') {
+      this.handleReturnDate(value);
+    }
+    else {
+      this.handleButtonChange(event, value);
+    }
+  }
+
+  /**
+  * Handler for slider
+  *
+  * @param value {Int} Budget number associated with slider status
+  * @return none
+  */
+  handleSliderChange = (value) => {
+    this.setState({ budget: value });
+  };
+
+  /**
+  * Handler for button
+  *
+  * @param event {Object} Event type
+  * @param value {String} Value associated with event
+  * @return none
+  */
+  handleButtonChange = (event, value) => {
+    this.setState({ [event.target.name]: value });
+  };
+    
+  /**
+  * Handler for searchbar autocomplete
+  *
+  * @param airport {JSON} Key Value pair of airport with its airport code
+  * @return none
+  */
+  handleAutocomplete = (airport) => {
+    if (airport !== null){
+      console.log("Listener (Autocomplete): " + airport.code);
+      this.setState({
+        departureAirport: airport
+      });
+    }
+  }
+  /**
+  * Handler for calendar listener
+  *
+  * @param date {Date} Date chosen by user
+  * @return none
+  */
+  handleDepartureDate = (date) => {
+    console.log("Listener (DepartureDate): " + date);
+    if (this.state.returnDate !== null &amp;&amp;  this.state.departureDate >= date) {
+      window.alert("Please enter a departure date before your return date :)");
+    }
+    else {
+      this.setState({
+        departureDate: date
+      });
+    }
+  };
+
+  /**
+  * Handler for calendar listener
+  *
+  * @param date {Date} Date chosen by user
+  * @return none
+  */
+  handleReturnDate = (date) => {
+    console.log("Listener (ReturnDate): " + date);
+    if (this.state.departureDate !== null &amp;&amp; date &lt;= this.state.departureDate) {
+      window.alert("Please enter a return date after your departure date :)");
+    }
+    else {
+      this.setState({
+        returnDate: date
+      }); 
+    }
+  };
+  
+  /**
+  * Sets the data associated with a trip.
+  *
+  * @param bookTrip {Trip} BookedTrip that will be booked
+  * @param saveTrip {Trip} SavedTrip that will be saved
+  * @param hotel {HotelStay} Hotel object
+  * @param price {Int} Price of the trip
+  * @return none
+  */
+  setTripData = (bookTrip, saveTrip, hotel, price) => {
+    this.setState({
+      bookTrip: bookTrip,
+      saveTrip: saveTrip, 
+      hotel: hotel,
+      totalPrice: price,
+  })};
+  
+  /**
+  * sets state of Error
+  *
+  * @param err {String} Detailed error message
+  * @return none
+  */
+  setApiErr = (err) => { 
+    this.setState({
+      apiErr : err,
+  })};
+  
+  /**
+  * sets state of totalPrice
+  *
+  * @param price {Int} price of trip
+  * @return none
+  */
+  setTotalPrice = (price) => {
+    this.setState({
+      totalPrice : price,
+  })};
+  
+  /**
+  * sets state of ticketName
+  *
+  * @param name {String} Name on Ticket
+  * @return none
+  */
+  setTicketName = (name) => {
+    this.setState({
+      ticketName : name,
+  })};
+  
+  /**
+  * Renders the component
+  *
+  * @param none
+  * @return HTML {HTML} The HTML representation of the component.
+  */
+  render() {
+    const { step } = this.state;
+    const { departureAirport, departureDate, returnDate, destination, price, budget, totalPrice, bookTrip, saveTrip, hotel, apiErr, ticketName } =  this.state;
+    const values = { departureAirport, departureDate, returnDate, destination, price, budget, totalPrice, bookTrip, saveTrip, hotel, apiErr, ticketName };
+  
+    switch (step) {
+      case 1:
+        return (
+          &lt;Quiz
+            nextStep={this.nextStep}
+            handleSliderChange={this.handleSliderChange}
+            handleChange={this.handleChange}
+            values={values}
+          />
+        );
+      case 2:
+        return (
+          &lt;Price
+            nextStep={this.nextStep}
+            prevStep={this.prevStep}
+            goBack={this.goBackToQuiz}
+            handleChange={this.handleChange}
+            setTripData={this.setTripData}
+            setTotalPrice={this.setTotalPrice}
+            setApiErr={this.setApiErr}
+            values={values}
+          />
+        );
+      case 3:
+        return (
+          &lt;Payment nextStep={this.nextStep} setTicketName={this.setTicketName} values={values}/>
+        );
+      case 4:
+        console.log(this.state.bookTrip);
+        const dateStr = this.state.bookTrip.departureFlight.departureDate;
+        const date = new Date(dateStr);
+        const yearString = `${date.getFullYear()}`.slice(-2);
+        const formattedDate = `${date.getMonth() + 1}/${date.getDate()}/${yearString}`;
+        const formattedTime = formatTime(date);
+
+        return (
+          &lt;TripBooked 
+            name={this.state.userFullName === null ? this.state.ticketName : this.state.userFullName}
+            destination={this.state.bookTrip.departureFlight.destinationCity}
+            date={formattedDate}
+            time={formattedTime}
+          />
+        );
+      default:
+        return(
+          &lt;div> Error &lt;/div>
+        )
+    }
+  }
+}
+  
+TripGeneration.contextType = AuthUserContext;
+
+export default TripGeneration;</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="BookedTrip.html">BookedTrip</a></li><li><a href="BookedTripCard.html">BookedTripCard</a></li><li><a href="BookedTripsBase.html">BookedTripsBase</a></li><li><a href="BookedTripsItem.html">BookedTripsItem</a></li><li><a href="ErrorCard.html">ErrorCard</a></li><li><a href="Flight.html">Flight</a></li><li><a href="GeneratedCard.html">GeneratedCard</a></li><li><a href="GeneratingCard.html">GeneratingCard</a></li><li><a href="HotelStay.html">HotelStay</a></li><li><a href="MyTrips.html">MyTrips</a></li><li><a href="PasswordChange.html">PasswordChange</a></li><li><a href="PasswordForget.html">PasswordForget</a></li><li><a href="Payment.html">Payment</a></li><li><a href="Price.html">Price</a></li><li><a href="Quiz.html">Quiz</a></li><li><a href="SavedTrip.html">SavedTrip</a></li><li><a href="SavedTripCard.html">SavedTripCard</a></li><li><a href="SavedTripsBase.html">SavedTripsBase</a></li><li><a href="SavedTripsItem.html">SavedTripsItem</a></li><li><a href="SignInFormBase.html">SignInFormBase</a></li><li><a href="SignOutButton.html">SignOutButton</a></li><li><a href="SignUpFormBase.html">SignUpFormBase</a></li><li><a href="TripBooked.html">TripBooked</a></li><li><a href="TripGeneration.html">TripGeneration</a></li><li><a href="WithAuthentication.html">WithAuthentication</a></li></ul><h3>Global</h3><ul><li><a href="global.html#FlightRoute">FlightRoute</a></li><li><a href="global.html#formatTime">formatTime</a></li><li><a href="global.html#getAttractions">getAttractions</a></li><li><a href="global.html#getCityImage">getCityImage</a></li><li><a href="global.html#getCityWebsite">getCityWebsite</a></li><li><a href="global.html#getFormattedAddress">getFormattedAddress</a></li><li><a href="global.html#SimpleDialog">SimpleDialog</a></li><li><a href="global.html#TabPanel">TabPanel</a></li><li><a href="global.html#TripTabs">TripTabs</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.3</a> on Fri Mar 13 2020 23:33:24 GMT-0700 (Pacific Daylight Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

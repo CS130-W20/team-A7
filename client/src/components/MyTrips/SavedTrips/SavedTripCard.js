@@ -46,8 +46,15 @@ const styles = theme => ({
   },
 });
 
+/** @class SavedTripCard representing a saved trip Card */
 class SavedTripCard extends Component {
   
+  /**
+  * Gets the quiz parameter for a destination.
+  *
+  * @param destinationOpt {String} The option chosen by the user.
+  * @return String {String} The quiz's representation of the object
+  */
   destinationText(destinationOpt) {
     if (destinationOpt === 'anyDest') {
       return 'Surprise me!';
@@ -63,6 +70,12 @@ class SavedTripCard extends Component {
     }
   }
 
+  /**
+  * Gets the quiz parameter for a price.
+  *
+  * @param priceOpt {String} The option chosen by the user.
+  * @return String {String} The quiz's representation of the object
+  */
   priceText(priceOpt) {
     if (priceOpt === 'anyPrice') {
       return "Cost isn't a factor";
@@ -78,6 +91,12 @@ class SavedTripCard extends Component {
     }
   }
 
+  /**
+  * Handles clicking on a SavedTripCard
+  *
+  * @param none
+  * @return none
+  */
   handleClickOpen = () => {
     this.props.history.push({
       pathname: '/quiz',
@@ -100,6 +119,12 @@ class SavedTripCard extends Component {
     })
   };
 
+  /**
+  * Renders the component
+  *
+  * @param none
+  * @return HTML {HTML} The HTML representation of the component.
+  */
   render() {
     const { classes } = this.props;
     return (

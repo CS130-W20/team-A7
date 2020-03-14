@@ -59,6 +59,12 @@ const styles = theme => ({
   }
 });
 
+/**
+  * Renders the three slots for Google Places Attractions
+  *
+  * @param props {props} React Component props
+  * @return HTML {HTML} HTML representation of object.
+  */
 function SimpleDialog(props) {
   
   const { onClose,  open , details, classes, destinationAddress, attractions, price} = props;
@@ -176,11 +182,16 @@ SimpleDialog.propTypes = {
   open: PropTypes.bool.isRequired,
 };
 
+/** @class BookedTripCard displays a Trip that a user has booked. */
 class BookedTripCard extends Component {
-
+  /**
+   * Creates an instance of BookedTripCard
+   *
+   * @constructor
+   */
   constructor(props) {
     super(props);
-    this.state = {
+    /** @private */ this.state = {
       open: false,
       sourceAddress: '',
       destinationAddress: '',
@@ -195,6 +206,12 @@ class BookedTripCard extends Component {
     };
   }
 
+  /**
+    * Updates state to contain source address
+    *
+    * @param addy {String} The address to be set.
+    * @return none
+    */
   setSourceAddress(addy) {
     if (typeof addy !== 'undefined' && addy !== '') {
       this.setState({
@@ -203,6 +220,12 @@ class BookedTripCard extends Component {
     }
   }
 
+  /**
+    * Updates state to contain destination address
+    *
+    * @param addy {String} The address to be set.
+    * @return none
+    */
   setDestinationAddress(addy) {
     if (typeof addy !== 'undefined' && addy !== '') {
       this.setState({
@@ -211,6 +234,12 @@ class BookedTripCard extends Component {
     }
   }
 
+  /**
+    * Updates state to contain the destination image's url
+    *
+    * @param url {String} The url to be set.
+    * @return none
+    */
   setDestinationImage(url) {
     if (typeof url !== 'undefined' && url !== null) {
       this.setState({
@@ -219,6 +248,12 @@ class BookedTripCard extends Component {
     }
   }
 
+  /**
+    * Updates state to contain destination website's url.
+    *
+    * @param url {String} The url to be set.
+    * @return none
+    */
   setDestinationWebsite(url) {
     if (typeof url !== 'undefined' && url !== null) {
       this.setState({
@@ -227,6 +262,12 @@ class BookedTripCard extends Component {
     }
   }
 
+  /**
+    * Updates state to contain Google Places Attractions
+    *
+    * @param attractions {Array<JSON>} The attractions returned by Google Places API.
+    * @return none
+    */
   setAttractions(attractions) {
     if (typeof attractions !== 'undefined' && attractions !== null) {
       this.setState({
@@ -235,36 +276,72 @@ class BookedTripCard extends Component {
     }
   }
   
+  /**
+    * Updates state to indicate source address API call completed.
+    *
+    * @param none
+    * @return none
+    */
   srcAddIsDone() {
     this.setState({
       srcAddDone : true
     });
   }
   
+  /**
+    * Updates state to indicate destination address API call completed.
+    *
+    * @param none
+    * @return none
+    */
   desAddIsDone() {
     this.setState({
       desAddDone : true
     });
   }
   
+  /**
+    * Updates state to indicate destination image API call completed.
+    *
+    * @param none
+    * @return none
+    */
   destImgIsDone() {
     this.setState({
       destImgDone : true
     });
   }
   
+  /**
+    * Updates state to indicate destination website url API call completed.
+    *
+    * @param none
+    * @return none
+    */
   destWbstIsDone() {
     this.setState({
       destWbstDone : true
     });
   }
 
+  /**
+    * Updates state to indicate Google Places API call completed.
+    *
+    * @param none
+    * @return none
+    */
   attractionsIsDone() {
     this.setState({
       attractionsDone : true
     });
   }
 
+  /**
+    * Updates object by making API calls.
+    *
+    * @param none
+    * @return none
+    */
   componentDidMount() {
     const setSourceAddress_c = ((addy) => this.setSourceAddress(addy));
     const setDestinationAddress_c = ((addy) => this.setDestinationAddress(addy));
@@ -312,7 +389,13 @@ class BookedTripCard extends Component {
       });
     }
   }
-  
+
+  /**
+    * Renders the component
+    *
+    * @param none
+    * @return the generated HTML
+  */
   render() {
     
     // Hacky method of fixing attractions sometimes being null

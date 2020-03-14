@@ -46,21 +46,46 @@ const INITIAL_STATE = {
   error: null
 };
 
+/** @class PasswordChange renders the page for changing a password. */
 class PasswordChange extends Component {
+  /**
+  * Creates an instance of PasswordChange.
+  *
+  * @constructor
+  * @param props {props} The react Component properties.
+  */
   constructor(props) {
     super(props);
     this.state = { ...INITIAL_STATE };
   }
 
+  /**
+  * Overrides onSubmit functionality for button
+  * @override
+  * @param event {event} onSubmit event.
+  * @return none
+  */
   onSubmit = event => {
     event.preventDefault();
     this.props.resetPassword(this.state.email);
   };
 
+  /**
+  * Overrides onChange functionality for button
+  * @override
+  * @param event {event} onChange event.
+  * @return none
+  */
   onChange = event => {
     this.setState({ [event.target.name]: event.target.value });
   };
 
+  /**
+  * Renders the component
+  *
+  * @param none
+  * @return HTML {HTML} The HTML representation of the component.
+  */
   render() {
     const { email } = this.state;
     const { classes, error } = this.props;

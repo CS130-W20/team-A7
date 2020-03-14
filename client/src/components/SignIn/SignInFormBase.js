@@ -47,13 +47,26 @@ const INITIAL_STATE = {
   password: '',
   error: null,
 };
-  
+ 
+/** @class SignInFormBase handles rendering the Sign In page. */
 class SignInFormBase extends Component {
+  /**
+  * Creates an instance of SignInFormBase.
+  *
+  * @constructor
+  * @param props {props} The React Component properties.
+  */
   constructor(props) {
     super(props);
     this.state = { ...INITIAL_STATE };
   }
 
+  /**
+  * Overrides onSubmit functionality for button
+  * @override
+  * @param event {event} onSubmit event.
+  * @return none
+  */
   onSubmit = event => {
     const { email, password } = this.state;
     this.props.firebase
@@ -68,10 +81,22 @@ class SignInFormBase extends Component {
     event.preventDefault();
   };
 
+  /**
+  * Overrides onChange functionality for button
+  * @override
+  * @param event{event} onChange event.
+  * @return none
+  */
   onChange = event => {
     this.setState({ [event.target.name]: event.target.value });
   };
 
+  /**
+  * Renders the component
+  *
+  * @param none
+  * @return HTML {HTML} The HTML of the rendered component
+  */
   render() {
     const { classes } = this.props;
     const { email, password, error } = this.state;
