@@ -7,7 +7,7 @@ import { withStyles } from '@material-ui/core/styles';
 import logo from '../../assets/logo.png'
 
 import { AuthUserContext } from '../Session';
-import SignOutButton from '../SignOut';
+import SignOutButton from '../SignOut/SignOut';
 import * as ROUTES from '../../constants/routes';
 
 const styles = (theme) => ({

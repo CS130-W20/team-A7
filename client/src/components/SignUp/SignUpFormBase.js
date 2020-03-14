@@ -9,7 +9,7 @@ import Container from '@material-ui/core/Container';
 import Card from '@material-ui/core/Card'
 import CardContent from '@material-ui/core/CardContent'
 
-import { SignInLink } from '../SignIn';
+import { SignInLink } from '../SignIn/SignIn';
 import * as ROUTES from '../../constants/routes';
 
 const styles = (theme) => ({

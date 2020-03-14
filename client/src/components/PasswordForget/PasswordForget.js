@@ -1,14 +1,13 @@
-import Button from "@material-ui/core/Button";
-import Card from "@material-ui/core/Card";
 import Container from "@material-ui/core/Container";
 import CssBaseline from "@material-ui/core/CssBaseline";
-import Grid from "@material-ui/core/Grid";
+import { withStyles } from "@material-ui/core/styles";
 import TextField from "@material-ui/core/TextField";
 import Typography from "@material-ui/core/Typography";
 import React, { Component } from "react";
-import { Link } from "react-router-dom";
+import Button from "react-bootstrap/Button";
+import Card from "react-bootstrap/Card";
+import { Redirect } from "react-router-dom";
 import * as ROUTES from "../../constants/routes";
-import { SignUpLink } from "../SignUp/SignUp";
 
 const styles = (theme) => ({
   card: {
@@ -43,29 +42,19 @@ const styles = (theme) => ({
 });
 
 const INITIAL_STATE = {
-  email: '',
-  password: '',
-  error: null,
+  email: "",
+  error: null
 };
-  
-class SignInFormBase extends Component {
+
+class PasswordForget extends Component {
   constructor(props) {
     super(props);
     this.state = { ...INITIAL_STATE };
   }
 
   onSubmit = event => {
-    const { email, password } = this.state;
-    this.props.firebase
-      .doSignInWithEmailAndPassword(email, password)
-      .then(() => {
-        this.setState({ ...INITIAL_STATE });
-        this.props.history.push(ROUTES.ABOUT);
-      })
-      .catch(error => {
-        this.setState({ error });
-      });
     event.preventDefault();
+    this.props.resetPassword(this.state.email);
   };
 
   onChange = event => {
@@ -73,9 +62,12 @@ class SignInFormBase extends Component {
   };
 
   render() {
+    const { email, error } = this.state;
     const { classes } = this.props;
-    const { email, password, error } = this.state;
-    const isInvalid = password === "" || email === "";
+
+    const isInvalid = email === "";
+
+    if (error === "success") return <Redirect to={ROUTES.SIGN_IN}> </Redirect>;
 
     return (
       <div id="centered-fixed-masthead">
@@ -84,7 +76,7 @@ class SignInFormBase extends Component {
             <CssBaseline />
             <div className={classes.paper}>
               <Typography component="h1" variant="h5">
-                Sign in
+                Reset Password
               </Typography>
               <form className={classes.form} noValidate>
                 <TextField
@@ -100,19 +92,7 @@ class SignInFormBase extends Component {
                   autoComplete="email"
                   autoFocus
                 />
-                <TextField
-                  variant="outlined"
-                  margin="normal"
-                  required
-                  fullWidth
-                  name="password"
-                  value={password}
-                  onChange={this.onChange}
-                  label="Password"
-                  type="password"
-                  id="password"
-                  autoComplete="current-password"
-                />
+
                 <Button
                   disabled={isInvalid}
                   onClick={this.onSubmit}
@@ -122,7 +102,7 @@ class SignInFormBase extends Component {
                   color="primary"
                   className={classes.submit}
                 >
-                  Sign In
+                  Reset
                 </Button>
 
                 {error && (
@@ -130,17 +110,6 @@ class SignInFormBase extends Component {
                     {error.message}
                   </Typography>
                 )}
-
-                <Grid container>
-                  <Grid item xs>
-                    <Link to={ROUTES.PASSWORD_FORGET} variant="body2">
-                      Forgot password?
-                    </Link>
-                  </Grid>
-                  <Grid item>
-                    <SignUpLink />
-                  </Grid>
-                </Grid>
               </form>
             </div>
           </Container>
@@ -150,6 +119,4 @@ class SignInFormBase extends Component {
   }
 }
 
-export { SignInFormBase, styles };
-
-export default SignInFormBase;
+export default withStyles(styles)(PasswordForget);
