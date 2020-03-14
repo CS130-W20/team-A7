@@ -15,7 +15,7 @@ import FlightTakeoffIcon from '@material-ui/icons/FlightTakeoff';
 import FlightLandIcon from '@material-ui/icons/FlightLand';
 import HotelIcon from '@material-ui/icons/Hotel';
 import LocalActivityIcon from '@material-ui/icons/LocalActivity';
-import { getCityImage, getFormattedAddress, getCityWebsite } from '../../Places/Places.js'
+import { getCityImage, getFormattedAddress, getCityWebsite, getAttractions } from '../../Places/Places.js'
 
 const styles = theme => ({
   button: {
@@ -25,6 +25,7 @@ const styles = theme => ({
   },
   root: {
     margin: "auto",
+    marginTop: 10,
     width: "85%",
     height: 300,
     overflow: "initial",
@@ -60,15 +61,17 @@ const styles = theme => ({
 
 function SimpleDialog(props) {
   
-  const { onClose,  open , details, classes, destinationAddress} = props;
+  const { onClose,  open , details, classes, destinationAddress, attractions, price} = props;
+
+  var apiKey = process.env.REACT_APP_PLACES_API_KEY;
 
   const handleClose = () => {
     onClose();
   };
 
   return (
-    <Dialog onClose={handleClose} aria-labelledby="simple-dialog-title" open={open} maxWidth="md" fullWidth="true">
-      <DialogTitle id="simple-dialog-title">Trip Details - {destinationAddress}</DialogTitle>
+    <Dialog onClose={handleClose} aria-labelledby="simple-dialog-title" open={open} maxWidth="md" fullWidth={true}>
+      <DialogTitle id="simple-dialog-title">Trip Details - {destinationAddress} (${price})</DialogTitle>
       <List>
           <ListItem >
           <FlightTakeoffIcon className={classes.icon} /> <ListItemText  primary={"Outbound Flight: "} secondary={details.departureFlight.departureCity + " (" + details.departureFlight.departureAirport.code + ") to " + details.departureFlight.destinationCity + " (" + details.departureFlight.destinationAirport.code + ")   -   " + details.departureFlight.departureDate} />
@@ -87,20 +90,23 @@ function SimpleDialog(props) {
         <CardMedia
           className={classes.media}
           image={
-            "https://upload.wikimedia.org/wikipedia/commons/d/d6/London-Eye-2009.JPG"
-          }
+            'https://maps.googleapis.com/maps/api/place/photo?photoreference=' + attractions[0].photos[0].photo_reference + '&key=' + apiKey + '&maxheight=250'
+          }  
         />
         <div className={classes.tripInfo} >
           <CardContent>
             <Typography gutterBottom variant="h4">
-              {"Attraction1Name"}
+              {attractions[0].name}
             </Typography>
             <div className={classes.details}>
               <Typography variant="body1" gutterBottom>
-              {"*number of stars*"} stars <br></br> {"*description of attraction*"}
+                {attractions[0].vicinity}
+              </Typography>
+              <Typography variant="body1" gutterBottom>
+                {attractions[0].rating} stars ({attractions[0].user_ratings_total} reviews)
               </Typography>
               <Typography variant="body1" color="textSecondary">
-              <i> <a href="google.com">More Information</a> </i>  
+                <i> <a rel="noopener noreferrer" href={'http://www.google.com/search?q=' + attractions[0].name} target="_blank">More Information</a> </i>  
               </Typography>
             </div>
           </CardContent>
@@ -111,20 +117,23 @@ function SimpleDialog(props) {
         <CardMedia
           className={classes.media}
           image={
-            "https://upload.wikimedia.org/wikipedia/commons/thumb/4/45/Green_Dragon_Tavern_%2836196%29.jpg/1920px-Green_Dragon_Tavern_%2836196%29.jpg"
+            'https://maps.googleapis.com/maps/api/place/photo?photoreference=' + attractions[1].photos[0].photo_reference + '&key=' + apiKey + '&maxheight=250'
           }
         />
         <div className={classes.tripInfo}>
           <CardContent>
             <Typography gutterBottom variant="h4">
-              {"Attraction2Name"}
+              {attractions[1].name}
             </Typography>
             <div className={classes.details}>
               <Typography variant="body1" gutterBottom>
-                {"*number of stars*"} stars <br></br> {"*description of attraction*nqlwjknf "}
+                {attractions[1].vicinity}
+              </Typography>
+              <Typography variant="body1" gutterBottom>
+                {attractions[1].rating} stars ({attractions[1].user_ratings_total} reviews)
               </Typography>
               <Typography variant="body1" color="textSecondary">
-                <i> <a href="google.com">More Information</a> </i>
+                <i> <a rel="noopener noreferrer" href={'http://www.google.com/search?q=' + attractions[1].name} target="_blank">More Information</a> </i>
               </Typography>
             </div>
           </CardContent>
@@ -135,20 +144,23 @@ function SimpleDialog(props) {
         <CardMedia
           className={classes.media}
           image={
-            "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e7/MV_Pemulwuy_at_Milsons_Point%2C_November_2016_%284%29.jpg/1920px-MV_Pemulwuy_at_Milsons_Point%2C_November_2016_%284%29.jpg"
+            'https://maps.googleapis.com/maps/api/place/photo?photoreference=' + attractions[2].photos[0].photo_reference + '&key=' + apiKey + '&maxheight=250'
           }
         />
         <div className={classes.tripInfo}>
           <CardContent>
             <Typography gutterBottom variant="h4">
-              {"Attraction3Name"}
+              {attractions[2].name}
             </Typography>
             <div className={classes.details}>
               <Typography variant="body1" gutterBottom>
-              {"*number of stars*"} stars <br></br> {"*description of attraction*nqlwjknf"}
+                {attractions[2].vicinity}
+              </Typography>
+              <Typography variant="body1" gutterBottom>
+                {attractions[2].rating} stars ({attractions[2].user_ratings_total} reviews)
               </Typography>
               <Typography variant="body1" color="textSecondary">
-              <i> <a href="google.com">More Information</a> </i>
+              <i> <a rel="noopener noreferrer" href={'http://www.google.com/search?q=' + attractions[2].name} target="_blank">More Information</a> </i>
               </Typography>
             </div>
           </CardContent>
@@ -174,10 +186,12 @@ class BookedTripCard extends Component {
       destinationAddress: '',
       destinationImage: null,
       destinationWebsite: '',
+      attractions: null,
       srcAddDone: false,
       desAddDone: false,
       destImgDone: false,
       destWbstDone: false,
+      attractionsDone: false
     };
   }
 
@@ -212,6 +226,14 @@ class BookedTripCard extends Component {
       });
     }
   }
+
+  setAttractions(attractions) {
+    if (typeof attractions !== 'undefined' && attractions !== null) {
+      this.setState({
+        attractions: attractions,
+      });
+    }
+  }
   
   srcAddIsDone() {
     this.setState({
@@ -237,15 +259,23 @@ class BookedTripCard extends Component {
     });
   }
 
+  attractionsIsDone() {
+    this.setState({
+      attractionsDone : true
+    });
+  }
+
   componentDidMount() {
     const setSourceAddress_c = ((addy) => this.setSourceAddress(addy));
     const setDestinationAddress_c = ((addy) => this.setDestinationAddress(addy));
     const setDestinationImage_c = ((url) => this.setDestinationImage(url));
     const setDestinationWebsite_c = ((url) => this.setDestinationWebsite(url));
+    const setAttractions_c = ((attractions) => this.setAttractions(attractions));
     const srcAddIsDone_c = (() => this.srcAddIsDone());
     const desAddIsDone_c = (() => this.desAddIsDone());
     const destImgIsDone_c = (() => this.destImgIsDone());
     const destWbstIsDone_c = (() => this.destWbstIsDone());
+    const attractionsIsDone_c = (() => this.attractionsIsDone());
 
     if (!this.state.srcAddDone) {
       getFormattedAddress(this.props.trip.departureFlight.departureCity).then(function (addy) {
@@ -253,47 +283,59 @@ class BookedTripCard extends Component {
         srcAddIsDone_c();
       });
     }
-
-    if (!this.state.desAddDone) {
-      getFormattedAddress(this.props.trip.departureFlight.destinationCity).then(function (addy) {
-        setDestinationAddress_c(addy);
-        desAddIsDone_c();
-      });
-    }
-
+    
     if (!this.state.destImgDone) {
       getCityImage(this.props.trip.departureFlight.destinationCity).then(function (url) {
         setDestinationImage_c(url);
         destImgIsDone_c();
       });
     }
-
+    
     if (!this.state.destWbstDone) {
       getCityWebsite(this.props.trip.departureFlight.destinationCity).then(function (url) {
         setDestinationWebsite_c(url);
         destWbstIsDone_c();
       });
     }
+    
+    if (!this.state.attractionsIsDone) {
+      getAttractions(this.props.trip.departureFlight.destinationCity).then(function (attractions) {
+        setAttractions_c(attractions);
+        attractionsIsDone_c();
+      });
+    }
+    
+    if (!this.state.desAddDone) {
+      getFormattedAddress(this.props.trip.departureFlight.destinationCity).then(function (addy) {
+        setDestinationAddress_c(addy);
+        desAddIsDone_c();
+      });
+    }
   }
-
+  
   render() {
     
-  const { classes, trip } = this.props;
+    // Hacky method of fixing attractions sometimes being null
+    if (this.state.attractions === null) {
+      return (<div> </div>);
+    }
+    
+    const { classes, trip } = this.props;
 
-  const handleClickOpen = () => {
-    this.setState({
-      open: true
-    });
-  };
-  const handleClose = () => {
-    this.setState({
-      open: false
-    });
-  };
+    const handleClickOpen = () => {
+      this.setState({
+        open: true
+      });
+    };
+    const handleClose = () => {
+      this.setState({
+        open: false
+      });
+    };
 
     return (
       <div>
-      <SimpleDialog  open={this.state.open} onClose={handleClose} details={trip} classes={classes} destinationAddress={this.state.destinationAddress}/>
+      <SimpleDialog  open={this.state.open} onClose={handleClose} details={trip} classes={classes} destinationAddress={this.state.destinationAddress} attractions={this.state.attractions} price={this.props.trip.price}/>
       
       <ButtonBase className={classes.button} onClick={handleClickOpen}>
         <Card className={classes.root} >
@@ -305,13 +347,13 @@ class BookedTripCard extends Component {
               <CardContent>
                 <div className={classes.details}>
                   <Typography style={{marginBottom: 10, marginTop: 20}} variant="h4">
-                    {this.state.sourceAddress} to {this.state.destinationAddress}
+                    {this.state.sourceAddress} to {this.state.destinationAddress} (${this.props.trip.price})
                   </Typography>
                   <Typography variant="body1" color="textSecondary">
                     <i> {this.props.trip.departureFlight.departureDate} to {this.props.trip.returnFlight.departureDate} </i>
                   </Typography>
                   <Typography variant="body1" color="textSecondary">
-                    <a href={this.state.destinationWebsite} target="_blank">{this.state.destinationWebsite}</a>
+                    <a rel="noopener noreferrer" href={this.state.destinationWebsite} target="_blank">More Information</a>
                   </Typography>
                 </div>
               </CardContent>

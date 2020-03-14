@@ -38,12 +38,14 @@ const About = ({ classes }) => (
         <div id="line"></div>
       </div>
       <div id="description-container">
-      <Typography className={classes.description}> 
       <Typography className={classes.smallTitle}>Our Mission</Typography>
-      Ready to take your travel spontaneity to the next level? Here at Serendipity, we believe there is beauty to be found 
-      in every single city out there, many of which one would never think to travel to. Our mission is to connect adventurous travelers to entirely random destinations, while still 
-      taking into account important restrictions like travel dates and budget. 
+      <Typography className={classes.description}> 
+        Ready to take your travel spontaneity to the next level? Here at Serendipity, we believe there is beauty to be found 
+        in every single city out there, many of which one would never think to travel to. Our mission is to connect adventurous travelers to entirely random destinations, while still 
+        taking into account important restrictions like travel dates and budget. 
+      </Typography>
       <Typography className={classes.smallTitle}>How it Works</Typography>
+      <Typography className={classes.description}> 
       All you need to do to get started is take <Link to={ROUTES.QUIZ}>our Quiz</Link>. You'll indicate your desired trip dates and budget, and we will take over
       from there! We will generate a full trip plan for you, complete with flights and hotel, and show you what the cost will be. From here you can click book and only then
       will your final destination be revealed! You could be going to Lincoln, Nebraska or Nusa Dua, Bali - so keep an open mind and remember to see the beauty in every city and culture!

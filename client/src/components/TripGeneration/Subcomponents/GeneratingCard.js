@@ -35,10 +35,6 @@ const styles = (theme) => ({
 });
 
 class GeneratingCard extends Component {
-  constructor(props) {
-    super(props);
-  }
-
   render() {
     const { classes } = this.props;
 

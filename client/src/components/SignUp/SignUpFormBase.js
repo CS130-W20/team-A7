@@ -13,34 +13,34 @@ import { SignInLink } from '../SignIn';
 import * as ROUTES from '../../constants/routes';
 
 const styles = (theme) => ({
-    card: {
-      marginTop: 50,
-      maxWidth: 500,
-      margin: "auto",
-      transition: "0.3s",
-      boxShadow: "0 8px 40px -12px rgba(0,0,0,0.3)",
-      "&:hover": {
-        boxShadow: "0 16px 70px -12.125px rgba(0,0,0,0.3)"
-      }
-    },
-    paper: {
-      marginTop: theme.spacing(8),
-      display: 'flex',
-      flexDirection: 'column',
-      alignItems: 'center',
-    },
-    form: {
-      width: '100%', // Fix IE 11 issue.
-      marginTop: theme.spacing(3),
-    },
-    submit: {
-      margin: theme.spacing(3, 0, 2),
-    },
-    error: {
-      color: 'red',
-      fontSize: 'small',
-      margin: theme.spacing(3, 0, 2),
+  card: {
+    marginTop: 50,
+    maxWidth: 500,
+    margin: "auto",
+    transition: "0.3s",
+    boxShadow: "0 8px 40px -12px rgba(0,0,0,0.3)",
+    "&:hover": {
+      boxShadow: "0 16px 70px -12.125px rgba(0,0,0,0.3)"
     }
+  },
+  paper: {
+    marginTop: theme.spacing(8),
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+  },
+  form: {
+    width: '100%', // Fix IE 11 issue.
+    marginTop: theme.spacing(3),
+  },
+  submit: {
+    margin: theme.spacing(3, 0, 2),
+  },
+  error: {
+    color: 'red',
+    fontSize: 'small',
+    margin: theme.spacing(3, 0, 2),
+  }
 });
 
 const INITIAL_STATE = {
@@ -95,8 +95,8 @@ class SignUpFormBase extends Component {
       firstname,
       lastname,
       email,
-      passwordOne: passwordOne,
-      passwordTwo: passwordTwo,
+      passwordOne,
+      passwordTwo,
       error,
     } = this.state;
   
@@ -165,7 +165,6 @@ class SignUpFormBase extends Component {
                         name="email"
                         value={email}
                         onChange={this.onChange}
-                        name="email"
                         autoComplete="email"
                       />
                     </Grid>
@@ -211,7 +210,6 @@ class SignUpFormBase extends Component {
                     variant='primary'
                     type="submit"
                     fullWidth
-                    variant="contained"
                     color="primary"
                     className={classes.submit}
                   >

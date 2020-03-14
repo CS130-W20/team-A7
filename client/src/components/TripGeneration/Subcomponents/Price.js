@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import GeneratingCard from './GeneratingCard';
 import GeneratedCard from './GeneratedCard';
+import ErrorCard from './ErrorCard';
 import { compose } from 'recompose';
 import { withFirebase } from '../../Firebase';
 import { AuthUserContext } from '../../Session';
@@ -58,7 +59,6 @@ class Price extends Component {
         gotContext: true,
         authUser: this.context.authUser,
       });
-      // console.log('yeet: ', this.context);
     }
   }
 
@@ -68,7 +68,7 @@ class Price extends Component {
     if (values.apiErr === null) {
       componentToRender = values.totalPrice === null ? <GeneratingCard /> : <GeneratedCard authUser={this.state.authUser} history={this.props.history} firebase={this.props.firebase} values={values} goBack={goBack} nextStep={nextStep} setApiErr={setApiErr} setTotalPrice={setTotalPrice}/>;
     } else {
-      componentToRender = values.apiErr;
+      componentToRender = <ErrorCard goBack={goBack} setApiErr={setApiErr} setTotalPrice={setTotalPrice} />;
     }
     
     return (

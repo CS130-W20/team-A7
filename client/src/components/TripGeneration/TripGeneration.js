@@ -3,6 +3,7 @@ import Price from './Subcomponents/Price';
 import Quiz from './Subcomponents/Quiz';
 import Payment from './Subcomponents/Payment';
 import TripBooked from '../TripBooked';
+import { AuthUserContext } from '../Session';
 
 const INITIAL_STATE = {
   step: 1,
@@ -18,7 +19,12 @@ const INITIAL_STATE = {
   bookTrip: null,
   saveTrip: null,
   hotel: null,
-  apiErr: null
+  apiErr: null,
+  // Ticket name passes from payment
+  ticketName: 'someone',
+  //
+  userFullName: null,
+  gotContext: false,
 };
 
 const formatTime = (date) => {
@@ -26,7 +32,7 @@ const formatTime = (date) => {
   const minutes = date.getMinutes();
 
   let timeString;
-  if (hour == 0) {
+  if (hour === 0) {
     timeString = '12:';
   } else {
     timeString = `${hour % 12}:`;
@@ -40,11 +46,21 @@ export class TripGeneration extends Component {
   constructor(props) {
     super(props);
     if (typeof this.props.location.state !== 'undefined') {
-      console.log('hope: ', this.props.location.state);
-      this.state = {... this.props.location.state};
+      this.state = {...this.props.location.state};
     }
     else {
       this.state = { ...INITIAL_STATE };
+    }
+  }
+
+  componentDidUpdate() {
+    console.log('got context');
+    if (typeof this.context.user !== 'undefined' && this.context.user !== null && !this.state.gotContext) {
+      console.log('got context');
+      this.setState({
+        gotContext: true,
+        userFullName: this.context.user.firstname + ' ' + this.context.user.lastname,
+      });
     }
   }
   
@@ -144,11 +160,16 @@ export class TripGeneration extends Component {
     this.setState({
       totalPrice : price,
   })};
+
+  setTicketName = (name) => {
+    this.setState({
+      ticketName : name,
+  })};
   
   render() {
     const { step } = this.state;
-    const { departureAirport, departureDate, returnDate, destination, price, budget, totalPrice, bookTrip, saveTrip, hotel, apiErr } =  this.state;
-    const values = { departureAirport, departureDate, returnDate, destination, price, budget, totalPrice, bookTrip, saveTrip, hotel, apiErr };
+    const { departureAirport, departureDate, returnDate, destination, price, budget, totalPrice, bookTrip, saveTrip, hotel, apiErr, ticketName } =  this.state;
+    const values = { departureAirport, departureDate, returnDate, destination, price, budget, totalPrice, bookTrip, saveTrip, hotel, apiErr, ticketName };
   
     switch (step) {
       case 1:
@@ -175,7 +196,7 @@ export class TripGeneration extends Component {
         );
       case 3:
         return (
-          <Payment nextStep={this.nextStep}/>
+          <Payment nextStep={this.nextStep} setTicketName={this.setTicketName} values={values}/>
         );
       case 4:
         console.log(this.state.bookTrip);
@@ -187,14 +208,20 @@ export class TripGeneration extends Component {
 
         return (
           <TripBooked 
-            name="Kyle Romero"
+            name={this.state.userFullName === null ? this.state.ticketName : this.state.userFullName}
             destination={this.state.bookTrip.departureFlight.destinationCity}
             date={formattedDate}
             time={formattedTime}
           />
         );
+      default:
+        return(
+          <div> Error </div>
+        )
     }
   }
 }
   
+TripGeneration.contextType = AuthUserContext;
+
 export default TripGeneration;

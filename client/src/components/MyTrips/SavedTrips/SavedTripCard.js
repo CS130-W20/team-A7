@@ -6,10 +6,7 @@ import CardContent from "@material-ui/core/CardContent";
 import Typography from "@material-ui/core/Typography";
 import ButtonBase from '@material-ui/core/ButtonBase';
 
-import UserForm from '../../TripGeneration/TripGeneration'
-
-import { withRouter, Link } from 'react-router-dom';
-import * as ROUTES from '../../../constants/routes';
+import { withRouter } from 'react-router-dom';
 
 const styles = theme => ({
   button: {
@@ -50,10 +47,7 @@ const styles = theme => ({
 });
 
 class SavedTripCard extends Component {
-  constructor(props) {
-    super(props);
-  }
-
+  
   destinationText(destinationOpt) {
     if (destinationOpt === 'anyDest') {
       return 'Surprise me!';
@@ -115,7 +109,7 @@ class SavedTripCard extends Component {
           <div className={classes.tripInfo}>
             <CardContent>
               <Typography gutterBottom variant="h3">
-                {"Latest Price: " + "$" + this.props.trip.price.toFixed(2)}
+                {"Latest Price: $" + this.props.trip.price.toFixed(2)}
               </Typography>
               <div className={classes.details}>
                 <Typography variant="body1" gutterBottom>
