@@ -31,38 +31,6 @@ npm install
 npm start
 ```
 
-# Code Structure
-
-  Since we decided to build a React application, we utilize a standard structure for React apps in which we store all components inside client/src/components. Within this folder, we keep each component in a seperate file. This is the main structure of our critical components:
-
-  client  
-    --src  
-      ----assets  
-        ------[..assets..]  
-      ----components  
-        ------About 
-        ------App  
-        ------CTAButton  
-        ------Firebase  
-        ------Landing  
-        ------MyTrips  
-        ------NavBar  
-        ------PasswordChange  
-        ------PasswordForget
-        ------Places 
-        ------Session  
-        ------SignIn  
-        ------SignOut  
-        ------SignUp  
-        ------TripGeneration  
-      ----constants
-      ----models
-  server
-    --out
-    --routes
-    index.js
-    server.js
-
 # Testing
 
 Tests can be found within folders for each component that is tested. Please see our report for more information.
