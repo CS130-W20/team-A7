@@ -6,12 +6,27 @@ const MAX_TRIES = 5;
 const tripAdvisorRoutes = {
   PLACE: "/locations/search",
   HOTEL: "/hotels/list"
-}
+};
 
+/**
+ * Reconstructs a Date object from an ISO-formatted string.
+ * 
+ * @param {string} stringValue The ISO-formatted string to convert.
+ * @return {Date} The Date equivalent to the passed in string.
+ */
 function dateReviver(stringValue) {
   return new Date(stringValue);
 }
 
+/**
+ * Constructs a request to the SkyScanner API to find out what flights are available from a
+ * given depature to a given destination
+ * 
+ * @param {string} departureCode The three-character departure airport code.
+ * @param {string} destination The desired destination code (e.g. "FR" for "France").
+ * @param {string} departureDate The ISO-formatted date portion (YYYY-MM-DD) representing the departure date.
+ * @return {Promise} A promise wrapping the API-call that will resolve to a Response object on completion.
+ */
 function makeSkyScannerRequest(departureCode, destination, departureDate) {
   // Configure API request
   const flightUrl = "https://skyscanner-skyscanner-flight-search-v1.p.rapidapi.com/apiservices/browsequotes/v1.0/US/USD/en-US/" + departureCode + "-sky/" + destination + "/" + departureDate;
@@ -28,6 +43,13 @@ function makeSkyScannerRequest(departureCode, destination, departureDate) {
   return fetch(flightUrl + "?" + queryParams, { headers });
 }
 
+/**
+ * Constructs a request to the TripAdvisor API to either get the ID of a location or find
+ * nearby hotels.
+ * 
+ * @param {string} route 
+ * @param {Object} optionBag 
+ */
 function makeTripAdvisorRequest(route, optionBag) {
   const url = "https://tripadvisor1.p.rapidapi.com" + route;
   const { outFlight, placeId, numNights } = optionBag;
