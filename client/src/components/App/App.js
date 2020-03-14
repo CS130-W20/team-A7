@@ -5,15 +5,15 @@ import './App.css';
 
 import NavBar from '../NavBar/NavBar';
 import Landing from '../Landing/Landing';
-import SignIn from '../SignIn';
-import SignUp from '../SignUp';
-import About from '../About';
+import SignIn from '../SignIn/SignIn';
+import SignUp from '../SignUp/SignUp';
+import About from '../About/About';
 import TripGeneration from '../TripGeneration/TripGeneration';
-import MyTrips from '../MyTrips';
+import MyTrips from '../MyTrips/MyTrips';
 
 import * as ROUTES from '../../constants/routes';
 import { withAuthentication } from '../Session';
-import PasswordChange from '../PasswordChange';
+import PasswordForget from '../PasswordForget/PasswordForget';
 
 const theme = createMuiTheme({
   palette: {
@@ -37,7 +37,7 @@ function App() {
             <Route exact path={ROUTES.LANDING} render={(props) => <Landing {...props} />} />
             <Route exact path={ROUTES.ABOUT} render={(props) => <About {...props} />} />
             <Route exact path={ROUTES.SIGN_UP} render={(props) => <SignUp {...props} />} />
-            <Route exact path={ROUTES.PASSWORD_FORGET} render={(props) => <PasswordChange {...props} />} />
+            <Route exact path={ROUTES.PASSWORD_FORGET} render={(props) => <PasswordForget {...props} />} />
             <Route exact path={ROUTES.SIGN_IN} render={(props) => <SignIn {...props} />}/>
             <Route exact path={ROUTES.MY_TRIPS} render={(props) => <MyTrips {...props} />}/>
             <Route exact path={ROUTES.QUIZ} render={(props) => < TripGeneration {...props} />}/>

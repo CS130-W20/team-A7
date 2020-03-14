@@ -1,6 +1,6 @@
 div#trip-booked-container {
   overflow: hidden;
-  background-image: url("../../assets/background.png");
+  background-image: url("../../../assets/background.png");
   object-fit: cover;
   padding: 45px 200px;
   height: 100%;
@@ -37,7 +37,7 @@ div#trip-booked-ticket-container {
 div#destination-container {
   flex: 0 1 auto;
   width: 40%;
-  background-image: url("../../assets/background.png");
+  background-image: url("../../../assets/background.png");
   background-size: cover;
   position: relative;
 }

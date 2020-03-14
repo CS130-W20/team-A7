@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
-import CTAButton from '../CTAButton/CTAButton';
-import * as ROUTES from '../../constants/routes';
+import CTAButton from '../../CTAButton/CTAButton';
+import * as ROUTES from '../../../constants/routes';
 import { Typography } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
 import { withRouter } from 'react-router-dom';

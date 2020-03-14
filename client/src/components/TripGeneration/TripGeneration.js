@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import Price from './Subcomponents/Price';
 import Quiz from './Subcomponents/Quiz';
 import Payment from './Subcomponents/Payment';
-import TripBooked from '../TripBooked';
+import TripBooked from './Subcomponents/TripBooked';
 import { AuthUserContext } from '../Session';
 
 const INITIAL_STATE = {
