@@ -61,11 +61,11 @@ function generateTrip(tripData, body, cbSuccess, cbError) {
           },
         );
 
-        const hotelStay = new HotelStay(hotel, numNights);
-        const bookTrip = new BookedTrip('BookedTrip1', departureFlight, returnFlight, hotelStay);
-        
         // Calculating total price
         const price = outFlight.MinPrice + inFlight.MinPrice + (hotel.price * numNights);
+
+        const hotelStay = new HotelStay(hotel, numNights);
+        const bookTrip = new BookedTrip('BookedTrip1', departureFlight, returnFlight, hotelStay, price);
 
         // Creating the SavedTrip object
         const inputCriteria = new Criteria(
